@@ -1,0 +1,14 @@
+Algorithme Test
+
+Variable x : Entier
+
+Debut
+	x = x + 1
+
+	Ecrire (x)
+
+	y = x * 2
+
+	Ecrire (y)
+
+Fin
