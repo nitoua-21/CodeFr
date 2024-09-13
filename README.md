@@ -1,8 +1,8 @@
-# CodeFr Compiler
+# CodeFr
 
 ## Description
 
-CodeFr Compiler is an educational project aimed at simplifying programming for French-speaking beginners. It allows users to write and execute algorithms directly in French, reducing the learning curve associated with English-based programming languages.
+CodeFr is an educational project aimed at simplifying programming for French-speaking beginners. It allows users to write and execute algorithms directly in French, reducing the learning curve associated with English-based programming languages.
 
 This compiler translates French pseudocode into executable programs, bridging the gap between algorithmic thinking and practical programming skills.
 
@@ -45,26 +45,43 @@ make
 
 1. Run the compiler:
 
-```bash
-./codefr
-```
-
-2. Enter CodeFr statements directly, or use a file:
-
 ```
 ./codefr file.fr
 ```
 
-Example usage:
+### Conditional Example:
 
 ```plaintext
-Variable x : Entier
-x = 5
-Variable y : Entier
-y = 3
-Ecrire(x + y)
-x = x * 2
-Ecrire(x)
+Algorithme Signe_numbre
+
+Variable n : Entier
+
+Debut
+    Ecrire("Enter an integer: ")
+    Lire(n)
+
+    // Check if the number is positive
+    Si n > 0 Alors
+        Ecrire("You entered a positive number: ", n, "\n")
+    FinSi
+Fin
+
+```
+
+### Loops example
+
+```
+Algorithme Boucle
+
+Variable i : Entier
+
+Debut
+    i = 0
+    TantQue i < 5 Faire
+        Ecrire(i, "\n")
+        i = i + 1
+    FinTanQue
+Fin
 ```
 
 ## Project Structure
