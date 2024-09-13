@@ -54,20 +54,31 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    NUMBER = 258,                  /* NUMBER  */
-    IDENTIFIER = 259,              /* IDENTIFIER  */
-    PLUS = 260,                    /* PLUS  */
-    MINUS = 261,                   /* MINUS  */
-    TIMES = 262,                   /* TIMES  */
-    DIVIDE = 263,                  /* DIVIDE  */
-    LPAREN = 264,                  /* LPAREN  */
-    RPAREN = 265,                  /* RPAREN  */
-    ASSIGN = 266,                  /* ASSIGN  */
-    VARIABLE = 267,                /* VARIABLE  */
-    WRITE = 268,                   /* WRITE  */
-    COLON = 269,                   /* COLON  */
-    INTEGER = 270,                 /* INTEGER  */
-    COMMA = 271                    /* COMMA  */
+    ENTIER_VAL = 258,              /* ENTIER_VAL  */
+    DECIMAL_VAL = 259,             /* DECIMAL_VAL  */
+    IDENTIFIER = 260,              /* IDENTIFIER  */
+    STRING_VAL = 261,              /* STRING_VAL  */
+    LOGIQUE_VAL = 262,             /* LOGIQUE_VAL  */
+    PLUS = 263,                    /* PLUS  */
+    MINUS = 264,                   /* MINUS  */
+    TIMES = 265,                   /* TIMES  */
+    DIVIDE = 266,                  /* DIVIDE  */
+    LPAREN = 267,                  /* LPAREN  */
+    RPAREN = 268,                  /* RPAREN  */
+    ASSIGN = 269,                  /* ASSIGN  */
+    VARIABLE = 270,                /* VARIABLE  */
+    VARIABLES = 271,               /* VARIABLES  */
+    ECRIRE = 272,                  /* ECRIRE  */
+    LIRE = 273,                    /* LIRE  */
+    COLON = 274,                   /* COLON  */
+    COMMA = 275,                   /* COMMA  */
+    ALGORITHME = 276,              /* ALGORITHME  */
+    DEBUT = 277,                   /* DEBUT  */
+    FIN = 278,                     /* FIN  */
+    ENTIER = 279,                  /* ENTIER  */
+    DECIMAL = 280,                 /* DECIMAL  */
+    LOGIQUE = 281,                 /* LOGIQUE  */
+    CHAINE = 282                   /* CHAINE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -76,12 +87,16 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 28 "parser.y"
+#line 12 "parser.y"
 
-	int ival;
-	char *sval;
+    int ival;
+    double fval;
+    char *sval;
+    bool bval;
+    char **str_list;
+    SymbolType type;
 
-#line 85 "parser.tab.h"
+#line 100 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

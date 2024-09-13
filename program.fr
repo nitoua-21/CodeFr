@@ -1,14 +1,17 @@
-Algorithme Test
+Algorithme Signe_numbre
 
-Variable x : Entier
+Variable n : Entier
 
 Debut
-	x = x + 1
+    Ecrire("Enter an integer: ")
+    Lire(n)
 
-	Ecrire (x)
-
-	y = x * 2
-
-	Ecrire (y)
-
+    // Check if the number is positive
+    Si n > 0 Alors
+        Ecrire("You entered a positive number: ", n, "\n")
+    SinonSi n < 0 Alors
+        Ecrire("You entered a negative number: ", n, "\n")
+    Sinon
+        Ecrire("You entered zero.\n")
+    FinSi
 Fin
