@@ -41,5 +41,6 @@ double evaluate_expression(double left, char operator, double right);
 
 // Error handling
 void report_error(const char *message);
+char* process_string(const char* str);
 
 #endif /* CODEFR_H */

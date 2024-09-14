@@ -80,31 +80,49 @@ assignment:
             report_error("Variable non déclarée");
         }
     }
+	|
+	IDENTIFIER ASSIGN STRING_VAL {
+		Symbol *sym = get_symbol($1);
+		if (sym) {
+			if (sym->type == TYPE_CHAINE) {
+				set_symbol_value($1, strdup($3));
+			} else {
+				report_error("Type incompatible");
+		    }
+		} else {
+			report_error("Variable non déclarée");
+		}
+	}
     ;
 
 io_operation:
-    ECRIRE LPAREN expr RPAREN { printf("%f\n", $3); }
+    ECRIRE LPAREN expr RPAREN { printf("%f", $3); }
     | ECRIRE LPAREN IDENTIFIER RPAREN { 
         Symbol *sym = get_symbol($3);
         if (sym) {
             switch (sym->type) {
                 case TYPE_ENTIER:
-                    printf("%d\n", sym->value.int_val);
+                    printf("%d", sym->value.int_val);
                     break;
                 case TYPE_DECIMAL:
-                    printf("%f\n", sym->value.float_val);
+                    printf("%f", sym->value.float_val);
                     break;
                 case TYPE_LOGIQUE:
-                    printf("%s\n", sym->value.bool_val ? "Vrai" : "Faux");
+                    printf("%s", sym->value.bool_val ? "Vrai" : "Faux");
                     break;
                 case TYPE_CHAINE:
-                    printf("%s\n", sym->value.string_val);
+                    printf("%s", sym->value.string_val);
                     break;
             }
         } else {
             report_error("Variable non déclarée");
         }
     }
+	| ECRIRE LPAREN STRING_VAL RPAREN {
+		printf("%s", $3); 
+		fflush(stdout);
+		free($3);
+	}
     | LIRE LPAREN IDENTIFIER RPAREN {
         Symbol *sym = get_symbol($3);
         if (sym) {

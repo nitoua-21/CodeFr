@@ -34,9 +34,8 @@
 "Vrai"          { yylval.bval = true; return LOGIQUE_VAL; }
 "Faux"          { yylval.bval = false; return LOGIQUE_VAL; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.sval = strdup(yytext); return IDENTIFIER; }
-\"[^\"]*\"      { 
-    yylval.sval = strdup(yytext + 1);
-    yylval.sval[strlen(yylval.sval) - 1] = '\0';
+\"([^"]|\\.)*\"  {
+    yylval.sval = process_string(yytext + 1);
     return STRING_VAL;
 }
 ":"             { return COLON; }

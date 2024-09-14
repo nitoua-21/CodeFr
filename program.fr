@@ -1,17 +1,10 @@
 Algorithme Signe_numbre
 
 Variable n : Entier
+Variable nom : Chaine
 
 Debut
-    Ecrire("Enter an integer: ")
-    Lire(n)
-
-    // Check if the number is positive
-    Si n > 0 Alors
-        Ecrire("You entered a positive number: ", n, "\n")
-    SinonSi n < 0 Alors
-        Ecrire("You entered a negative number: ", n, "\n")
-    Sinon
-        Ecrire("You entered zero.\n")
-    FinSi
+    nom = "Normich ITOUA\n"
+	Ecrire(nom)
+	Ecrire("Je suis le maitre")
 Fin
