@@ -78,7 +78,9 @@ int yylex(void);
 void yyerror(const char *s);
 extern int yylineno;
 
-#line 82 "parser.tab.c"
+
+
+#line 84 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -535,10 +537,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    45,    45,    48,    50,    54,    55,    64,    65,    69,
-      70,    74,    75,    76,    80,    89,   104,   105,   127,   132,
-     161,   162,   163,   182,   183,   184,   185,   193,   197,   198,
-     207,   214,   224,   225,   226,   227
+       0,    47,    47,    50,    52,    56,    57,    66,    67,    73,
+      74,    78,    79,    80,    84,    93,   108,   109,   131,   136,
+     165,   166,   167,   186,   187,   188,   189,   197,   201,   202,
+     211,   218,   228,   229,   230,   231
 };
 #endif
 
@@ -1143,42 +1145,44 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* var_decl: VARIABLE IDENTIFIER COLON type  */
-#line 54 "parser.y"
+#line 56 "parser.y"
                                    { add_symbol((yyvsp[-2].sval), (yyvsp[0].type)); }
-#line 1149 "parser.tab.c"
+#line 1151 "parser.tab.c"
     break;
 
   case 6: /* var_decl: VARIABLES var_list COLON type  */
-#line 55 "parser.y"
-                                    { 
+#line 57 "parser.y"
+                                    {
         for (int i = 0; (yyvsp[-2].str_list)[i] != NULL; i++) {
 			add_symbol((yyvsp[-2].str_list)[i], (yyvsp[0].type));
         }
         free_var_list((yyvsp[-2].str_list));
     }
-#line 1160 "parser.tab.c"
+#line 1162 "parser.tab.c"
     break;
 
   case 7: /* var_list: IDENTIFIER  */
-#line 64 "parser.y"
+#line 66 "parser.y"
                { (yyval.str_list) = create_var_list((yyvsp[0].sval)); }
-#line 1166 "parser.tab.c"
+#line 1168 "parser.tab.c"
     break;
 
   case 8: /* var_list: var_list COMMA IDENTIFIER  */
-#line 65 "parser.y"
-                                { add_var_to_list((yyvsp[-2].str_list), (yyvsp[0].sval)); (yyval.str_list) = (yyvsp[-2].str_list); }
-#line 1172 "parser.tab.c"
+#line 67 "parser.y"
+                                {
+	    add_var_to_list((yyvsp[-2].str_list), (yyvsp[0].sval)); (yyval.str_list) = (yyvsp[-2].str_list);
+	}
+#line 1176 "parser.tab.c"
     break;
 
   case 13: /* statement: expr  */
-#line 76 "parser.y"
+#line 80 "parser.y"
            { printf("%f\n", (yyvsp[0].fval)); }
-#line 1178 "parser.tab.c"
+#line 1182 "parser.tab.c"
     break;
 
   case 14: /* assignment: IDENTIFIER ASSIGN expr  */
-#line 80 "parser.y"
+#line 84 "parser.y"
                            { 
         Symbol *sym = get_symbol((yyvsp[-2].sval));
         if (sym) {
@@ -1187,11 +1191,11 @@ yyreduce:
             report_error("Variable non déclarée");
         }
     }
-#line 1191 "parser.tab.c"
+#line 1195 "parser.tab.c"
     break;
 
   case 15: /* assignment: IDENTIFIER ASSIGN string_expr  */
-#line 89 "parser.y"
+#line 93 "parser.y"
                                       {
 		Symbol *sym = get_symbol((yyvsp[-2].sval));
 		if (sym) {
@@ -1204,17 +1208,17 @@ yyreduce:
 			report_error("Variable non déclarée");
 		}
 	}
-#line 1208 "parser.tab.c"
+#line 1212 "parser.tab.c"
     break;
 
   case 16: /* io_operation: ECRIRE LPAREN expr RPAREN  */
-#line 104 "parser.y"
+#line 108 "parser.y"
                               { printf("%f", (yyvsp[-1].fval)); }
-#line 1214 "parser.tab.c"
+#line 1218 "parser.tab.c"
     break;
 
   case 17: /* io_operation: ECRIRE LPAREN IDENTIFIER RPAREN  */
-#line 105 "parser.y"
+#line 109 "parser.y"
                                       { 
         Symbol *sym = get_symbol((yyvsp[-1].sval));
         if (sym) {
@@ -1223,7 +1227,7 @@ yyreduce:
                     printf("%d", sym->value.int_val);
                     break;
                 case TYPE_DECIMAL:
-                    printf("%f", sym->value.float_val);
+                    printf("%.2f", sym->value.float_val);
                     break;
                 case TYPE_LOGIQUE:
                     printf("%s", sym->value.bool_val ? "Vrai" : "Faux");
@@ -1237,21 +1241,21 @@ yyreduce:
             report_error("Variable non déclarée");
         }
     }
-#line 1241 "parser.tab.c"
+#line 1245 "parser.tab.c"
     break;
 
   case 18: /* io_operation: ECRIRE LPAREN string_expr RPAREN  */
-#line 127 "parser.y"
+#line 131 "parser.y"
                                            {
 		printf("%s", (yyvsp[-1].sval)); 
 		fflush(stdout);
 		free((yyvsp[-1].sval));
 	}
-#line 1251 "parser.tab.c"
+#line 1255 "parser.tab.c"
     break;
 
   case 19: /* io_operation: LIRE LPAREN IDENTIFIER RPAREN  */
-#line 132 "parser.y"
+#line 136 "parser.y"
                                     {
         Symbol *sym = get_symbol((yyvsp[-1].sval));
         if (sym) {
@@ -1278,23 +1282,23 @@ yyreduce:
             report_error("Variable non déclarée");
         }
     }
-#line 1282 "parser.tab.c"
+#line 1286 "parser.tab.c"
     break;
 
   case 20: /* expr: ENTIER_VAL  */
-#line 161 "parser.y"
+#line 165 "parser.y"
                { (yyval.fval) = (double)(yyvsp[0].ival); }
-#line 1288 "parser.tab.c"
+#line 1292 "parser.tab.c"
     break;
 
   case 21: /* expr: DECIMAL_VAL  */
-#line 162 "parser.y"
+#line 166 "parser.y"
                   { (yyval.fval) = (yyvsp[0].fval); }
-#line 1294 "parser.tab.c"
+#line 1298 "parser.tab.c"
     break;
 
   case 22: /* expr: IDENTIFIER  */
-#line 163 "parser.y"
+#line 167 "parser.y"
                  { 
         Symbol *sym = get_symbol((yyvsp[0].sval));
         if (sym) {
@@ -1314,29 +1318,29 @@ yyreduce:
             (yyval.fval) = 0;
         }
     }
-#line 1318 "parser.tab.c"
+#line 1322 "parser.tab.c"
     break;
 
   case 23: /* expr: expr PLUS expr  */
-#line 182 "parser.y"
+#line 186 "parser.y"
                      { (yyval.fval) = evaluate_expression((yyvsp[-2].fval), '+', (yyvsp[0].fval)); }
-#line 1324 "parser.tab.c"
+#line 1328 "parser.tab.c"
     break;
 
   case 24: /* expr: expr MINUS expr  */
-#line 183 "parser.y"
+#line 187 "parser.y"
                       { (yyval.fval) = evaluate_expression((yyvsp[-2].fval), '-', (yyvsp[0].fval)); }
-#line 1330 "parser.tab.c"
+#line 1334 "parser.tab.c"
     break;
 
   case 25: /* expr: expr TIMES expr  */
-#line 184 "parser.y"
+#line 188 "parser.y"
                       { (yyval.fval) = evaluate_expression((yyvsp[-2].fval), '*', (yyvsp[0].fval)); }
-#line 1336 "parser.tab.c"
+#line 1340 "parser.tab.c"
     break;
 
   case 26: /* expr: expr DIVIDE expr  */
-#line 185 "parser.y"
+#line 189 "parser.y"
                        { 
         if ((yyvsp[0].fval) == 0) {
             report_error("Division par zéro");
@@ -1345,23 +1349,23 @@ yyreduce:
             (yyval.fval) = evaluate_expression((yyvsp[-2].fval), '/', (yyvsp[0].fval));
         }
     }
-#line 1349 "parser.tab.c"
+#line 1353 "parser.tab.c"
     break;
 
   case 27: /* expr: LPAREN expr RPAREN  */
-#line 193 "parser.y"
+#line 197 "parser.y"
                          { (yyval.fval) = (yyvsp[-1].fval); }
-#line 1355 "parser.tab.c"
+#line 1359 "parser.tab.c"
     break;
 
   case 28: /* string_expr: STRING_VAL  */
-#line 197 "parser.y"
+#line 201 "parser.y"
                { (yyval.sval) = strdup((yyvsp[0].sval)); }
-#line 1361 "parser.tab.c"
+#line 1365 "parser.tab.c"
     break;
 
   case 29: /* string_expr: IDENTIFIER  */
-#line 198 "parser.y"
+#line 202 "parser.y"
                  {
         Symbol *sym = get_symbol((yyvsp[0].sval));
         if (sym && sym->type == TYPE_CHAINE) {
@@ -1371,11 +1375,11 @@ yyreduce:
             (yyval.sval) = strdup("");
         }
     }
-#line 1375 "parser.tab.c"
+#line 1379 "parser.tab.c"
     break;
 
   case 30: /* string_expr: string_expr PLUS string_expr  */
-#line 207 "parser.y"
+#line 211 "parser.y"
                                    {
         (yyval.sval) = malloc(strlen((yyvsp[-2].sval)) + strlen((yyvsp[0].sval)) + 1);
         strcpy((yyval.sval), (yyvsp[-2].sval));
@@ -1383,11 +1387,11 @@ yyreduce:
         free((yyvsp[-2].sval));
         free((yyvsp[0].sval));
     }
-#line 1387 "parser.tab.c"
+#line 1391 "parser.tab.c"
     break;
 
   case 31: /* string_expr: string_expr CONCAT string_expr  */
-#line 214 "parser.y"
+#line 218 "parser.y"
                                      {
         (yyval.sval) = malloc(strlen((yyvsp[-2].sval)) + strlen((yyvsp[0].sval)) + 1);
         strcpy((yyval.sval), (yyvsp[-2].sval));
@@ -1395,35 +1399,35 @@ yyreduce:
         free((yyvsp[-2].sval));
         free((yyvsp[0].sval));
     }
-#line 1399 "parser.tab.c"
+#line 1403 "parser.tab.c"
     break;
 
   case 32: /* type: ENTIER  */
-#line 224 "parser.y"
+#line 228 "parser.y"
            { (yyval.type) = TYPE_ENTIER; }
-#line 1405 "parser.tab.c"
+#line 1409 "parser.tab.c"
     break;
 
   case 33: /* type: DECIMAL  */
-#line 225 "parser.y"
+#line 229 "parser.y"
               { (yyval.type) = TYPE_DECIMAL; }
-#line 1411 "parser.tab.c"
+#line 1415 "parser.tab.c"
     break;
 
   case 34: /* type: LOGIQUE  */
-#line 226 "parser.y"
+#line 230 "parser.y"
               { (yyval.type) = TYPE_LOGIQUE; }
-#line 1417 "parser.tab.c"
+#line 1421 "parser.tab.c"
     break;
 
   case 35: /* type: CHAINE  */
-#line 227 "parser.y"
+#line 231 "parser.y"
              { (yyval.type) = TYPE_CHAINE; }
-#line 1423 "parser.tab.c"
+#line 1427 "parser.tab.c"
     break;
 
 
-#line 1427 "parser.tab.c"
+#line 1431 "parser.tab.c"
 
       default: break;
     }
@@ -1616,7 +1620,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 230 "parser.y"
+#line 234 "parser.y"
 
 
 void yyerror(const char *s) {

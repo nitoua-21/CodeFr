@@ -7,6 +7,8 @@
 int yylex(void);
 void yyerror(const char *s);
 extern int yylineno;
+
+
 %}
 
 %union {
@@ -42,7 +44,7 @@ extern int yylineno;
 %%
 
 program:
-    ALGORITHME IDENTIFIER var_decl_list DEBUT statement_list FIN
+    ALGORITHME IDENTIFIER  var_decl_list DEBUT statement_list FIN
     ;
 
 var_decl_list:
@@ -52,7 +54,7 @@ var_decl_list:
 
 var_decl:
     VARIABLE IDENTIFIER COLON type { add_symbol($2, $4); }
-    | VARIABLES var_list COLON type { 
+    | VARIABLES var_list COLON type {
         for (int i = 0; $2[i] != NULL; i++) {
 			add_symbol($2[i], $4);
         }
@@ -62,7 +64,9 @@ var_decl:
 
 var_list:
     IDENTIFIER { $$ = create_var_list($1); }
-    | var_list COMMA IDENTIFIER { add_var_to_list($1, $3); $$ = $1; }
+    | var_list COMMA IDENTIFIER {
+	    add_var_to_list($1, $3); $$ = $1;
+	}
     ;
 
 statement_list:
@@ -110,7 +114,7 @@ io_operation:
                     printf("%d", sym->value.int_val);
                     break;
                 case TYPE_DECIMAL:
-                    printf("%f", sym->value.float_val);
+                    printf("%.2f", sym->value.float_val);
                     break;
                 case TYPE_LOGIQUE:
                     printf("%s", sym->value.bool_val ? "Vrai" : "Faux");

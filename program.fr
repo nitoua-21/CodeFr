@@ -1,11 +1,17 @@
 Algorithme TestConcatenation
 Variable nom : Chaine
-Variable prenom : Chaine
-Variable message : Chaine
-
+Variable n : Entier
+Variable c : Decimal
 Debut
-    nom = "Doe"
-    prenom = "John"
-    message = "Bonjour, " + prenom & " " + nom
-    Ecrire(message)
+	nom = "\nNormich\n"
+    n = 1000.5
+	c = 3.14 * n
+	Ecrire("\nn= ")
+	Ecrire(n)
+	Ecrire("\n")
+	Ecrire("c= ")
+	Ecrire(c)
+	Ecrire(nom)
+	Lire(n)
+	Ecrire(n)
 Fin
