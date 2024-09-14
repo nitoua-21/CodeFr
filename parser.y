@@ -23,7 +23,7 @@ extern int yylineno;
 %token <sval> IDENTIFIER STRING_VAL
 %token <bval> LOGIQUE_VAL
 
-%token PLUS MINUS TIMES DIVIDE
+%token PLUS MINUS TIMES DIVIDE CONCAT
 %token LPAREN RPAREN
 %token ASSIGN VARIABLE VARIABLES ECRIRE LIRE
 %token COLON COMMA
@@ -31,8 +31,13 @@ extern int yylineno;
 %token ENTIER DECIMAL LOGIQUE CHAINE
 
 %type <fval> expr
+%type <sval> string_expr
 %type <str_list> var_list
 %type <type> type
+
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left CONCAT
 
 %%
 
@@ -81,7 +86,7 @@ assignment:
         }
     }
 	|
-	IDENTIFIER ASSIGN STRING_VAL {
+	IDENTIFIER ASSIGN string_expr {
 		Symbol *sym = get_symbol($1);
 		if (sym) {
 			if (sym->type == TYPE_CHAINE) {
@@ -114,11 +119,12 @@ io_operation:
                     printf("%s", sym->value.string_val);
                     break;
             }
+			fflush(stdout);
         } else {
             report_error("Variable non déclarée");
         }
     }
-	| ECRIRE LPAREN STRING_VAL RPAREN {
+	| ECRIRE LPAREN string_expr RPAREN {
 		printf("%s", $3); 
 		fflush(stdout);
 		free($3);
@@ -185,6 +191,33 @@ expr:
         }
     }
     | LPAREN expr RPAREN { $$ = $2; }
+    ;
+
+string_expr:
+    STRING_VAL { $$ = strdup($1); }
+    | IDENTIFIER {
+        Symbol *sym = get_symbol($1);
+        if (sym && sym->type == TYPE_CHAINE) {
+            $$ = strdup(sym->value.string_val);
+        } else {
+            report_error("Variable non déclarée ou type incompatible");
+            $$ = strdup("");
+        }
+    }
+    | string_expr PLUS string_expr {
+        $$ = malloc(strlen($1) + strlen($3) + 1);
+        strcpy($$, $1);
+        strcat($$, $3);
+        free($1);
+        free($3);
+    }
+    | string_expr CONCAT string_expr {
+        $$ = malloc(strlen($1) + strlen($3) + 1);
+        strcpy($$, $1);
+        strcat($$, $3);
+        free($1);
+        free($3);
+    }
     ;
 
 type:

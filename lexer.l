@@ -23,6 +23,7 @@
 "Logique"       { return LOGIQUE; }
 "Chaine"        { return CHAINE; }
 "+"             { return PLUS; }
+"&"             { return CONCAT; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
 "/"             { return DIVIDE; }

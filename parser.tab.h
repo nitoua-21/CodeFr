@@ -63,22 +63,23 @@ extern int yydebug;
     MINUS = 264,                   /* MINUS  */
     TIMES = 265,                   /* TIMES  */
     DIVIDE = 266,                  /* DIVIDE  */
-    LPAREN = 267,                  /* LPAREN  */
-    RPAREN = 268,                  /* RPAREN  */
-    ASSIGN = 269,                  /* ASSIGN  */
-    VARIABLE = 270,                /* VARIABLE  */
-    VARIABLES = 271,               /* VARIABLES  */
-    ECRIRE = 272,                  /* ECRIRE  */
-    LIRE = 273,                    /* LIRE  */
-    COLON = 274,                   /* COLON  */
-    COMMA = 275,                   /* COMMA  */
-    ALGORITHME = 276,              /* ALGORITHME  */
-    DEBUT = 277,                   /* DEBUT  */
-    FIN = 278,                     /* FIN  */
-    ENTIER = 279,                  /* ENTIER  */
-    DECIMAL = 280,                 /* DECIMAL  */
-    LOGIQUE = 281,                 /* LOGIQUE  */
-    CHAINE = 282                   /* CHAINE  */
+    CONCAT = 267,                  /* CONCAT  */
+    LPAREN = 268,                  /* LPAREN  */
+    RPAREN = 269,                  /* RPAREN  */
+    ASSIGN = 270,                  /* ASSIGN  */
+    VARIABLE = 271,                /* VARIABLE  */
+    VARIABLES = 272,               /* VARIABLES  */
+    ECRIRE = 273,                  /* ECRIRE  */
+    LIRE = 274,                    /* LIRE  */
+    COLON = 275,                   /* COLON  */
+    COMMA = 276,                   /* COMMA  */
+    ALGORITHME = 277,              /* ALGORITHME  */
+    DEBUT = 278,                   /* DEBUT  */
+    FIN = 279,                     /* FIN  */
+    ENTIER = 280,                  /* ENTIER  */
+    DECIMAL = 281,                 /* DECIMAL  */
+    LOGIQUE = 282,                 /* LOGIQUE  */
+    CHAINE = 283                   /* CHAINE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -96,7 +97,7 @@ union YYSTYPE
     char **str_list;
     SymbolType type;
 
-#line 100 "parser.tab.h"
+#line 101 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -1,10 +1,11 @@
-Algorithme Signe_numbre
-
-Variable n : Entier
+Algorithme TestConcatenation
 Variable nom : Chaine
+Variable prenom : Chaine
+Variable message : Chaine
 
 Debut
-    nom = "Normich ITOUA\n"
-	Ecrire(nom)
-	Ecrire("Je suis le maitre")
+    nom = "Doe"
+    prenom = "John"
+    message = "Bonjour, " + prenom & " " + nom
+    Ecrire(message)
 Fin
