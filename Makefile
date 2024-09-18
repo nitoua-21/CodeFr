@@ -1,7 +1,7 @@
 all: codefr
 
-codefr: lex.yy.c parser.tab.c main.c codefr.c
-	gcc -o codefr lex.yy.c parser.tab.c main.c codefr.c
+codefr: lex.yy.c parser.tab.c main.c codefr.c conditions.c
+	gcc -o codefr lex.yy.c parser.tab.c main.c codefr.c conditions.c
 
 lex.yy.c: lexer.l parser.tab.h
 	flex lexer.l

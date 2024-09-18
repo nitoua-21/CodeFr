@@ -1,17 +1,10 @@
-Algorithme TestConcatenation
-Variable nom : Chaine
-Variable n : Entier
-Variable c : Decimal
+Algorithme TestAlgo
+Variable x : Entier
+Variable y : Entier
+Variable z : Entier
 Debut
-	nom = "\nNormich\n"
-    n = 1000.5
-	c = 3.14 * n
-	Ecrire("\nn= ")
-	Ecrire(n)
-	Ecrire("\n")
-	Ecrire("c= ")
-	Ecrire(c)
-	Ecrire(nom)
-	Lire(n)
-	Ecrire(n)
+    x = 10
+    y = 20
+    z = x + y
+    Ecrire(z)
 Fin

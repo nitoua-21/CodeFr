@@ -1,45 +1,52 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "codefr.h"
+#include "ast.h"
 #include "parser.tab.h"
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
 %}
 
 %option noyywrap
-%option yylineno
+%x COMMENT
 
 %%
 [ \t\n]         ; /* Ignore whitespace */
 "Algorithme"    { return ALGORITHME; }
 "Debut"         { return DEBUT; }
 "Fin"           { return FIN; }
-"Variable"      { return VARIABLE; }
-"Variables"     { return VARIABLES; }
+"Variable"      { return VARIABLE_KWRD; }
 "Ecrire"        { return ECRIRE; }
 "Lire"          { return LIRE; }
-"Entier"        { return ENTIER; }
-"Decimal"       { return DECIMAL; }
-"Logique"       { return LOGIQUE; }
-"Chaine"        { return CHAINE; }
+"Entier"        { return ENTIER_KWRD; }
+"Decimal"       { return DECIMAL_KWRD; }
+"Logique"       { return LOGIQUE_KWRD; }
+"Chaine"        { return CHAINE_KWRD; }
 "+"             { return PLUS; }
-"&"             { return CONCAT; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
 "/"             { return DIVIDE; }
 "("             { return LPAREN; }
 ")"             { return RPAREN; }
-"="             { return ASSIGN; }
-[0-9]+          { yylval.ival = atoi(yytext); return ENTIER_VAL; }
-[0-9]+\.[0-9]+  { yylval.fval = atof(yytext); return DECIMAL_VAL; }
+"="             { return EQUALS; }
+[0-9]+          { yylval.int_value = atoi(yytext); return ENTIER_VAL; }
+[0-9]+\.[0-9]+  { yylval.double_value = atof(yytext); return DECIMAL_VAL; }
 "Vrai"          { yylval.bval = true; return LOGIQUE_VAL; }
 "Faux"          { yylval.bval = false; return LOGIQUE_VAL; }
-[a-zA-Z_][a-zA-Z0-9_]* { yylval.sval = strdup(yytext); return IDENTIFIER; }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.string_value = strdup(yytext); return IDENTIFIANT; }
 \"([^"]|\\.)*\"  {
-    yylval.sval = process_string(yytext + 1);
+    yylval.string_value = process_string(yytext + 1);
     return STRING_VAL;
 }
 ":"             { return COLON; }
 ","             { return COMMA; }
+
+ /* Single-line comment */
+"//".*          { /* Ignore single-line comments */ }
+
+ /* Multi-line comment */
+"/*"            { BEGIN(COMMENT); }
+<COMMENT>"*/"   { BEGIN(INITIAL); }
+<COMMENT>.|\n   { /* Ignore content inside multi-line comments */ }
+
 .               { printf("Caractère inattendu: %s\n", yytext); }
 %%

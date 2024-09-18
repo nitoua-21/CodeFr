@@ -59,27 +59,33 @@ extern int yydebug;
     IDENTIFIER = 260,              /* IDENTIFIER  */
     STRING_VAL = 261,              /* STRING_VAL  */
     LOGIQUE_VAL = 262,             /* LOGIQUE_VAL  */
-    PLUS = 263,                    /* PLUS  */
-    MINUS = 264,                   /* MINUS  */
-    TIMES = 265,                   /* TIMES  */
-    DIVIDE = 266,                  /* DIVIDE  */
-    CONCAT = 267,                  /* CONCAT  */
-    LPAREN = 268,                  /* LPAREN  */
-    RPAREN = 269,                  /* RPAREN  */
-    ASSIGN = 270,                  /* ASSIGN  */
-    VARIABLE = 271,                /* VARIABLE  */
-    VARIABLES = 272,               /* VARIABLES  */
-    ECRIRE = 273,                  /* ECRIRE  */
-    LIRE = 274,                    /* LIRE  */
-    COLON = 275,                   /* COLON  */
-    COMMA = 276,                   /* COMMA  */
-    ALGORITHME = 277,              /* ALGORITHME  */
-    DEBUT = 278,                   /* DEBUT  */
-    FIN = 279,                     /* FIN  */
-    ENTIER = 280,                  /* ENTIER  */
-    DECIMAL = 281,                 /* DECIMAL  */
-    LOGIQUE = 282,                 /* LOGIQUE  */
-    CHAINE = 283                   /* CHAINE  */
+    COMPARISON_OP = 263,           /* COMPARISON_OP  */
+    PLUS = 264,                    /* PLUS  */
+    MINUS = 265,                   /* MINUS  */
+    TIMES = 266,                   /* TIMES  */
+    DIVIDE = 267,                  /* DIVIDE  */
+    CONCAT = 268,                  /* CONCAT  */
+    LPAREN = 269,                  /* LPAREN  */
+    RPAREN = 270,                  /* RPAREN  */
+    ASSIGN = 271,                  /* ASSIGN  */
+    VARIABLE = 272,                /* VARIABLE  */
+    VARIABLES = 273,               /* VARIABLES  */
+    ECRIRE = 274,                  /* ECRIRE  */
+    LIRE = 275,                    /* LIRE  */
+    COLON = 276,                   /* COLON  */
+    COMMA = 277,                   /* COMMA  */
+    ALGORITHME = 278,              /* ALGORITHME  */
+    DEBUT = 279,                   /* DEBUT  */
+    FIN = 280,                     /* FIN  */
+    ENTIER = 281,                  /* ENTIER  */
+    DECIMAL = 282,                 /* DECIMAL  */
+    LOGIQUE = 283,                 /* LOGIQUE  */
+    CHAINE = 284,                  /* CHAINE  */
+    SI = 285,                      /* SI  */
+    ALORS = 286,                   /* ALORS  */
+    SINONSI = 287,                 /* SINONSI  */
+    SINON = 288,                   /* SINON  */
+    FINSI = 289                    /* FINSI  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -95,9 +101,10 @@ union YYSTYPE
     char *sval;
     bool bval;
     char **str_list;
+    char op;
     SymbolType type;
 
-#line 101 "parser.tab.h"
+#line 108 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

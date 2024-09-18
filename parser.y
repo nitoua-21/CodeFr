@@ -2,233 +2,89 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "codefr.h"
+#include <stdbool.h>
+#include "ast.h"
 
-int yylex(void);
 void yyerror(const char *s);
+int yylex(void);
 extern int yylineno;
 
-
+StatementList *parsed_program = NULL;
 %}
+%define parse.trace
+
 
 %union {
-    int ival;
-    double fval;
-    char *sval;
+    int int_value;
+    double double_value;
+    char *string_value;
+    char *var_name;
     bool bval;
-    char **str_list;
     SymbolType type;
+    Expression *expression;
+    Statement *statement;
+    StatementList *statement_list;
 }
 
-%token <ival> ENTIER_VAL
-%token <fval> DECIMAL_VAL
-%token <sval> IDENTIFIER STRING_VAL
+%token <int_value> ENTIER_VAL
+%token <double_value> DECIMAL_VAL
+%token <string_value> CHAINE STRING_VAL
 %token <bval> LOGIQUE_VAL
-
-%token PLUS MINUS TIMES DIVIDE CONCAT
-%token LPAREN RPAREN
-%token ASSIGN VARIABLE VARIABLES ECRIRE LIRE
-%token COLON COMMA
-%token ALGORITHME DEBUT FIN
-%token ENTIER DECIMAL LOGIQUE CHAINE
-
-%type <fval> expr
-%type <sval> string_expr
-%type <str_list> var_list
+%token <var_name> IDENTIFIANT
+%token PLUS MINUS TIMES DIVIDE SI ALORS SINON FINSI EQUALS LPAREN RPAREN VARIABLE_KWRD ECRIRE
+%token ALGORITHME DEBUT FIN COLON LIRE ENTIER_KWRD DECIMAL_KWRD LOGIQUE_KWRD CHAINE_KWRD COMMA
+%token COMMENT
+%type <statement> statement
+%type <statement_list> statement_list
+%type <expression> expression
 %type <type> type
 
 %left PLUS MINUS
 %left TIMES DIVIDE
-%left CONCAT
 
 %%
 
 program:
-    ALGORITHME IDENTIFIER  var_decl_list DEBUT statement_list FIN
-    ;
+    ALGORITHME IDENTIFIANT Declarations DEBUT statement_list FIN { parsed_program = $5; }
+;
 
-var_decl_list:
-    /* empty */
-    | var_decl_list var_decl
+Declarations:
+    /*Empty*/
+    | Declarations Declaration
     ;
-
-var_decl:
-    VARIABLE IDENTIFIER COLON type { add_symbol($2, $4); }
-    | VARIABLES var_list COLON type {
-        for (int i = 0; $2[i] != NULL; i++) {
-			add_symbol($2[i], $4);
-        }
-        free_var_list($2);
-    }
-    ;
-
-var_list:
-    IDENTIFIER { $$ = create_var_list($1); }
-    | var_list COMMA IDENTIFIER {
-	    add_var_to_list($1, $3); $$ = $1;
-	}
+Declaration:    
+    VARIABLE_KWRD IDENTIFIANT COLON type { add_symbol($2, $4); }
     ;
 
 statement_list:
-    statement
-    | statement_list statement
+    statement { $$ = new_statement_list($1, NULL); }
+    | statement statement_list { $$ = new_statement_list($1, $2); }
     ;
 
 statement:
-    assignment
-    | io_operation
-    | expr { printf("%f\n", $1); }
+    IDENTIFIANT EQUALS expression { $$ = new_assign($1, $3); }
+    | SI expression ALORS statement_list FINSI { $$ = new_if($2, $4, NULL); }
+    | SI expression ALORS statement_list SINON statement_list FINSI { $$ = new_if($2, $4, $6); }
+    | ECRIRE LPAREN expression RPAREN { $$ = new_print($3); }
+    | LIRE LPAREN IDENTIFIANT RPAREN { $$ = new_read($3); }
     ;
 
-assignment:
-    IDENTIFIER ASSIGN expr { 
-        Symbol *sym = get_symbol($1);
-        if (sym) {
-			set_symbol_value($1, &$3);
-        } else {
-            report_error("Variable non déclarée");
-        }
-    }
-	|
-	IDENTIFIER ASSIGN string_expr {
-		Symbol *sym = get_symbol($1);
-		if (sym) {
-			if (sym->type == TYPE_CHAINE) {
-				set_symbol_value($1, strdup($3));
-			} else {
-				report_error("Type incompatible");
-		    }
-		} else {
-			report_error("Variable non déclarée");
-		}
-	}
-    ;
-
-io_operation:
-    ECRIRE LPAREN expr RPAREN { printf("%f", $3); }
-    | ECRIRE LPAREN IDENTIFIER RPAREN { 
-        Symbol *sym = get_symbol($3);
-        if (sym) {
-            switch (sym->type) {
-                case TYPE_ENTIER:
-                    printf("%d", sym->value.int_val);
-                    break;
-                case TYPE_DECIMAL:
-                    printf("%.2f", sym->value.float_val);
-                    break;
-                case TYPE_LOGIQUE:
-                    printf("%s", sym->value.bool_val ? "Vrai" : "Faux");
-                    break;
-                case TYPE_CHAINE:
-                    printf("%s", sym->value.string_val);
-                    break;
-            }
-			fflush(stdout);
-        } else {
-            report_error("Variable non déclarée");
-        }
-    }
-	| ECRIRE LPAREN string_expr RPAREN {
-		printf("%s", $3); 
-		fflush(stdout);
-		free($3);
-	}
-    | LIRE LPAREN IDENTIFIER RPAREN {
-        Symbol *sym = get_symbol($3);
-        if (sym) {
-            switch (sym->type) {
-                case TYPE_ENTIER:
-                    printf("Entrez une valeur entière pour %s: ", $3);
-                    scanf("%d", &sym->value.int_val);
-                    break;
-                case TYPE_DECIMAL:
-                    printf("Entrez une valeur décimale pour %s: ", $3);
-                    scanf("%lf", &sym->value.float_val);
-                    break;
-                case TYPE_LOGIQUE:
-                    printf("Entrez une valeur logique pour %s (0 pour Faux, 1 pour Vrai): ", $3);
-                    scanf("%d", (int*)&sym->value.bool_val);
-                    break;
-                case TYPE_CHAINE:
-                    printf("Entrez une chaîne pour %s: ", $3);
-                    sym->value.string_val = malloc(100); // Allocate space for string
-                    scanf("%99s", sym->value.string_val);
-                    break;
-            }
-        } else {
-            report_error("Variable non déclarée");
-        }
-    }
-    ;
-
-expr:
-    ENTIER_VAL { $$ = (double)$1; }
-    | DECIMAL_VAL { $$ = $1; }
-    | IDENTIFIER { 
-        Symbol *sym = get_symbol($1);
-        if (sym) {
-            switch (sym->type) {
-                case TYPE_ENTIER:
-                    $$ = (double)sym->value.int_val;
-                    break;
-                case TYPE_DECIMAL:
-                    $$ = sym->value.float_val;
-                    break;
-                default:
-                    report_error("Type incompatible dans l'expression");
-                    $$ = 0;
-            }
-        } else {
-            report_error("Variable non déclarée");
-            $$ = 0;
-        }
-    }
-    | expr PLUS expr { $$ = evaluate_expression($1, '+', $3); }
-    | expr MINUS expr { $$ = evaluate_expression($1, '-', $3); }
-    | expr TIMES expr { $$ = evaluate_expression($1, '*', $3); }
-    | expr DIVIDE expr { 
-        if ($3 == 0) {
-            report_error("Division par zéro");
-            $$ = 0;
-        } else {
-            $$ = evaluate_expression($1, '/', $3);
-        }
-    }
-    | LPAREN expr RPAREN { $$ = $2; }
-    ;
-
-string_expr:
-    STRING_VAL { $$ = strdup($1); }
-    | IDENTIFIER {
-        Symbol *sym = get_symbol($1);
-        if (sym && sym->type == TYPE_CHAINE) {
-            $$ = strdup(sym->value.string_val);
-        } else {
-            report_error("Variable non déclarée ou type incompatible");
-            $$ = strdup("");
-        }
-    }
-    | string_expr PLUS string_expr {
-        $$ = malloc(strlen($1) + strlen($3) + 1);
-        strcpy($$, $1);
-        strcat($$, $3);
-        free($1);
-        free($3);
-    }
-    | string_expr CONCAT string_expr {
-        $$ = malloc(strlen($1) + strlen($3) + 1);
-        strcpy($$, $1);
-        strcat($$, $3);
-        free($1);
-        free($3);
-    }
+expression:
+    ENTIER_VAL { $$ = new_integer($1); }
+    | DECIMAL_VAL { $$ = new_decimal($1); }
+    | STRING_VAL { $$ = new_string($1); }
+    | IDENTIFIANT { $$ = new_variable($1); }
+    | expression PLUS expression { $$ = new_binary_op('+', $1, $3); }
+    | expression MINUS expression { $$ = new_binary_op('-', $1, $3); }
+    | expression TIMES expression { $$ = new_binary_op('*', $1, $3); }
+    | expression DIVIDE expression { $$ = new_binary_op('/', $1, $3); }
+    | LPAREN expression RPAREN { $$ = $2; }
     ;
 
 type:
-    ENTIER { $$ = TYPE_ENTIER; }
-    | DECIMAL { $$ = TYPE_DECIMAL; }
-    | LOGIQUE { $$ = TYPE_LOGIQUE; }
-    | CHAINE { $$ = TYPE_CHAINE; }
+    ENTIER_KWRD { $$ = TYPE_ENTIER; }
+    | DECIMAL_KWRD { $$ = TYPE_DECIMAL; }
+    | CHAINE_KWRD { $$ = TYPE_CHAINE; }
     ;
 
 %%
