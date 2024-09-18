@@ -39,7 +39,7 @@
 # define YY_YY_PARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -56,36 +56,34 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     ENTIER_VAL = 258,              /* ENTIER_VAL  */
     DECIMAL_VAL = 259,             /* DECIMAL_VAL  */
-    IDENTIFIER = 260,              /* IDENTIFIER  */
+    CHAINE = 260,                  /* CHAINE  */
     STRING_VAL = 261,              /* STRING_VAL  */
     LOGIQUE_VAL = 262,             /* LOGIQUE_VAL  */
-    COMPARISON_OP = 263,           /* COMPARISON_OP  */
+    IDENTIFIANT = 263,             /* IDENTIFIANT  */
     PLUS = 264,                    /* PLUS  */
     MINUS = 265,                   /* MINUS  */
     TIMES = 266,                   /* TIMES  */
     DIVIDE = 267,                  /* DIVIDE  */
-    CONCAT = 268,                  /* CONCAT  */
-    LPAREN = 269,                  /* LPAREN  */
-    RPAREN = 270,                  /* RPAREN  */
-    ASSIGN = 271,                  /* ASSIGN  */
-    VARIABLE = 272,                /* VARIABLE  */
-    VARIABLES = 273,               /* VARIABLES  */
-    ECRIRE = 274,                  /* ECRIRE  */
-    LIRE = 275,                    /* LIRE  */
-    COLON = 276,                   /* COLON  */
-    COMMA = 277,                   /* COMMA  */
-    ALGORITHME = 278,              /* ALGORITHME  */
-    DEBUT = 279,                   /* DEBUT  */
-    FIN = 280,                     /* FIN  */
-    ENTIER = 281,                  /* ENTIER  */
-    DECIMAL = 282,                 /* DECIMAL  */
-    LOGIQUE = 283,                 /* LOGIQUE  */
-    CHAINE = 284,                  /* CHAINE  */
-    SI = 285,                      /* SI  */
-    ALORS = 286,                   /* ALORS  */
-    SINONSI = 287,                 /* SINONSI  */
-    SINON = 288,                   /* SINON  */
-    FINSI = 289                    /* FINSI  */
+    SI = 268,                      /* SI  */
+    ALORS = 269,                   /* ALORS  */
+    SINON = 270,                   /* SINON  */
+    FINSI = 271,                   /* FINSI  */
+    EQUALS = 272,                  /* EQUALS  */
+    LPAREN = 273,                  /* LPAREN  */
+    RPAREN = 274,                  /* RPAREN  */
+    VARIABLE_KWRD = 275,           /* VARIABLE_KWRD  */
+    ECRIRE = 276,                  /* ECRIRE  */
+    ALGORITHME = 277,              /* ALGORITHME  */
+    DEBUT = 278,                   /* DEBUT  */
+    FIN = 279,                     /* FIN  */
+    COLON = 280,                   /* COLON  */
+    LIRE = 281,                    /* LIRE  */
+    ENTIER_KWRD = 282,             /* ENTIER_KWRD  */
+    DECIMAL_KWRD = 283,            /* DECIMAL_KWRD  */
+    LOGIQUE_KWRD = 284,            /* LOGIQUE_KWRD  */
+    CHAINE_KWRD = 285,             /* CHAINE_KWRD  */
+    COMMA = 286,                   /* COMMA  */
+    COMMENT = 287                  /* COMMENT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -94,15 +92,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "parser.y"
+#line 17 "parser.y"
 
-    int ival;
-    double fval;
-    char *sval;
+    int int_value;
+    double double_value;
+    char *string_value;
+    char *var_name;
     bool bval;
-    char **str_list;
-    char op;
     SymbolType type;
+    Expression *expression;
+    Statement *statement;
+    StatementList *statement_list;
 
 #line 108 "parser.tab.h"
 
