@@ -33,14 +33,20 @@ StatementList *parsed_program = NULL;
 %token <var_name> IDENTIFIANT
 %token PLUS MINUS TIMES DIVIDE SI ALORS SINON FINSI EQUALS LPAREN RPAREN VARIABLE_KWRD ECRIRE
 %token ALGORITHME DEBUT FIN COLON LIRE ENTIER_KWRD DECIMAL_KWRD LOGIQUE_KWRD CHAINE_KWRD COMMA
-%token COMMENT
+%token COMMENT AND OR NOT XOR
+%token LT GT LE GE EQ NE
 %type <statement> statement
 %type <statement_list> statement_list
 %type <expression> expression
 %type <type> type
 
+%left OR XOR
+%left AND
+%left EQ NE
+%left LT GT LE GE
 %left PLUS MINUS
 %left TIMES DIVIDE
+%right NOT
 
 %%
 
@@ -73,11 +79,22 @@ expression:
     ENTIER_VAL { $$ = new_integer($1); }
     | DECIMAL_VAL { $$ = new_decimal($1); }
     | STRING_VAL { $$ = new_string($1); }
+    | LOGIQUE_VAL { $$ = new_boolean($1); }
     | IDENTIFIANT { $$ = new_variable($1); }
     | expression PLUS expression { $$ = new_binary_op('+', $1, $3); }
     | expression MINUS expression { $$ = new_binary_op('-', $1, $3); }
     | expression TIMES expression { $$ = new_binary_op('*', $1, $3); }
     | expression DIVIDE expression { $$ = new_binary_op('/', $1, $3); }
+    | expression AND expression { $$ = new_binary_op('&', $1, $3); }
+    | expression OR expression { $$ = new_binary_op('|', $1, $3); }
+    | expression XOR expression { $$ = new_binary_op('^', $1, $3); }
+    | NOT expression { $$ = new_unary_op('!', $2); }
+    | expression LT expression { $$ = new_binary_op('<', $1, $3); }
+    | expression GT expression { $$ = new_binary_op('>', $1, $3); }
+    | expression LE expression { $$ = new_binary_op('L', $1, $3); }
+    | expression GE expression { $$ = new_binary_op('G', $1, $3); }
+    | expression EQ expression { $$ = new_binary_op('=', $1, $3); }
+    | expression NE expression { $$ = new_binary_op('!', $1, $3); }
     | LPAREN expression RPAREN { $$ = $2; }
     ;
 
@@ -85,6 +102,7 @@ type:
     ENTIER_KWRD { $$ = TYPE_ENTIER; }
     | DECIMAL_KWRD { $$ = TYPE_DECIMAL; }
     | CHAINE_KWRD { $$ = TYPE_CHAINE; }
+    | LOGIQUE_KWRD { $$ = TYPE_LOGIQUE; }
     ;
 
 %%

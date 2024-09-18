@@ -8,6 +8,7 @@
 
 %option noyywrap
 %x COMMENT
+%option yylineno
 
 %%
 [ \t\n]         ; /* Ignore whitespace */
@@ -21,6 +22,11 @@
 "Decimal"       { return DECIMAL_KWRD; }
 "Logique"       { return LOGIQUE_KWRD; }
 "Chaine"        { return CHAINE_KWRD; }
+"Si"            { return SI; }
+"Alors"         { return ALORS; }
+"Sinon"         { return SINON; }
+"SinSi"         {return SINONSI; }
+"FinSi"         { return FINSI; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
@@ -28,6 +34,16 @@
 "("             { return LPAREN; }
 ")"             { return RPAREN; }
 "="             { return EQUALS; }
+"Et"            { return AND; }
+"Ou"            { return OR; }
+"Non"           { return NOT; }
+"Oux"           { return XOR; }
+"<"             { return LT; }
+">"             { return GT; }
+"<="            { return LE; }
+">="            { return GE; }
+"=="            { return EQ; }
+"!="            { return NE; }
 [0-9]+          { yylval.int_value = atoi(yytext); return ENTIER_VAL; }
 [0-9]+\.[0-9]+  { yylval.double_value = atof(yytext); return DECIMAL_VAL; }
 "Vrai"          { yylval.bval = true; return LOGIQUE_VAL; }

@@ -4,7 +4,16 @@
 #include <stdbool.h>
 #include "ast.h"
 
-// Statement list constructor
+/**
+ * new_statement_list - Creates a new statement list
+ * @statement: Pointer to the Statement to be added to the list
+ * @next: Pointer to the next StatementList in the sequence
+ *
+ * This function creates a new StatementList node, which is part of a linked
+ * list structure representing a sequence of statements in the program.
+ *
+ * Return: A pointer to the newly created StatementList
+ */
 StatementList *new_statement_list(Statement *statement, StatementList *next) {
     StatementList *list = malloc(sizeof(StatementList));
     list->statement = statement;
@@ -12,7 +21,17 @@ StatementList *new_statement_list(Statement *statement, StatementList *next) {
     return list;
 }
 
-// Create an assignment statement
+
+/**
+ * new_assign - Creates a new assignment statement
+ * @var_name: The name of the variable being assigned
+ * @value: Pointer to the Expression representing the value to be assigned
+ *
+ * This function creates a new Statement structure representing an
+ * assignment operation (e.g., x = 5).
+ *
+ * Return: A pointer to the newly created Statement
+ */
 Statement *new_assign(char *var_name, Expression *value) {
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = ASSIGN;
@@ -21,7 +40,16 @@ Statement *new_assign(char *var_name, Expression *value) {
     return stmt;
 }
 
-// Create a print statement
+
+/**
+ * new_print - Creates a new print statement
+ * @expr: Pointer to the Expression to be printed
+ *
+ * This function creates a new Statement structure representing a
+ * print operation, which outputs the value of an expression.
+ *
+ * Return: A pointer to the newly created Statement
+ */
 Statement *new_print(Expression *expr) {
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = PRINT;
@@ -29,7 +57,17 @@ Statement *new_print(Expression *expr) {
     return stmt;
 }
 
-// Create an if statement
+/**
+ * new_if - Creates a new if statement
+ * @condition: Pointer to the Expression representing the condition
+ * @then_branch: Pointer to the StatementList for the 'then' branch
+ * @else_branch: Pointer to the StatementList for the 'else' branch (can be NULL)
+ *
+ * This function creates a new Statement structure representing an
+ * if-then-else control structure.
+ *
+ * Return: A pointer to the newly created Statement
+ */
 Statement *new_if(Expression *condition, StatementList *then_branch, StatementList *else_branch) {
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = IF_STATEMENT;
@@ -39,45 +77,16 @@ Statement *new_if(Expression *condition, StatementList *then_branch, StatementLi
     return stmt;
 }
 
-// Expression constructors
-Expression *new_integer(int value) {
-    Expression *expr = malloc(sizeof(Expression));
-    expr->type = INTEGER;
-    expr->data.int_value = value;
-    return expr;
-}
-
-Expression *new_decimal(double value) {
-    Expression *expr = malloc(sizeof(Expression));
-    expr->type = DECIMAL;
-    expr->data.double_value = value;
-    return expr;
-}
-
-Expression *new_variable(char *var_name) {
-    Expression *expr = malloc(sizeof(Expression));
-    expr->type = VARIABLE;
-    expr->data.var_name = strdup(var_name);
-    return expr;
-}
-
-Expression *new_string(char *string_value) {
-    Expression *expr = malloc(sizeof(Expression));
-    expr->type = STRING;
-    expr->data.string_value = strdup(string_value);
-    return expr;
-}
-
-Expression *new_binary_op(char op, Expression *left, Expression *right)
-{
-    Expression *expr = malloc(sizeof(Expression));
-    expr->type = BINARY_OP;
-    expr->data.binary_op.op = op;
-    expr->data.binary_op.left = left;
-    expr->data.binary_op.right = right;
-    return expr;
-}
-
+/**
+ * new_read - Creates a new read statement
+ * @var_name: The name of the variable to store the read value
+ *
+ * This function creates a new Statement structure representing a
+ * read operation, which inputs a value from the user and stores it
+ * in a variable.
+ *
+ * Return: A pointer to the newly created Statement
+ */
 Statement *new_read(char *var_name) {
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = READ;
@@ -85,7 +94,16 @@ Statement *new_read(char *var_name) {
     return stmt;
 }
 
-// Execute a statement list
+
+/**
+ * execute_statement_list - Executes a list of statements
+ * @list: Pointer to the StatementList to be executed
+ *
+ * This function traverses a StatementList and executes each Statement
+ * in the list. It forms the core of the interpreter's execution engine.
+ *
+ * Return: void
+ */
 void execute_statement_list(StatementList *list) {
     int statement_count = 0;
     while (list) {
@@ -184,197 +202,4 @@ void execute_statement_list(StatementList *list) {
         }
         list = list->next;
     }
-}
-
-Expression *evaluate_expression(Expression *expr) {
-    if (expr == NULL) {
-        return NULL;
-    }
-
-    Expression *new_expr = malloc(sizeof(Expression));
-    if (new_expr == NULL) {
-        printf("Error: Memory allocation failed in evaluate_expression\n");
-        exit(1);
-    }
-
-    switch (expr->type) {
-        case INTEGER:
-            new_expr->type = INTEGER;
-            new_expr->data.int_value = expr->data.int_value;
-            break;
-
-        case DECIMAL:
-            new_expr->type = DECIMAL;
-            new_expr->data.double_value = expr->data.double_value;
-            break;
-
-        case STRING:
-            new_expr->type = STRING;
-            new_expr->data.string_value = strdup(expr->data.string_value);
-            if (new_expr->data.string_value == NULL) {
-                free(new_expr);
-                exit(1);
-            }
-            break;
-
-        case VARIABLE:
-            {
-                Symbol *sym = get_symbol(expr->data.var_name);
-                if (!sym) {
-                    printf("Error: Undefined variable: %s\n", expr->data.var_name);
-                    free(new_expr);
-                    exit(1);
-                }
-                switch (sym->type) {
-                    case TYPE_ENTIER:
-                        new_expr->type = INTEGER;
-                        new_expr->data.int_value = sym->value.int_val;
-                        break;
-                    case TYPE_DECIMAL:
-                        new_expr->type = DECIMAL;
-                        new_expr->data.double_value = sym->value.float_val;
-                        break;
-                    case TYPE_CHAINE:
-                        new_expr->type = STRING;
-                        new_expr->data.string_value = strdup(sym->value.string_val);
-                        if (new_expr->data.string_value == NULL) {
-                            printf("Error: Memory allocation failed for string duplication\n");
-                            free(new_expr);
-                            exit(1);
-                        }
-                        break;
-                    case TYPE_LOGIQUE:
-                        printf("Error: Boolean type not supported in expressions\n");
-                        free(new_expr);
-                        exit(1);
-                }
-            }
-            break;
-
-        case BINARY_OP:
-            {
-                Expression *lval = evaluate_expression(expr->data.binary_op.left);
-                Expression *rval = evaluate_expression(expr->data.binary_op.right);
-
-                bool isint = lval->type == INTEGER && rval->type == INTEGER;
-                bool isnumber = (lval->type == INTEGER || lval->type == DECIMAL) && (rval->type == INTEGER || rval->type == DECIMAL); 
-
-                switch (expr->data.binary_op.op) {
-                    case '+':
-                        if (isint)
-                        {
-                            new_expr->type = INTEGER;
-                            new_expr->data.int_value = lval->data.int_value + rval->data.int_value;
-                        }else if (isnumber){
-                            new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
-                            new_expr->data.double_value = lvalue + rvalue;
-                        }
-                        else {
-                            printf("Error: Invalid type for addition\n");
-                            free(lval);
-                            free(rval);
-                            free(new_expr);
-                            exit(1);
-                        }
-                        break;
-                    case '-':
-                        if (isint)
-                        {
-                            new_expr->type = INTEGER;
-                            new_expr->data.int_value = lval->data.int_value - rval->data.int_value;
-                        }else if (isnumber){
-                            new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
-                            new_expr->data.double_value = lvalue - rvalue;
-                        }
-                        else {
-                            printf("Error: Invalid type for substraction\n");
-                            free(lval);
-                            free(rval);
-                            free(new_expr);
-                            exit(1);
-                        }
-                        break;
-                    case '*':
-                        if (isint)
-                        {
-                            new_expr->type = INTEGER;
-                            new_expr->data.int_value = lval->data.int_value * rval->data.int_value;
-                        }else if (isnumber){
-                            new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
-                            new_expr->data.double_value = lvalue * rvalue;
-                        }
-                        else {
-                            printf("Error: Invalid type for multiplication\n");
-                            free(lval);
-                            free(rval);
-                            free(new_expr);
-                            exit(1);
-                        }
-                        break;
-                    case '/':
-                        if (isnumber){
-                            if (((rval->data.int_value + rval->data.double_value) == 0)) {
-                                printf("Division par zéro\n");
-                                free(lval);
-                                free(rval);
-                                free(new_expr);
-                                exit(1);
-                            }
-                            new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
-                            new_expr->data.double_value = lvalue / rvalue;
-                        } else {
-                            printf("Error: Invalid type for Division\n");
-                            free(lval);
-                            free(rval);
-                            free(new_expr);
-                            exit(1);
-                        }
-                        break;
-                    default:
-                        printf("Error: Unknown binary operator\n");
-                        free(lval);
-                        free(rval);
-                        free(new_expr);
-                        exit(1);
-                    }
-                free(lval);
-                free(rval);
-            }
-            break;
-        default:
-            printf("Error: Unknown expression type\n");
-            free(new_expr);
-            exit(1);
-    }
-    return new_expr;
-}
-
-char* process_string(const char* str) {
-    int len = strlen(str);
-    char* processed = malloc(len);
-    int i, j;
-    for (i = 0, j = 0; i < len - 1; i++, j++) {
-        if (str[i] == '\\') {
-            i++;
-            switch (str[i]) {
-                case 'n': processed[j] = '\n'; break;
-                case 't': processed[j] = '\t'; break;
-                case '\\': processed[j] = '\\'; break;
-                case '"': processed[j] = '"'; break;
-                default: processed[j] = str[i];
-            }
-        } else {
-            processed[j] = str[i];
-        }
-    }
-    processed[j] = '\0';
-    return processed;
 }

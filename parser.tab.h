@@ -83,7 +83,17 @@ extern int yydebug;
     LOGIQUE_KWRD = 284,            /* LOGIQUE_KWRD  */
     CHAINE_KWRD = 285,             /* CHAINE_KWRD  */
     COMMA = 286,                   /* COMMA  */
-    COMMENT = 287                  /* COMMENT  */
+    COMMENT = 287,                 /* COMMENT  */
+    AND = 288,                     /* AND  */
+    OR = 289,                      /* OR  */
+    NOT = 290,                     /* NOT  */
+    XOR = 291,                     /* XOR  */
+    LT = 292,                      /* LT  */
+    GT = 293,                      /* GT  */
+    LE = 294,                      /* LE  */
+    GE = 295,                      /* GE  */
+    EQ = 296,                      /* EQ  */
+    NE = 297                       /* NE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -104,7 +114,7 @@ union YYSTYPE
     Statement *statement;
     StatementList *statement_list;
 
-#line 108 "parser.tab.h"
+#line 118 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

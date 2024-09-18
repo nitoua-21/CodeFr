@@ -1,10 +1,31 @@
 Algorithme TestAlgo
-Variable x : Entier
+// Ceci est un commentaire sur une seule ligne
+Variable x : Decimal
 Variable y : Entier
-Variable z : Entier
+Variable z : Decimal
+Variable nom : Chaine
+Variable test : Logique
+/* Ceci est un commentaire
+   sur plusieurs lignes */
+
 Debut
     x = 10
-    y = 20
-    z = x + y
+    y = 50
+    z = x + y * 10 + (145 - 25)
     Ecrire(z)
+    /* Ce bloc de code
+       affiche la valeur de x */
+    nom = "Normich"
+    Ecrire(nom)
+    Lire(y)
+    Ecrire("La valeur de y est:")
+    Ecrire(y)
+    Si y > 0 Alors
+        Ecrire("Y est positif")
+    Sinon
+        Ecrire("Y est negatif")
+    FinSi
+
+    test = y > 10
+    Ecrire(test)
 Fin

@@ -6,6 +6,17 @@
 Symbol symbols[MAX_SYMBOLS];
 int symbol_count = 0;
 
+/**
+ * add_symbol - Adds a new symbol to the symbol table
+ * @name: The name of the symbol to add
+ * @type: The type of the symbol (from SymbolType enum)
+ *
+ * This function creates a new entry in the symbol table for a variable.
+ * It allocates space for the symbol name, initializes its value based on
+ * the type, and adds it to the global symbols array.
+ *
+ * Return: void
+ */
 void add_symbol(const char *name, SymbolType type) {
     if (symbol_count >= MAX_SYMBOLS) {
         printf("Trop de symboles");
@@ -30,6 +41,15 @@ void add_symbol(const char *name, SymbolType type) {
     symbol_count++;
 }
 
+/**
+ * get_symbol - Retrieves a symbol from the symbol table
+ * @name: The name of the symbol to retrieve
+ *
+ * This function searches the symbol table for a symbol with the given name.
+ * It returns a pointer to the Symbol structure if found, or NULL if not found.
+ *
+ * Return: Pointer to the Symbol if found, NULL otherwise
+ */
 Symbol *get_symbol(const char *name) {
     for (int i = 0; i < symbol_count; i++) {
         if (strcmp(symbols[i].name, name) == 0) {
@@ -39,6 +59,17 @@ Symbol *get_symbol(const char *name) {
     return NULL;
 }
 
+/**
+ * set_symbol_value - Sets the value of a symbol in the symbol table
+ * @name: The name of the symbol to update
+ * @value: Pointer to an Expression containing the new value
+ *
+ * This function updates the value of an existing symbol in the symbol table.
+ * It first retrieves the symbol, then sets its value based on its type and
+ * the provided Expression.
+ *
+ * Return: void
+ */
 void set_symbol_value(const char *name, Expression *exp) {
     Symbol *sym = get_symbol(name);
     if (sym) {
