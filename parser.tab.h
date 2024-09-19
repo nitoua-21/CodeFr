@@ -67,33 +67,34 @@ extern int yydebug;
     SI = 268,                      /* SI  */
     ALORS = 269,                   /* ALORS  */
     SINON = 270,                   /* SINON  */
-    FINSI = 271,                   /* FINSI  */
-    EQUALS = 272,                  /* EQUALS  */
-    LPAREN = 273,                  /* LPAREN  */
-    RPAREN = 274,                  /* RPAREN  */
-    VARIABLE_KWRD = 275,           /* VARIABLE_KWRD  */
-    ECRIRE = 276,                  /* ECRIRE  */
-    ALGORITHME = 277,              /* ALGORITHME  */
-    DEBUT = 278,                   /* DEBUT  */
-    FIN = 279,                     /* FIN  */
-    COLON = 280,                   /* COLON  */
-    LIRE = 281,                    /* LIRE  */
-    ENTIER_KWRD = 282,             /* ENTIER_KWRD  */
-    DECIMAL_KWRD = 283,            /* DECIMAL_KWRD  */
-    LOGIQUE_KWRD = 284,            /* LOGIQUE_KWRD  */
-    CHAINE_KWRD = 285,             /* CHAINE_KWRD  */
-    COMMA = 286,                   /* COMMA  */
-    COMMENT = 287,                 /* COMMENT  */
-    AND = 288,                     /* AND  */
-    OR = 289,                      /* OR  */
-    NOT = 290,                     /* NOT  */
-    XOR = 291,                     /* XOR  */
-    LT = 292,                      /* LT  */
-    GT = 293,                      /* GT  */
-    LE = 294,                      /* LE  */
-    GE = 295,                      /* GE  */
-    EQ = 296,                      /* EQ  */
-    NE = 297                       /* NE  */
+    SINONSI = 271,                 /* SINONSI  */
+    FINSI = 272,                   /* FINSI  */
+    EQUALS = 273,                  /* EQUALS  */
+    LPAREN = 274,                  /* LPAREN  */
+    RPAREN = 275,                  /* RPAREN  */
+    VARIABLE_KWRD = 276,           /* VARIABLE_KWRD  */
+    ECRIRE = 277,                  /* ECRIRE  */
+    ALGORITHME = 278,              /* ALGORITHME  */
+    DEBUT = 279,                   /* DEBUT  */
+    FIN = 280,                     /* FIN  */
+    COLON = 281,                   /* COLON  */
+    LIRE = 282,                    /* LIRE  */
+    ENTIER_KWRD = 283,             /* ENTIER_KWRD  */
+    DECIMAL_KWRD = 284,            /* DECIMAL_KWRD  */
+    LOGIQUE_KWRD = 285,            /* LOGIQUE_KWRD  */
+    CHAINE_KWRD = 286,             /* CHAINE_KWRD  */
+    COMMA = 287,                   /* COMMA  */
+    COMMENT = 288,                 /* COMMENT  */
+    AND = 289,                     /* AND  */
+    OR = 290,                      /* OR  */
+    NOT = 291,                     /* NOT  */
+    XOR = 292,                     /* XOR  */
+    LT = 293,                      /* LT  */
+    GT = 294,                      /* GT  */
+    LE = 295,                      /* LE  */
+    GE = 296,                      /* GE  */
+    EQ = 297,                      /* EQ  */
+    NE = 298                       /* NE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -102,7 +103,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 17 "parser.y"
+#line 24 "parser.y"
 
     int int_value;
     double double_value;
@@ -114,7 +115,7 @@ union YYSTYPE
     Statement *statement;
     StatementList *statement_list;
 
-#line 118 "parser.tab.h"
+#line 119 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

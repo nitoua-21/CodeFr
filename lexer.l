@@ -1,3 +1,8 @@
+/* This file defines the lexical analyzer for the  language using Flex. 
+   It tokenizes the input into reserved keywords, identifiers, operators, 
+   and other symbols. Token values are passed to the parser for syntactic 
+   analysis. 
+*/
 %{
 #include "ast.h"
 #include "parser.tab.h"
@@ -25,7 +30,7 @@
 "Si"            { return SI; }
 "Alors"         { return ALORS; }
 "Sinon"         { return SINON; }
-"SinSi"         {return SINONSI; }
+"SinonSi"       {return SINONSI; }
 "FinSi"         { return FINSI; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }

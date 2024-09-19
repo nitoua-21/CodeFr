@@ -1,0 +1,14 @@
+Algorithme Signe_numbre
+
+Variable n : Entier
+
+Debut
+    Ecrire("Enter an integer: ")
+    Lire(n)
+
+    // Check if the number is positive
+    Si n > 0 Alors
+        Ecrire("You entered a positive number: ")
+        Ecrire(n)
+    FinSi
+Fin

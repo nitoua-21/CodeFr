@@ -2,6 +2,8 @@
 #define AST_H
 
 #include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define MAX_SYMBOLS 100
 
