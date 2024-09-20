@@ -1,14 +1,39 @@
-Algorithme Signe_numbre
+/*  
+This a simple program 
+To check if a number is in the range 0 -100
+*/
+Algorithme TestProgram
 
-Variable n : Entier
+Variable x : Entier
+Variable name : Chaine
 
 Debut
-    Ecrire("Enter an integer: ")
-    Lire(n)
+    Ecrire("*************************\n")
+    Ecrire("Welcome to CodeFR\n")
+    Ecrire("*************************\n\n")
 
-    // Check if the number is positive
-    Si n > 0 Alors
-        Ecrire("You entered a positive number: ")
-        Ecrire(n)
+    Ecrire("Please enter your name: ")
+    Lire(name)
+
+    Ecrire("Hello, ")
+    Ecrire(name)
+    Ecrire("\n")
+
+    Ecrire("\nEnter a new value for x: ")
+    Lire(x)
+    Ecrire("New value of x: ")
+    Ecrire(x)
+    Ecrire("\n")
+
+    // Test nested if-else and logical OR
+    Si x < 0 Ou x > 100 Alors
+        Ecrire("x is out of range (0-100)\n")
+    Sinon
+        Si x >= 0 Et x <= 50 Alors
+            Ecrire("x is in the lower half of the range\n")
+        Sinon
+            Ecrire("x is in the upper half of the range\n")
+        FinSi
     FinSi
+
 Fin

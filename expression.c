@@ -288,6 +288,14 @@ Expression *evaluate_expression(Expression *expr) {
                             exit(1);
                         }
                         break;
+                    case 'C': // CONCAT
+                        char *result = malloc(sizeof(char) * (strlen(lval->data.string_value) + strlen(rval->data.string_value)) + 1);
+                        new_expr->type = STRING;
+                        strcpy(result, lval->data.string_value);
+                        strcat(result, rval->data.string_value);
+                        new_expr->data.string_value = strdup(result);
+                        free(result);
+                        break;
                     case '&': // AND
                         new_expr->type = BOOLEAN;
                         new_expr->data.bool_value = lval->data.bool_value && rval->data.bool_value;

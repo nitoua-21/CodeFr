@@ -40,7 +40,7 @@ StatementList *parsed_program = NULL;
 %token <var_name> IDENTIFIANT
 %token PLUS MINUS TIMES DIVIDE SI ALORS SINON SINONSI FINSI EQUALS LPAREN RPAREN VARIABLE_KWRD ECRIRE
 %token ALGORITHME DEBUT FIN COLON LIRE ENTIER_KWRD DECIMAL_KWRD LOGIQUE_KWRD CHAINE_KWRD COMMA
-%token COMMENT AND OR NOT XOR
+%token COMMENT AND OR NOT XOR CONCAT
 %token LT GT LE GE EQ NE
 %type <statement> statement
 %type <statement_list> statement_list
@@ -93,6 +93,7 @@ expression:
     | expression TIMES expression { $$ = new_binary_op('*', $1, $3); }
     | expression DIVIDE expression { $$ = new_binary_op('/', $1, $3); }
     | expression AND expression { $$ = new_binary_op('&', $1, $3); }
+    | expression CONCAT expression { $$ = new_binary_op('C', $1, $3); }
     | expression OR expression { $$ = new_binary_op('|', $1, $3); }
     | expression XOR expression { $$ = new_binary_op('^', $1, $3); }
     | NOT expression { $$ = new_unary_op('!', $2); }

@@ -1,0 +1,25 @@
+/*  
+This a simple program 
+To check if a number is in the range 0 -100
+*/
+Algorithme TestProgram
+
+Variable x : Entier
+Variable name : Chaine
+Variable gence : Chaine
+Variable rslt : Chaine
+
+Debut
+    Ecrire("*************************\n")
+    Ecrire("Welcome to CodeFR\n")
+    Ecrire("*************************\n\n")
+
+    Ecrire("Please enter your name: ")
+    Lire(name)
+    gence = "Homme"
+
+    rslt = gence & name
+    Ecrire(123 * 124 / 12)
+    Ecrire("\n")
+
+Fin

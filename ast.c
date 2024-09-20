@@ -123,15 +123,15 @@ void execute_statement_list(StatementList *list) {
             {
             case INTEGER:
                 int value = evaluate_expression(stmt->data.print_expr)->data.int_value;
-                printf("%d\n", value);
+                printf("%d", value);
                 break;
             case DECIMAL:
                 double fvalue = evaluate_expression(stmt->data.print_expr)->data.double_value;
-                printf("%f\n", fvalue);
+                printf("%f", fvalue);
                 break;
             case STRING:
                 char *cvalue = strdup(evaluate_expression(stmt->data.print_expr)->data.string_value);
-                printf("%s\n", cvalue);
+                printf("%s", cvalue);
                 free(cvalue);
                 break; 
             case VARIABLE:
@@ -143,16 +143,16 @@ void execute_statement_list(StatementList *list) {
                 switch (sym->type)
                 {
                 case TYPE_ENTIER:
-                    printf("%d\n", sym->value.int_val);
+                    printf("%d", sym->value.int_val);
                     break;
                 case TYPE_DECIMAL:
-                    printf("%f\n", sym->value.float_val);
+                    printf("%f", sym->value.float_val);
                     break;
                 case TYPE_CHAINE:
-                    printf("%s\n", sym->value.string_val);
+                    printf("%s", sym->value.string_val);
                     break;
                 case TYPE_LOGIQUE:
-                    printf("%s\n", sym->value.bool_val ? "Vrai" : "Faux");
+                    printf("%s", sym->value.bool_val ? "Vrai" : "Faux");
                     break;
                 default:
                     break;
@@ -174,7 +174,6 @@ void execute_statement_list(StatementList *list) {
                 exit(1);
             }
             char input[256];
-            printf("Enter value for %s: ", stmt->data.read_var_name);
             fgets(input, sizeof(input), stdin);
             input[strcspn(input, "\n")] = 0; // Remove newline
 

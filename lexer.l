@@ -49,6 +49,7 @@
 ">="            { return GE; }
 "=="            { return EQ; }
 "!="            { return NE; }
+"&"             { return CONCAT; }
 [0-9]+          { yylval.int_value = atoi(yytext); return ENTIER_VAL; }
 [0-9]+\.[0-9]+  { yylval.double_value = atof(yytext); return DECIMAL_VAL; }
 "Vrai"          { yylval.bval = true; return LOGIQUE_VAL; }
