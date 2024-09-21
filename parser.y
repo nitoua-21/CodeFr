@@ -31,6 +31,7 @@ StatementList *parsed_program = NULL;
     Expression *expression;
     Statement *statement;
     StatementList *statement_list;
+    CaseList *case_list;
 }
 
 %token <int_value> ENTIER_VAL
@@ -44,12 +45,13 @@ StatementList *parsed_program = NULL;
 %token LT GT LE GE EQ NE
 %token TANTQUE FAIRE FINTANTQUE
 %token POUR DE A FINPOUR
-
+%token SELON FINSELON CAS
 
 %type <statement> statement
 %type <statement_list> statement_list
 %type <expression> expression
 %type <type> type
+%type <case_list> case_list
 
 %left OR XOR
 %left AND
@@ -86,6 +88,13 @@ statement:
     | LIRE LPAREN IDENTIFIANT RPAREN { $$ = new_read($3); }
     | TANTQUE expression FAIRE statement_list FINTANTQUE { $$ = new_while($2, $4); }
     | POUR IDENTIFIANT DE expression A expression FAIRE statement_list FINPOUR { $$ = new_for($2, $4, $6, $8); }
+    | SELON expression FAIRE case_list FINSELON { $$ = new_switch($2, $4, NULL); }
+    | SELON expression FAIRE case_list SINON statement_list FINSELON { $$ = new_switch($2, $4, $6); }
+    ;
+
+case_list:
+    CAS expression COLON statement_list { $$ = new_case_list($2, $4, NULL); }
+    | CAS expression COLON statement_list case_list { $$ = new_case_list($2, $4, $5); }
     ;
 
 expression:

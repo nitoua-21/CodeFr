@@ -112,6 +112,23 @@ Statement *new_for(char *counter, Expression *start, Expression *end, StatementL
     return stmt;
 }
 
+Statement *new_switch(Expression *value, CaseList *cases, StatementList *default_case) {
+    Statement *stmt = malloc(sizeof(Statement));
+    stmt->type = SWITCH_STATEMENT;
+    stmt->data.switch_stmt.value = value;
+    stmt->data.switch_stmt.cases = cases;
+    stmt->data.switch_stmt.default_case = default_case;
+    return stmt;
+}
+
+CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *next) {
+    CaseList *case_list = malloc(sizeof(CaseList));
+    case_list->condition = condition;
+    case_list->body = body;
+    case_list->next = next;
+    return case_list;
+}
+
 /**
  * execute_statement_list - Executes a list of statements
  * @list: Pointer to the StatementList to be executed
@@ -227,6 +244,47 @@ void execute_statement_list(StatementList *list) {
             for (counter->value.int_val = start; counter->value.int_val <= end; counter->value.int_val++) {
                 execute_statement_list(stmt->data.for_stmt.body);
             }
+        } else if (stmt->type == SWITCH_STATEMENT) {
+            Expression *switch_value = evaluate_expression(stmt->data.switch_stmt.value);
+            CaseList *current_case = stmt->data.switch_stmt.cases;
+            bool case_executed = false;
+
+            while (current_case != NULL) {
+                Expression *case_value = evaluate_expression(current_case->condition);
+                if (switch_value->type == case_value->type) {
+                    bool match = false;
+                    switch (switch_value->type) {
+                        case INTEGER:
+                            match = (switch_value->data.int_value == case_value->data.int_value);
+                            break;
+                        case DECIMAL:
+                            match = (switch_value->data.double_value == case_value->data.double_value);
+                            break;
+                        case STRING:
+                            match = (strcmp(switch_value->data.string_value, case_value->data.string_value) == 0);
+                            break;
+                        case BOOLEAN:
+                            match = (switch_value->data.bool_value == case_value->data.bool_value);
+                            break;
+                        default:
+                            fprintf(stderr, "Unsupported type in switch statement\n");
+                            exit(1);
+                    }
+
+                    if (match) {
+                        execute_statement_list(current_case->body);
+                        case_executed = true;
+                        break;
+                    }
+                }
+                current_case = current_case->next;
+            }
+
+            if (!case_executed && stmt->data.switch_stmt.default_case != NULL) {
+                execute_statement_list(stmt->data.switch_stmt.default_case);
+            }
+
+            free(switch_value);
         }
         list = list->next;
     }

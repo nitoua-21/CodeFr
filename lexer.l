@@ -39,6 +39,9 @@
 "De"            { return DE; }
 "A"             { return A; }
 "FinPour"       { return FINPOUR; }
+"Selon"         { return SELON; }
+"Cas"           { return CAS; }
+"FinSelon"      { return FINSELON; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

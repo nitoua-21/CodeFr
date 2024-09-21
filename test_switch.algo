@@ -1,0 +1,19 @@
+Algorithme Mois
+
+Variable N : Entier
+
+Debut
+    Ecrire ("Enter a number (1-7): ")
+    Lire (N)
+    Selon N Faire
+        Cas 1 : Ecrire ("Monday\n")
+        Cas 2 : Ecrire ("Tuesday\n")
+        Cas 3 : Ecrire ("Wednesday\n")
+        Cas 4 : Ecrire ("Thursday\n")
+        Cas 5 : Ecrire ("Friday\n")
+        Cas 6 : Ecrire ("Saturday\n")
+        Cas 7 : Ecrire ("Sunday\n")
+    Sinon
+        Ecrire ("Invalid input! Please enter a number between 1 and 7.\n")
+    FinSelon
+Fin

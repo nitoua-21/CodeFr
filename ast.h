@@ -74,6 +74,12 @@ typedef struct Expression {
     } data;
 } Expression;
 
+typedef struct CaseList {
+    Expression *condition;
+    struct StatementList *body;
+    struct CaseList *next;
+} CaseList;
+
 /**
  * struct Statement - Represents a statement in the AST
  * @type: The type of the statement
@@ -84,7 +90,7 @@ typedef struct Expression {
  * if statements, and read statements.
  */
 typedef struct Statement {
-    enum { ASSIGN, PRINT, IF_STATEMENT, READ, WHILE_STATEMENT, FOR_STATEMENT } type;
+    enum { ASSIGN, PRINT, IF_STATEMENT, READ, WHILE_STATEMENT, FOR_STATEMENT, SWITCH_STATEMENT } type;
     union {
         struct { char *var_name; Expression *value; } assign;
         Expression *print_expr;
@@ -92,6 +98,7 @@ typedef struct Statement {
         char *read_var_name;
         struct { Expression *condition; struct StatementList *body; } while_stmt;
         struct { char *counter; Expression *start; Expression *end; struct StatementList *body; } for_stmt;
+        struct { Expression *value; CaseList *cases; struct StatementList *default_case; } switch_stmt;
     } data;
 } Statement;
 
@@ -120,6 +127,8 @@ Statement *new_if(Expression *condition, StatementList *then_branch, StatementLi
 Statement *new_read(char *var_name);
 Statement *new_while(Expression *condition, StatementList *body);
 Statement *new_for(char *counter, Expression *start, Expression *end, StatementList *body);
+Statement *new_switch(Expression *value, CaseList *cases, StatementList *default_case);
+CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *next);
 void execute_statement_list(StatementList *list);
 
 Expression *new_integer(int value);
