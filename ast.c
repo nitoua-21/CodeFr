@@ -94,6 +94,13 @@ Statement *new_read(char *var_name) {
     return stmt;
 }
 
+Statement *new_while(Expression *condition, StatementList *body) {
+    Statement *stmt = malloc(sizeof(Statement));
+    stmt->type = WHILE_STATEMENT;
+    stmt->data.while_stmt.condition = condition;
+    stmt->data.while_stmt.body = body;
+    return stmt;
+}
 
 /**
  * execute_statement_list - Executes a list of statements
@@ -198,6 +205,10 @@ void execute_statement_list(StatementList *list) {
             }
             set_symbol_value(stmt->data.read_var_name, exp);
             free(exp);
+        } else if (stmt->type == WHILE_STATEMENT) {
+            while (evaluate_expression(stmt->data.while_stmt.condition)->data.bool_value) {
+                execute_statement_list(stmt->data.while_stmt.body);
+            }
         }
         list = list->next;
     }

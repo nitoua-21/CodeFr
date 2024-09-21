@@ -1,0 +1,12 @@
+Algorithme Boucle
+
+Variable i : Entier
+
+Debut
+    i = 0
+    TantQue i <= 10 Faire
+        Ecrire(i)
+        Ecrire("\n")
+        i = i + 1
+    FinTantQue
+Fin

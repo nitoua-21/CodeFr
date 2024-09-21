@@ -19,7 +19,6 @@
 [ \t\n]         ; /* Ignore whitespace */
 "Algorithme"    { return ALGORITHME; }
 "Debut"         { return DEBUT; }
-"Fin"           { return FIN; }
 "Variable"      { return VARIABLE_KWRD; }
 "Ecrire"        { return ECRIRE; }
 "Lire"          { return LIRE; }
@@ -32,6 +31,10 @@
 "Sinon"         { return SINON; }
 "SinonSi"       {return SINONSI; }
 "FinSi"         { return FINSI; }
+"TantQue"       { return TANTQUE; }
+"Faire"         { return FAIRE; }
+"FinTantQue"    { return FINTANTQUE; }
+"Fin"           { return FIN; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

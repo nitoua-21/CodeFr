@@ -84,12 +84,13 @@ typedef struct Expression {
  * if statements, and read statements.
  */
 typedef struct Statement {
-    enum { ASSIGN, PRINT, IF_STATEMENT, READ } type;
+    enum { ASSIGN, PRINT, IF_STATEMENT, READ, WHILE_STATEMENT } type;
     union {
         struct { char *var_name; Expression *value; } assign;
         Expression *print_expr;
         struct { Expression *condition; struct StatementList *then_branch; struct StatementList *else_branch; } if_stmt;
         char *read_var_name;
+        struct { Expression *condition; struct StatementList *body; } while_stmt;
     } data;
 } Statement;
 
@@ -125,6 +126,7 @@ Expression *new_string(char *string_value);
 Expression *new_binary_op(char op, Expression *left, Expression *right);
 Expression *new_boolean(bool value);
 Expression *new_unary_op(char op, Expression *operand);
+Statement *new_while(Expression *condition, StatementList *body);
 Expression* evaluate_expression(Expression *expr);
 
 char* process_string(const char* str);

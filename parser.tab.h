@@ -95,7 +95,10 @@ extern int yydebug;
     LE = 296,                      /* LE  */
     GE = 297,                      /* GE  */
     EQ = 298,                      /* EQ  */
-    NE = 299                       /* NE  */
+    NE = 299,                      /* NE  */
+    TANTQUE = 300,                 /* TANTQUE  */
+    FAIRE = 301,                   /* FAIRE  */
+    FINTANTQUE = 302               /* FINTANTQUE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -116,7 +119,7 @@ union YYSTYPE
     Statement *statement;
     StatementList *statement_list;
 
-#line 120 "parser.tab.h"
+#line 123 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

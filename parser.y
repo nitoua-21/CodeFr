@@ -42,6 +42,9 @@ StatementList *parsed_program = NULL;
 %token ALGORITHME DEBUT FIN COLON LIRE ENTIER_KWRD DECIMAL_KWRD LOGIQUE_KWRD CHAINE_KWRD COMMA
 %token COMMENT AND OR NOT XOR CONCAT
 %token LT GT LE GE EQ NE
+%token TANTQUE FAIRE FINTANTQUE
+
+
 %type <statement> statement
 %type <statement_list> statement_list
 %type <expression> expression
@@ -80,6 +83,7 @@ statement:
     | SI expression ALORS statement_list SINON statement_list FINSI { $$ = new_if($2, $4, $6); }
     | ECRIRE LPAREN expression RPAREN { $$ = new_print($3); }
     | LIRE LPAREN IDENTIFIANT RPAREN { $$ = new_read($3); }
+    | TANTQUE expression FAIRE statement_list FINTANTQUE { $$ = new_while($2, $4); }
     ;
 
 expression:
