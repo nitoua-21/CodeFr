@@ -35,6 +35,10 @@
 "Faire"         { return FAIRE; }
 "FinTantQue"    { return FINTANTQUE; }
 "Fin"           { return FIN; }
+"Pour"          { return POUR; }
+"De"            { return DE; }
+"A"             { return A; }
+"FinPour"       { return FINPOUR; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

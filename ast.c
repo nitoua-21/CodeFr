@@ -102,6 +102,16 @@ Statement *new_while(Expression *condition, StatementList *body) {
     return stmt;
 }
 
+Statement *new_for(char *counter, Expression *start, Expression *end, StatementList *body) {
+    Statement *stmt = malloc(sizeof(Statement));
+    stmt->type = FOR_STATEMENT;
+    stmt->data.for_stmt.counter = strdup(counter);
+    stmt->data.for_stmt.start = start;
+    stmt->data.for_stmt.end = end;
+    stmt->data.for_stmt.body = body;
+    return stmt;
+}
+
 /**
  * execute_statement_list - Executes a list of statements
  * @list: Pointer to the StatementList to be executed
@@ -208,6 +218,14 @@ void execute_statement_list(StatementList *list) {
         } else if (stmt->type == WHILE_STATEMENT) {
             while (evaluate_expression(stmt->data.while_stmt.condition)->data.bool_value) {
                 execute_statement_list(stmt->data.while_stmt.body);
+            }
+        }else if (stmt->type == FOR_STATEMENT) {
+            int start = evaluate_expression(stmt->data.for_stmt.start)->data.int_value;
+            int end = evaluate_expression(stmt->data.for_stmt.end)->data.int_value;
+            Symbol *counter = get_symbol(stmt->data.for_stmt.counter);
+            
+            for (counter->value.int_val = start; counter->value.int_val <= end; counter->value.int_val++) {
+                execute_statement_list(stmt->data.for_stmt.body);
             }
         }
         list = list->next;

@@ -9,4 +9,10 @@ Debut
         Ecrire("\n")
         i = i + 1
     FinTantQue
+
+    Ecrire("For Loop")
+    Pour i De 0 A 4 Faire
+        Ecrire(i)
+        Ecrire(" ")
+    FinPour
 Fin

@@ -43,6 +43,7 @@ StatementList *parsed_program = NULL;
 %token COMMENT AND OR NOT XOR CONCAT
 %token LT GT LE GE EQ NE
 %token TANTQUE FAIRE FINTANTQUE
+%token POUR DE A FINPOUR
 
 
 %type <statement> statement
@@ -84,6 +85,7 @@ statement:
     | ECRIRE LPAREN expression RPAREN { $$ = new_print($3); }
     | LIRE LPAREN IDENTIFIANT RPAREN { $$ = new_read($3); }
     | TANTQUE expression FAIRE statement_list FINTANTQUE { $$ = new_while($2, $4); }
+    | POUR IDENTIFIANT DE expression A expression FAIRE statement_list FINPOUR { $$ = new_for($2, $4, $6, $8); }
     ;
 
 expression:
