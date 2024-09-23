@@ -206,19 +206,26 @@ Expression *evaluate_expression(Expression *expr) {
                 Expression *lval = evaluate_expression(expr->data.binary_op.left);
                 Expression *rval = evaluate_expression(expr->data.binary_op.right);
 
+                double lvalue, rvalue;
+
                 bool isint = lval->type == INTEGER && rval->type == INTEGER;
-                bool isnumber = (lval->type == INTEGER || lval->type == DECIMAL) && (rval->type == INTEGER || rval->type == DECIMAL); 
+                bool isnumber = (lval->type == INTEGER || lval->type == DECIMAL) && (rval->type == INTEGER || rval->type == DECIMAL);
+                bool isstring = lval->type == STRING && rval->type == STRING;
+
+                if (isint || isnumber)
+                {
+                    lvalue = lval->data.double_value + lval->data.int_value;
+                    rvalue = rval->data.double_value + rval->data.int_value;
+                }
 
                 switch (expr->data.binary_op.op) {
                     case '+':
                         if (isint)
                         {
                             new_expr->type = INTEGER;
-                            new_expr->data.int_value = lval->data.int_value + rval->data.int_value;
+                            new_expr->data.int_value = (int) (lvalue + rvalue);
                         }else if (isnumber){
                             new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
                             new_expr->data.double_value = lvalue + rvalue;
                         }
                         else {
@@ -233,11 +240,9 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isint)
                         {
                             new_expr->type = INTEGER;
-                            new_expr->data.int_value = lval->data.int_value - rval->data.int_value;
+                            new_expr->data.int_value =  (int) (lvalue - rvalue);
                         }else if (isnumber){
                             new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
                             new_expr->data.double_value = lvalue - rvalue;
                         }
                         else {
@@ -252,11 +257,9 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isint)
                         {
                             new_expr->type = INTEGER;
-                            new_expr->data.int_value = lval->data.int_value * rval->data.int_value;
+                            new_expr->data.int_value = (int) (lvalue * rvalue);
                         }else if (isnumber){
                             new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
                             new_expr->data.double_value = lvalue * rvalue;
                         }
                         else {
@@ -277,8 +280,6 @@ Expression *evaluate_expression(Expression *expr) {
                                 exit(1);
                             }
                             new_expr->type = DECIMAL;
-                            double lvalue = lval->data.double_value + lval->data.int_value;
-                            double rvalue = rval->data.double_value + rval->data.int_value;
                             new_expr->data.double_value = lvalue / rvalue;
                         } else {
                             printf("Error: Invalid type for Division\n");
@@ -302,35 +303,103 @@ Expression *evaluate_expression(Expression *expr) {
                         break;
                     case '|': // OR
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.bool_value || rval->data.bool_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue || rvalue;
+                        else {
+                            printf("Error: Invalid type for OR\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     case '^': // XOR
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.bool_value != rval->data.bool_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue != rvalue;
+                        else {
+                            printf("Error: Invalid type for XOR\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     case '<':
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.int_value < rval->data.int_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue < rvalue;
+                        else {
+                            printf("Error: Invalid type for <\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     case '>':
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.int_value > rval->data.int_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue > rvalue;
+                        else {
+                            printf("Error: Invalid type for >\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     case 'L': // <=
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.int_value <= rval->data.int_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue <= rvalue;
+                        else {
+                            printf("Error: Invalid type for <=\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     case 'G': // >=
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.int_value >= rval->data.int_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue >= rvalue;
+                        else {
+                            printf("Error: Invalid type for >=\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     case '=': // ==
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.int_value == rval->data.int_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue == rvalue;
+                        else if (isstring)
+                            new_expr->data.bool_value = strcmp(lval->data.string_value, rval->data.string_value) == 0;                           
+                        else {
+                            printf("Error: Invalid type for ==\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     case '!': // !=
                         new_expr->type = BOOLEAN;
-                        new_expr->data.bool_value = lval->data.int_value != rval->data.int_value;
+                        if (isnumber)
+                            new_expr->data.bool_value = lvalue != rvalue;
+                        else if (isstring)
+                            new_expr->data.bool_value = strcmp(lval->data.string_value, rval->data.string_value) != 0;                           
+                        else {
+                            printf("Error: Invalid type for Or\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
                         break;
                     default:
                         printf("Error: Unknown binary operator\n");

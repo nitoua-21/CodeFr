@@ -1239,7 +1239,7 @@ yyreduce:
     {
   case 2: /* program: ALGORITHME IDENTIFIANT Declarations DEBUT statement_list FIN  */
 #line 67 "parser.y"
-                                                                 { parsed_program = (yyvsp[-1].statement_list); }
+                                                                 { printf("*********************\nAlgorithme %s\n*********************\n\n", (yyvsp[-4].var_name)); parsed_program = (yyvsp[-1].statement_list); }
 #line 1244 "parser.tab.c"
     break;
 

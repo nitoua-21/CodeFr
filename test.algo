@@ -6,16 +6,15 @@ Algorithme TestProgram
 
 Variable x : Entier
 Variable name : Chaine
-Variable gence : Chaine
+Variable genre : Chaine
 Variable r : Logique
 
 Debut
-    Ecrire("*************************\n")
-    Ecrire("Welcome to CodeFR\n")
-    Ecrire("*************************\n\n")
-
-    r = 10 > 0
+    name = "Normich"
+    genre = "Normich"
+    r = name == genre
 
     Ecrire(r)
+    Ecrire("\n")
 
 Fin
