@@ -7,19 +7,15 @@ Algorithme TestProgram
 Variable x : Entier
 Variable name : Chaine
 Variable gence : Chaine
-Variable rslt : Chaine
+Variable r : Logique
 
 Debut
     Ecrire("*************************\n")
     Ecrire("Welcome to CodeFR\n")
     Ecrire("*************************\n\n")
 
-    Ecrire("Please enter your name: ")
-    Lire(name)
-    gence = "Homme"
+    r = 10 > 0
 
-    rslt = gence & name
-    Ecrire(123 * 124 / 12)
-    Ecrire("\n")
+    Ecrire(r)
 
 Fin

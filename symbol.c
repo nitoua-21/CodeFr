@@ -80,6 +80,9 @@ void set_symbol_value(const char *name, Expression *exp) {
             case TYPE_DECIMAL:
                 sym->value.float_val = exp->data.double_value;
                 break;
+            case TYPE_LOGIQUE:
+                sym->value.bool_val = exp->data.bool_value;
+                break;
             case TYPE_CHAINE:
                 if (sym->value.string_val) {
                     free(sym->value.string_val);
