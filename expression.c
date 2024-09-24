@@ -208,8 +208,8 @@ Expression *evaluate_expression(Expression *expr) {
 
                 double lvalue, rvalue;
 
-                bool isint = lval->type == INTEGER && rval->type == INTEGER;
-                bool isnumber = (lval->type == INTEGER || lval->type == DECIMAL) && (rval->type == INTEGER || rval->type == DECIMAL);
+                bool isint = (lval->type == INTEGER && rval->type == INTEGER) || (lval->type == BOOLEAN && rval->type == BOOLEAN);
+                bool isnumber = (lval->type == INTEGER || lval->type == DECIMAL || lval->type == BOOLEAN) && (rval->type == INTEGER || rval->type == DECIMAL ||  rval->type == BOOLEAN);
                 bool isstring = lval->type == STRING && rval->type == STRING;
 
                 if (isint || isnumber)

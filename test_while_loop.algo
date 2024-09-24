@@ -3,6 +3,7 @@ Algorithme Boucle
 Variable i : Entier
 
 Debut
+    Ecrire("\nWhile Loop\n")
     i = 0
     TantQue i <= 10 Faire
         Ecrire(i)
@@ -10,9 +11,10 @@ Debut
         i = i + 1
     FinTantQue
 
-    Ecrire("For Loop")
+    Ecrire("\nFor Loop\n")
     Pour i De 0 A 4 Faire
         Ecrire(i)
         Ecrire(" ")
     FinPour
+	Ecrire("\n")
 Fin
