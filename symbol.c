@@ -75,10 +75,10 @@ void set_symbol_value(const char *name, Expression *exp) {
     if (sym) {
         switch (sym->type) {
             case TYPE_ENTIER:
-                sym->value.int_val = exp->data.int_value;
+                sym->value.int_val = exp->type == INTEGER ? exp->data.int_value : (int)exp->data.double_value;
                 break;
             case TYPE_DECIMAL:
-                sym->value.float_val = exp->data.double_value;
+                sym->value.float_val =  exp->type == DECIMAL ? exp->data.double_value : exp->data.int_value;
                 break;
             case TYPE_LOGIQUE:
                 sym->value.bool_val = exp->data.bool_value;

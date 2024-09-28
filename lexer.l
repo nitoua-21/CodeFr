@@ -43,6 +43,7 @@
 "Cas"           { return CAS; }
 "FinSelon"      { return FINSELON; }
 "^"             { return POWER; }
+"Mod"           { return MODULO; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

@@ -214,8 +214,8 @@ Expression *evaluate_expression(Expression *expr) {
 
                 if (isint || isnumber)
                 {
-                    lvalue = lval->data.double_value + lval->data.int_value;
-                    rvalue = rval->data.double_value + rval->data.int_value;
+                    lvalue = lval->type == DECIMAL ? lval->data.double_value : lval->data.int_value;
+                    rvalue = rval->type == DECIMAL ? rval->data.double_value : rval->data.int_value;
                 }
 
                 switch (expr->data.binary_op.op) {
@@ -299,7 +299,24 @@ Expression *evaluate_expression(Expression *expr) {
                             new_expr->data.double_value = pow(lvalue, rvalue);
                         }
                         else {
-                            printf("Error: Invalid type for power\n");
+                            fprintf(stderr, "Error: Invalid type for power\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
+                        break;
+                    case 'M':
+                        if (isint)
+                        {
+                            new_expr->type = INTEGER;
+                            new_expr->data.int_value = (int) lvalue % (int) rvalue;
+                        }else if (isnumber){
+                            new_expr->type = DECIMAL;
+                            new_expr->data.double_value = (int)lvalue % (int)rvalue;
+                        }
+                        else {
+                            fprintf(stderr, "Error: Invalid type for Mod\n");
                             free(lval);
                             free(rval);
                             free(new_expr);

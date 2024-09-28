@@ -44,7 +44,7 @@ StatementList *parsed_program = NULL;
 %token COMMENT AND OR NOT XOR CONCAT
 %token LT GT LE GE EQ NE
 %token TANTQUE FAIRE FINTANTQUE
-%token POUR DE A FINPOUR POWER
+%token POUR DE A FINPOUR POWER MODULO
 %token SELON FINSELON CAS
 
 %type <statement> statement
@@ -112,6 +112,7 @@ expression:
     | expression OR expression { $$ = new_binary_op('|', $1, $3); }
     | expression XOR expression { $$ = new_binary_op('^', $1, $3); }
     | expression POWER expression { $$ = new_binary_op('P', $1, $3); }
+    | expression MODULO expression { $$ = new_binary_op('M', $1, $3); }
     | NOT expression { $$ = new_unary_op('!', $2); }
     | expression LT expression { $$ = new_binary_op('<', $1, $3); }
     | expression GT expression { $$ = new_binary_op('>', $1, $3); }
