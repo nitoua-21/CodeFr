@@ -107,7 +107,13 @@ extern int yydebug;
     MODULO = 308,                  /* MODULO  */
     SELON = 309,                   /* SELON  */
     FINSELON = 310,                /* FINSELON  */
-    CAS = 311                      /* CAS  */
+    CAS = 311,                     /* CAS  */
+    SQUARE_ROOT = 312,             /* SQUARE_ROOT  */
+    SINE = 313,                    /* SINE  */
+    COSINE = 314,                  /* COSINE  */
+    TANGENT = 315,                 /* TANGENT  */
+    LOG = 316,                     /* LOG  */
+    LOG10 = 317                    /* LOG10  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -129,7 +135,7 @@ union YYSTYPE
     StatementList *statement_list;
     CaseList *case_list;
 
-#line 133 "parser.tab.h"
+#line 139 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

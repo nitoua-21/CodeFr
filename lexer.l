@@ -44,6 +44,12 @@
 "FinSelon"      { return FINSELON; }
 "^"             { return POWER; }
 "Mod"           { return MODULO; }
+"Racine"        { return SQUARE_ROOT; }
+"Sin"           { return SINE; }
+"Cos"           { return COSINE; }
+"Tan"           { return TANGENT; }
+"Log"           { return LOG; }
+"Log10"         { return LOG10; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

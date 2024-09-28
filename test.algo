@@ -10,7 +10,7 @@ Variable genre : Chaine
 Variable r : Logique
 
 Debut
-    x = 2.6 Mod "Bonjour"
+    x = Racine(36.5)
     Ecrire(x)
     Ecrire("\n")
 

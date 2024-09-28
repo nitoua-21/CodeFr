@@ -46,6 +46,7 @@ StatementList *parsed_program = NULL;
 %token TANTQUE FAIRE FINTANTQUE
 %token POUR DE A FINPOUR POWER MODULO
 %token SELON FINSELON CAS
+%token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10
 
 %type <statement> statement
 %type <statement_list> statement_list
@@ -121,6 +122,10 @@ expression:
     | expression EQ expression { $$ = new_binary_op('=', $1, $3); }
     | expression NE expression { $$ = new_binary_op('!', $1, $3); }
     | LPAREN expression RPAREN { $$ = $2; }
+    | SQUARE_ROOT LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? sqrt(exp->data.int_value) : sqrt(exp->data.double_value));
+    }
     ;
 
 type:
