@@ -289,6 +289,23 @@ Expression *evaluate_expression(Expression *expr) {
                             exit(1);
                         }
                         break;
+                    case 'P':
+                        if (isint)
+                        {
+                            new_expr->type = INTEGER;
+                            new_expr->data.int_value = (int) pow(lvalue, rvalue);
+                        }else if (isnumber){
+                            new_expr->type = DECIMAL;
+                            new_expr->data.double_value = pow(lvalue, rvalue);
+                        }
+                        else {
+                            printf("Error: Invalid type for power\n");
+                            free(lval);
+                            free(rval);
+                            free(new_expr);
+                            exit(1);
+                        }
+                        break;
                     case 'C': // CONCAT
                         char *result = malloc(sizeof(char) * (strlen(lval->data.string_value) + strlen(rval->data.string_value)) + 1);
                         new_expr->type = STRING;

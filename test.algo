@@ -4,17 +4,14 @@ To check if a number is in the range 0 -100
 */
 Algorithme TestProgram
 
-Variable x : Entier
+Variable x : Decimal
 Variable name : Chaine
 Variable genre : Chaine
 Variable r : Logique
 
 Debut
-    name = "Normich"
-    genre = "Normich"
-    r = name == genre
-
-    Ecrire(r)
+    x = 2.5 ^ 4
+    Ecrire(x)
     Ecrire("\n")
 
 Fin

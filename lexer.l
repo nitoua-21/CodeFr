@@ -42,6 +42,7 @@
 "Selon"         { return SELON; }
 "Cas"           { return CAS; }
 "FinSelon"      { return FINSELON; }
+"^"             { return POWER; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
