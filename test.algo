@@ -10,7 +10,7 @@ Variable genre : Chaine
 Variable r : Logique
 
 Debut
-    x = Racine(36.5)
+    x = Tan(1.5)
     Ecrire(x)
     Ecrire("\n")
 

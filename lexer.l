@@ -50,6 +50,7 @@
 "Tan"           { return TANGENT; }
 "Log"           { return LOG; }
 "Log10"         { return LOG10; }
+"Arrondi"       { return ROUND; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

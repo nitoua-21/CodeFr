@@ -125,6 +125,32 @@ expression:
     | SQUARE_ROOT LPAREN expression RPAREN {
         Expression *exp = evaluate_expression($3);
         $$ = new_decimal(exp->type == INTEGER ? sqrt(exp->data.int_value) : sqrt(exp->data.double_value));
+        free(exp);
+    }
+    | SINE LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? sin(exp->data.int_value) : sin(exp->data.double_value));
+        free(exp);
+    }
+    | COSINE LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? cos(exp->data.int_value) : cos(exp->data.double_value));
+        free(exp);
+    }
+    | TANGENT LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? tan(exp->data.int_value) : tan(exp->data.double_value));
+        free(exp);
+    }
+    | LOG LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? log(exp->data.int_value) : log(exp->data.double_value));
+        free(exp);
+    }
+    | LOG10 LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? log10(exp->data.int_value) : log10(exp->data.double_value));
+        free(exp);
     }
     ;
 
