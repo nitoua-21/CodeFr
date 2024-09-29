@@ -17,13 +17,14 @@ int symbol_count = 0;
  *
  * Return: void
  */
-void add_symbol(const char *name, SymbolType type) {
+void add_symbol(const char *name, SymbolType type, bool is_constant) {
     if (symbol_count >= MAX_SYMBOLS) {
-        printf("Trop de symboles");
+        printf("Erreur ligne %d: Trop de symboles", yylineno);
         return;
     }
     symbols[symbol_count].name = strdup(name);
     symbols[symbol_count].type = type;
+    symbols[symbol_count].is_constant = is_constant;
     switch (type) {
         case TYPE_ENTIER:
             symbols[symbol_count].value.int_val = 0;

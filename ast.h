@@ -7,6 +7,8 @@
 #include <math.h>
 
 #define MAX_SYMBOLS 100
+extern int yylineno;
+
 
 /**
  * enum SymbolType - Enumerates the possible types of symbols
@@ -36,6 +38,7 @@ typedef enum {
  */
 typedef struct {
     char *name;
+    bool is_constant;
     union {
         int int_val;
         double float_val;
@@ -117,7 +120,7 @@ typedef struct StatementList {
     struct StatementList *next;
 } StatementList;
 
-void add_symbol(const char *name, SymbolType type);
+void add_symbol(const char *name, SymbolType type, bool is_constant);
 Symbol *get_symbol(const char *name);
 void set_symbol_value(const char *name, Expression *value);
 

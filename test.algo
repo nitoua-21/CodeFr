@@ -5,12 +5,12 @@ To check if a number is in the range 0 -100
 Algorithme TestProgram
 
 Variable x : Decimal
-Variable name : Chaine
-Variable genre : Chaine
-Variable r : Logique
+Constante PI = 3.14
 
 Debut
-    x = Tan(1.5)
+    Ecrire(PI)
+    Ecrire("\n")
+    x = 2.5 * 4
     Ecrire(x)
     Ecrire("\n")
 

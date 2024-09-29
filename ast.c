@@ -149,7 +149,15 @@ void execute_statement_list(StatementList *list) {
                 printf("Undefined variable: %s\n", stmt->data.assign.var_name);
                 exit(1);
             }
+            if (sym->is_constant) {
+                printf("Erreur ligne %d : Reassignment of constant variable %s not allowed\n", yylineno, stmt->data.assign.var_name);
+                exit(1);
+            }
             Expression *result = evaluate_expression(stmt->data.assign.value);
+            if (sym->type != result->type) {
+                printf("Erreur ligne %d : Incompatible type for assignment to variable %s\n", yylineno, stmt->data.assign.var_name);
+                exit(1);
+            }
             set_symbol_value(stmt->data.assign.var_name, result);
             free(result);
         } else if (stmt->type == PRINT) {
@@ -171,7 +179,7 @@ void execute_statement_list(StatementList *list) {
             case VARIABLE:
                 Symbol *sym = get_symbol(stmt->data.print_expr->data.var_name);
                 if (!sym) {
-                    printf("Undefined variable: %s\n", stmt->data.print_expr->data.var_name);
+                    printf("Erreur ligne %d: Undefined variable: %s\n", yylineno, stmt->data.print_expr->data.var_name);
                     exit(1);
                 }
                 switch (sym->type)
@@ -204,7 +212,7 @@ void execute_statement_list(StatementList *list) {
         } else if (stmt->type == READ) {
             Symbol *sym = get_symbol(stmt->data.read_var_name);
             if (!sym) {
-                printf("Undefined variable: %s\n", stmt->data.read_var_name);
+                printf("Erreur ligne %d: Undefined variable: %s\n", yylineno, stmt->data.read_var_name);
                 exit(1);
             }
             char input[256];
@@ -226,7 +234,7 @@ void execute_statement_list(StatementList *list) {
                     exp->data.string_value = strdup(input);
                     break;
                 case TYPE_LOGIQUE:
-                    printf("Boolean input not supported\n");
+                    printf("Erreur ligne %d: Boolean input not supported\n", yylineno);
                     free(exp);
                     exit(1);
             }
@@ -267,7 +275,7 @@ void execute_statement_list(StatementList *list) {
                             match = (switch_value->data.bool_value == case_value->data.bool_value);
                             break;
                         default:
-                            fprintf(stderr, "Unsupported type in switch statement\n");
+                            printf("Erreur ligne %d: Unsupported type in switch statement\n", yylineno);
                             exit(1);
                     }
 

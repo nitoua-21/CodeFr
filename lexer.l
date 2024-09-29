@@ -28,6 +28,7 @@
 "Chaine"        { return CHAINE_KWRD; }
 "Si"            { return SI; }
 "Alors"         { return ALORS; }
+"Constante"     { return CONSTANT; }
 "Sinon"         { return SINON; }
 "SinonSi"       {return SINONSI; }
 "FinSi"         { return FINSI; }

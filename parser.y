@@ -14,7 +14,6 @@
 
 void yyerror(const char *s);
 int yylex(void);
-extern int yylineno;
 
 StatementList *parsed_program = NULL;
 %}
@@ -44,9 +43,9 @@ StatementList *parsed_program = NULL;
 %token COMMENT AND OR NOT XOR CONCAT
 %token LT GT LE GE EQ NE
 %token TANTQUE FAIRE FINTANTQUE
-%token POUR DE A FINPOUR POWER MODULO
+%token POUR DE A FINPOUR POWER MODULO CONSTANT
 %token SELON FINSELON CAS
-%token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10
+%token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10 ROUND
 
 %type <statement> statement
 %type <statement_list> statement_list
@@ -60,6 +59,8 @@ StatementList *parsed_program = NULL;
 %left LT GT LE GE
 %left PLUS MINUS
 %left TIMES DIVIDE
+%left MODULO
+%left POWER
 %right NOT
 
 %%
@@ -73,7 +74,11 @@ Declarations:
     | Declarations Declaration
     ;
 Declaration:    
-    VARIABLE_KWRD IDENTIFIANT COLON type { add_symbol($2, $4); }
+    VARIABLE_KWRD IDENTIFIANT COLON type { add_symbol($2, $4, false); }
+    | CONSTANT IDENTIFIANT COLON ENTIER_VAL { add_symbol($2, TYPE_ENTIER, true); set_symbol_value($2, new_integer($4)); }
+    | CONSTANT IDENTIFIANT EQUALS DECIMAL_VAL { add_symbol($2, TYPE_DECIMAL, true); set_symbol_value($2, new_decimal($4)); }
+    | CONSTANT IDENTIFIANT EQUALS STRING_VAL { add_symbol($2, TYPE_CHAINE, true); set_symbol_value($2, new_string($4));}
+    | CONSTANT IDENTIFIANT EQUALS LOGIQUE_VAL { add_symbol($2, TYPE_LOGIQUE, true); set_symbol_value($2, new_boolean($4)); }
     ;
 
 statement_list:
@@ -152,6 +157,11 @@ expression:
         $$ = new_decimal(exp->type == INTEGER ? log10(exp->data.int_value) : log10(exp->data.double_value));
         free(exp);
     }
+    | ROUND LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? round(exp->data.int_value) : round(exp->data.double_value));
+        free(exp);
+    }
     ;
 
 type:
@@ -164,5 +174,5 @@ type:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erreur à la ligne %d: %s\n", yylineno, s);
+    fprintf(stderr, "Erreur ligne %d: %s\n", yylineno, s);
 }

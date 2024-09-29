@@ -105,15 +105,17 @@ extern int yydebug;
     FINPOUR = 306,                 /* FINPOUR  */
     POWER = 307,                   /* POWER  */
     MODULO = 308,                  /* MODULO  */
-    SELON = 309,                   /* SELON  */
-    FINSELON = 310,                /* FINSELON  */
-    CAS = 311,                     /* CAS  */
-    SQUARE_ROOT = 312,             /* SQUARE_ROOT  */
-    SINE = 313,                    /* SINE  */
-    COSINE = 314,                  /* COSINE  */
-    TANGENT = 315,                 /* TANGENT  */
-    LOG = 316,                     /* LOG  */
-    LOG10 = 317                    /* LOG10  */
+    CONSTANT = 309,                /* CONSTANT  */
+    SELON = 310,                   /* SELON  */
+    FINSELON = 311,                /* FINSELON  */
+    CAS = 312,                     /* CAS  */
+    SQUARE_ROOT = 313,             /* SQUARE_ROOT  */
+    SINE = 314,                    /* SINE  */
+    COSINE = 315,                  /* COSINE  */
+    TANGENT = 316,                 /* TANGENT  */
+    LOG = 317,                     /* LOG  */
+    LOG10 = 318,                   /* LOG10  */
+    ROUND = 319                    /* ROUND  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -122,7 +124,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 24 "parser.y"
+#line 23 "parser.y"
 
     int int_value;
     double double_value;
@@ -135,7 +137,7 @@ union YYSTYPE
     StatementList *statement_list;
     CaseList *case_list;
 
-#line 139 "parser.tab.h"
+#line 141 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

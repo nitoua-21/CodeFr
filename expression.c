@@ -140,7 +140,7 @@ Expression *evaluate_expression(Expression *expr) {
 
     Expression *new_expr = malloc(sizeof(Expression));
     if (new_expr == NULL) {
-        printf("Error: Memory allocation failed in evaluate_expression\n");
+        printf("Erreur ligne %d: Memory allocation failed in evaluate_expression\n", yylineno);
         exit(1);
     }
 
@@ -171,7 +171,7 @@ Expression *evaluate_expression(Expression *expr) {
             {
                 Symbol *sym = get_symbol(expr->data.var_name);
                 if (!sym) {
-                    printf("Error: Undefined variable: %s\n", expr->data.var_name);
+                    printf("Erreur ligne %d: Undefined variable: %s\n", yylineno, expr->data.var_name);
                     free(new_expr);
                     exit(1);
                 }
@@ -188,7 +188,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->type = STRING;
                         new_expr->data.string_value = strdup(sym->value.string_val);
                         if (new_expr->data.string_value == NULL) {
-                            printf("Error: Memory allocation failed for string duplication\n");
+                            printf("Erreur ligne %d: Memory allocation failed for string duplication\n", yylineno);
                             free(new_expr);
                             exit(1);
                         }
@@ -229,7 +229,7 @@ Expression *evaluate_expression(Expression *expr) {
                             new_expr->data.double_value = lvalue + rvalue;
                         }
                         else {
-                            printf("Error: Invalid type for addition\n");
+                            printf("Erreur ligne %d: Invalid type for addition\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -246,7 +246,7 @@ Expression *evaluate_expression(Expression *expr) {
                             new_expr->data.double_value = lvalue - rvalue;
                         }
                         else {
-                            printf("Error: Invalid type for substraction\n");
+                            printf("Erreur ligne %d: Invalid type for substraction\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -263,7 +263,7 @@ Expression *evaluate_expression(Expression *expr) {
                             new_expr->data.double_value = lvalue * rvalue;
                         }
                         else {
-                            printf("Error: Invalid type for multiplication\n");
+                            printf("Erreur ligne %d: Invalid type for multiplication\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -273,7 +273,7 @@ Expression *evaluate_expression(Expression *expr) {
                     case '/':
                         if (isnumber){
                             if (((rval->data.int_value + rval->data.double_value) == 0)) {
-                                printf("Division par zéro\n");
+                                printf("Erreur ligne %d: Division par zéro\n", yylineno);
                                 free(lval);
                                 free(rval);
                                 free(new_expr);
@@ -282,7 +282,7 @@ Expression *evaluate_expression(Expression *expr) {
                             new_expr->type = DECIMAL;
                             new_expr->data.double_value = lvalue / rvalue;
                         } else {
-                            printf("Error: Invalid type for Division\n");
+                            printf("Erreur ligne %d: Invalid type for Division\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -299,7 +299,7 @@ Expression *evaluate_expression(Expression *expr) {
                             new_expr->data.double_value = pow(lvalue, rvalue);
                         }
                         else {
-                            fprintf(stderr, "Error: Invalid type for power\n");
+                            printf("Erreur ligne %d: Invalid type for power\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -316,7 +316,7 @@ Expression *evaluate_expression(Expression *expr) {
                             new_expr->data.double_value = (int)lvalue % (int)rvalue;
                         }
                         else {
-                            fprintf(stderr, "Error: Invalid type for Mod\n");
+                            printf("Erreur ligne %d: Invalid type for Mod\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -340,7 +340,7 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isnumber)
                             new_expr->data.bool_value = lvalue || rvalue;
                         else {
-                            printf("Error: Invalid type for OR\n");
+                            printf("Erreur ligne %d: Invalid type for OR\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -352,7 +352,7 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isnumber)
                             new_expr->data.bool_value = lvalue != rvalue;
                         else {
-                            printf("Error: Invalid type for XOR\n");
+                            printf("Erreur ligne %d: Invalid type for XOR\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -364,7 +364,7 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isnumber)
                             new_expr->data.bool_value = lvalue < rvalue;
                         else {
-                            printf("Error: Invalid type for <\n");
+                            printf("Erreur ligne %d: Invalid type for <\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -376,7 +376,7 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isnumber)
                             new_expr->data.bool_value = lvalue > rvalue;
                         else {
-                            printf("Error: Invalid type for >\n");
+                            printf("Erreur ligne %d: Invalid type for >\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -388,7 +388,7 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isnumber)
                             new_expr->data.bool_value = lvalue <= rvalue;
                         else {
-                            printf("Error: Invalid type for <=\n");
+                            printf("Erreur ligne %d: Invalid type for <=\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -400,7 +400,7 @@ Expression *evaluate_expression(Expression *expr) {
                         if (isnumber)
                             new_expr->data.bool_value = lvalue >= rvalue;
                         else {
-                            printf("Error: Invalid type for >=\n");
+                            printf("Erreur ligne %d: Invalid type for >=\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -414,7 +414,7 @@ Expression *evaluate_expression(Expression *expr) {
                         else if (isstring)
                             new_expr->data.bool_value = strcmp(lval->data.string_value, rval->data.string_value) == 0;                           
                         else {
-                            printf("Error: Invalid type for ==\n");
+                            printf("Erreur ligne %d: Invalid type for ==\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -428,7 +428,7 @@ Expression *evaluate_expression(Expression *expr) {
                         else if (isstring)
                             new_expr->data.bool_value = strcmp(lval->data.string_value, rval->data.string_value) != 0;                           
                         else {
-                            printf("Error: Invalid type for Or\n");
+                            printf("Erreur ligne %d: Invalid type for Or\n", yylineno);
                             free(lval);
                             free(rval);
                             free(new_expr);
@@ -436,7 +436,7 @@ Expression *evaluate_expression(Expression *expr) {
                         }
                         break;
                     default:
-                        printf("Error: Unknown binary operator\n");
+                        printf("Erreur ligne %d: Unknown binary operator\n", yylineno);
                         free(lval);
                         free(rval);
                         free(new_expr);
@@ -447,7 +447,7 @@ Expression *evaluate_expression(Expression *expr) {
             }
             break;
         default:
-            printf("Error: Unknown expression type\n");
+            printf("Erreur ligne %d: Unknown expression type\n", yylineno);
             free(new_expr);
             exit(1);
     }
