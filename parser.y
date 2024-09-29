@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 #include "ast.h"
 
 void yyerror(const char *s);
@@ -46,6 +47,7 @@ StatementList *parsed_program = NULL;
 %token POUR DE A FINPOUR POWER MODULO CONSTANT
 %token SELON FINSELON CAS
 %token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10 ROUND
+%token ABS INT RANDOM
 
 %type <statement> statement
 %type <statement_list> statement_list
@@ -161,6 +163,31 @@ expression:
         Expression *exp = evaluate_expression($3);
         $$ = new_decimal(exp->type == INTEGER ? round(exp->data.int_value) : round(exp->data.double_value));
         free(exp);
+    }
+    | ABS LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_decimal(exp->type == INTEGER ? abs(exp->data.int_value) : abs(exp->data.double_value));
+        free(exp);
+    }
+    | INT LPAREN expression RPAREN {
+        Expression *exp = evaluate_expression($3);
+        $$ = new_integer(exp->type == INTEGER ? (int)exp->data.int_value : (int)exp->data.double_value);
+        free(exp);
+    }
+    | RANDOM LPAREN RPAREN {
+        srand(time(0));
+        double random_number = (double)rand() / (RAND_MAX + 1.0);
+        $$ = new_decimal(random_number);
+    }
+    | RANDOM LPAREN expression COMMA expression RPAREN {
+        srand(time(0));
+        Expression *min_exp = evaluate_expression($3);
+        Expression *max_exp = evaluate_expression($5);
+
+        int min = min_exp->type == INTEGER ? (int)min_exp->data.int_value : (int)min_exp->data.double_value;
+        int max = max_exp->type == INTEGER ? (int)max_exp->data.int_value : (int)max_exp->data.double_value;
+
+        $$ = new_integer(rand() % (max - min + 1) + min);
     }
     ;
 

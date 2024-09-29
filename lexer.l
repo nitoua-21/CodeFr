@@ -52,6 +52,9 @@
 "Log"           { return LOG; }
 "Log10"         { return LOG10; }
 "Arrondi"       { return ROUND; }
+"Abs"           { return ABS; }
+"Alea"          { return RANDOM; }
+"Ent"           { return INT; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
@@ -70,8 +73,8 @@
 "=="            { return EQ; }
 "!="            { return NE; }
 "&"             { return CONCAT; }
-[0-9]+          { yylval.int_value = atoi(yytext); return ENTIER_VAL; }
-[0-9]+\.[0-9]+  { yylval.double_value = atof(yytext); return DECIMAL_VAL; }
+[-+]?[0-9]+          { yylval.int_value = atoi(yytext); return ENTIER_VAL; }
+[-+]?[0-9]+\.[0-9]+  { yylval.double_value = atof(yytext); return DECIMAL_VAL; }
 "Vrai"          { yylval.bval = true; return LOGIQUE_VAL; }
 "Faux"          { yylval.bval = false; return LOGIQUE_VAL; }
 [a-zA-Z_][a-zA-Z0-9_]* { yylval.string_value = strdup(yytext); return IDENTIFIANT; }

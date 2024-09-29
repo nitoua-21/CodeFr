@@ -115,7 +115,10 @@ extern int yydebug;
     TANGENT = 316,                 /* TANGENT  */
     LOG = 317,                     /* LOG  */
     LOG10 = 318,                   /* LOG10  */
-    ROUND = 319                    /* ROUND  */
+    ROUND = 319,                   /* ROUND  */
+    ABS = 320,                     /* ABS  */
+    INT = 321,                     /* INT  */
+    RANDOM = 322                   /* RANDOM  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -124,7 +127,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 23 "parser.y"
+#line 24 "parser.y"
 
     int int_value;
     double double_value;
@@ -137,7 +140,7 @@ union YYSTYPE
     StatementList *statement_list;
     CaseList *case_list;
 
-#line 141 "parser.tab.h"
+#line 144 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

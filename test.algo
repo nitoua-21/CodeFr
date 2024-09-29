@@ -10,7 +10,7 @@ Constante PI = 3.14
 Debut
     Ecrire(PI)
     Ecrire("\n")
-    x = 2 * 4
+    x = Alea(10, 20)
     Ecrire(x)
     Ecrire("\n")
 
