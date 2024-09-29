@@ -155,8 +155,11 @@ void execute_statement_list(StatementList *list) {
             }
             Expression *result = evaluate_expression(stmt->data.assign.value);
             if (sym->type != result->type) {
-                printf("Erreur ligne %d : Incompatible type for assignment to variable %s\n", yylineno, stmt->data.assign.var_name);
-                exit(1);
+                if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
+                {
+                    printf("Erreur ligne %d : Incompatible type for assignment to variable %s\n", yylineno, stmt->data.assign.var_name);
+                    exit(1);
+                }
             }
             set_symbol_value(stmt->data.assign.var_name, result);
             free(result);
