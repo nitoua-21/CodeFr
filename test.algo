@@ -6,12 +6,15 @@ Algorithme TestProgram
 
 Variable x : Decimal
 Constante PI = 3.14
-
+Variable nom : Chaine
+Variable prenom : Chaine
 Debut
     Ecrire(PI)
     Ecrire("\n")
-    x = Alea(10, 20)
+    prenom = "Normich"
+    nom = "Normich"
+    x = Comparer("Normich", "Normich")
+    Ecrire("\n")
     Ecrire(x)
     Ecrire("\n")
-
 Fin

@@ -118,7 +118,12 @@ extern int yydebug;
     ROUND = 319,                   /* ROUND  */
     ABS = 320,                     /* ABS  */
     INT = 321,                     /* INT  */
-    RANDOM = 322                   /* RANDOM  */
+    RANDOM = 322,                  /* RANDOM  */
+    LENGTH = 323,                  /* LENGTH  */
+    COMPARE = 324,                 /* COMPARE  */
+    CONCATENATE = 325,             /* CONCATENATE  */
+    COPY = 326,                    /* COPY  */
+    SEARCH = 327                   /* SEARCH  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -140,7 +145,7 @@ union YYSTYPE
     StatementList *statement_list;
     CaseList *case_list;
 
-#line 144 "parser.tab.h"
+#line 149 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

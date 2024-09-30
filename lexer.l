@@ -55,6 +55,11 @@
 "Abs"           { return ABS; }
 "Alea"          { return RANDOM; }
 "Ent"           { return INT; }
+"Longueur"      { return LENGTH; }
+"Concatener"    { return CONCATENATE; }
+"Copie"         { return COPY; }
+"Comparer"      { return COMPARE; }
+"Recherche"     { return SEARCH; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

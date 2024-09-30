@@ -48,6 +48,7 @@ StatementList *parsed_program = NULL;
 %token SELON FINSELON CAS
 %token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10 ROUND
 %token ABS INT RANDOM
+%token LENGTH COMPARE CONCATENATE COPY SEARCH
 
 %type <statement> statement
 %type <statement_list> statement_list
@@ -129,66 +130,48 @@ expression:
     | expression EQ expression { $$ = new_binary_op('=', $1, $3); }
     | expression NE expression { $$ = new_binary_op('!', $1, $3); }
     | LPAREN expression RPAREN { $$ = $2; }
-    | SQUARE_ROOT LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? sqrt(exp->data.int_value) : sqrt(exp->data.double_value));
-        free(exp);
-    }
-    | SINE LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? sin(exp->data.int_value) : sin(exp->data.double_value));
-        free(exp);
-    }
-    | COSINE LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? cos(exp->data.int_value) : cos(exp->data.double_value));
-        free(exp);
-    }
-    | TANGENT LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? tan(exp->data.int_value) : tan(exp->data.double_value));
-        free(exp);
-    }
-    | LOG LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? log(exp->data.int_value) : log(exp->data.double_value));
-        free(exp);
-    }
-    | LOG10 LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? log10(exp->data.int_value) : log10(exp->data.double_value));
-        free(exp);
-    }
-    | ROUND LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? round(exp->data.int_value) : round(exp->data.double_value));
-        free(exp);
-    }
-    | ABS LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_decimal(exp->type == INTEGER ? abs(exp->data.int_value) : abs(exp->data.double_value));
-        free(exp);
-    }
-    | INT LPAREN expression RPAREN {
-        Expression *exp = evaluate_expression($3);
-        $$ = new_integer(exp->type == INTEGER ? (int)exp->data.int_value : (int)exp->data.double_value);
-        free(exp);
-    }
+    | SQUARE_ROOT LPAREN expression RPAREN { $$ = new_unary_op('R', $3); }
+    | SINE LPAREN expression RPAREN { $$ = new_unary_op('S', $3); }
+    | COSINE LPAREN expression RPAREN { $$ = new_unary_op('C', $3); }
+    | TANGENT LPAREN expression RPAREN { $$ = new_unary_op('T', $3); }
+    | LOG LPAREN expression RPAREN {$$ = new_unary_op('L', $3); }
+    | LOG10 LPAREN expression RPAREN { $$ = new_unary_op('l', $3);}
+    | ROUND LPAREN expression RPAREN { $$ = new_unary_op('D', $3);}
+    | ABS LPAREN expression RPAREN { $$ = new_unary_op('A', $3);}
+    | INT LPAREN expression RPAREN { $$ = new_unary_op('E', $3);}
     | RANDOM LPAREN RPAREN {
         srand(time(0));
         double random_number = (double)rand() / (RAND_MAX + 1.0);
         $$ = new_decimal(random_number);
     }
-    | RANDOM LPAREN expression COMMA expression RPAREN {
-        srand(time(0));
-        Expression *min_exp = evaluate_expression($3);
-        Expression *max_exp = evaluate_expression($5);
+    | RANDOM LPAREN expression COMMA expression RPAREN { $$ = new_binary_op('A', $3, $5); }
+    | LENGTH LPAREN expression RPAREN { $$ = new_unary_op('H', $3); }
+    | COMPARE LPAREN expression COMMA expression RPAREN { $$ = new_binary_op('p', $3, $5); }
+    | COPY LPAREN expression COMMA expression  COMMA expression RPAREN {
+        Expression *str_exp = evaluate_expression($3);
+        Expression *pos_exp = evaluate_expression($5);
+        Expression *n_exp = evaluate_expression($7);
 
-        int min = min_exp->type == INTEGER ? (int)min_exp->data.int_value : (int)min_exp->data.double_value;
-        int max = max_exp->type == INTEGER ? (int)max_exp->data.int_value : (int)max_exp->data.double_value;
+        if (str_exp->type != STRING || pos_exp->type != INTEGER || n_exp->type != INTEGER)
+        {
+            printf("Erreur ligne %d: Invalid argument type for 'Copie'\n", yylineno);
+            exit(1);
+        }
 
-        $$ = new_integer(rand() % (max - min + 1) + min);
+        char *new_str = malloc(sizeof(char*) * strlen(str_exp->data.string_value) + 1);
+
+        strncpy(new_str, str_exp->data.string_value + pos_exp->data.int_value, n_exp->data.int_value);
+        new_str[n_exp->data.int_value] = '\0';
+
+        printf("\nNew String: %s\n", new_str);
+
+        $$ = new_string(new_str);
+        free(str_exp);
+        free(pos_exp);
+        free(n_exp);
+        //free(new_str);
     }
+    | SEARCH LPAREN expression COMMA expression RPAREN { $$ = new_binary_op('r', $3, $5); }
     ;
 
 type:
