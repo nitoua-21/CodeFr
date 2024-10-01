@@ -10,32 +10,37 @@
  *
  * Return: A pointer to the newly allocated processed string
  */
-char* process_string(const char* str)
+char *process_string(const char *str)
 {
     int len = strlen(str);
-    char* processed = malloc(len);
+    char *processed = malloc(len);
     int i, j;
 
-    for (i = 0, j = 0; i < len - 1; i++, j++) {
-        if (str[i] == '\\') {
+    for (i = 0, j = 0; i < len - 1; i++, j++)
+    {
+        if (str[i] == '\\')
+        {
             i++;
-            switch (str[i]) {
-                case 'n':
-                    processed[j] = '\n';
-                    break;
-                case 't':
-                    processed[j] = '\t';
-                    break;
-                case '\\':
-                    processed[j] = '\\';
-                    break;
-                case '"':
-                    processed[j] = '"';
-                    break;
-                default:
-                    processed[j] = str[i];
+            switch (str[i])
+            {
+            case 'n':
+                processed[j] = '\n';
+                break;
+            case 't':
+                processed[j] = '\t';
+                break;
+            case '\\':
+                processed[j] = '\\';
+                break;
+            case '"':
+                processed[j] = '"';
+                break;
+            default:
+                processed[j] = str[i];
             }
-        } else {
+        }
+        else
+        {
             processed[j] = str[i];
         }
     }

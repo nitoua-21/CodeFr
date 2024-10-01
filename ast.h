@@ -9,7 +9,6 @@
 #define MAX_SYMBOLS 100
 extern int yylineno;
 
-
 /**
  * enum SymbolType - Enumerates the possible types of symbols
  * @TYPE_ENTIER: Represents an integer type
@@ -20,7 +19,8 @@ extern int yylineno;
  * This enumeration defines the possible data types that can be
  * represented in the language being interpreted.
  */
-typedef enum {
+typedef enum
+{
     TYPE_ENTIER,
     TYPE_DECIMAL,
     TYPE_LOGIQUE,
@@ -36,10 +36,12 @@ typedef enum {
  * This structure represents a symbol in the symbol table, which
  * stores information about variables in the program.
  */
-typedef struct {
+typedef struct
+{
     char *name;
     bool is_constant;
-    union {
+    union
+    {
         int int_val;
         double float_val;
         bool bool_val;
@@ -47,8 +49,6 @@ typedef struct {
     } value;
     SymbolType type;
 } Symbol;
-
-
 
 /**
  * struct Expression - Represents an expression in the AST
@@ -58,32 +58,47 @@ typedef struct {
  * This structure represents various types of expressions in the
  * abstract syntax tree, including literals, variables, and operations.
  */
-typedef struct Expression {
-    enum { INTEGER, DECIMAL, BOOLEAN, STRING, VARIABLE, BINARY_OP, UNARY_OP } type;
-    union {
+typedef struct Expression
+{
+    enum
+    {
+        INTEGER,
+        DECIMAL,
+        BOOLEAN,
+        STRING,
+        VARIABLE,
+        BINARY_OP,
+        UNARY_OP
+    } type;
+    union
+    {
         int int_value;
         double double_value;
         bool bool_value;
         char *var_name;
         char *string_value;
-        struct {
+        struct
+        {
             char op;
             struct Expression *left;
             struct Expression *right;
         } binary_op;
-         struct {
+        struct
+        {
             char op;
             struct Expression *operand;
-        } unary_op;       
+        } unary_op;
     } data;
 } Expression;
 
-typedef struct ExpressionList {
+typedef struct ExpressionList
+{
     Expression *expression;
     struct ExpressionList *next;
 } ExpressionList;
 
-typedef struct CaseList {
+typedef struct CaseList
+{
     Expression *condition;
     struct StatementList *body;
     struct CaseList *next;
@@ -98,19 +113,53 @@ typedef struct CaseList {
  * abstract syntax tree, including assignments, print statements,
  * if statements, and read statements.
  */
-typedef struct Statement {
-    enum { ASSIGN, PRINT, IF_STATEMENT, READ, WHILE_STATEMENT, FOR_STATEMENT, SWITCH_STATEMENT } type;
-    union {
-        struct { char *var_name; Expression *value; } assign;
+typedef struct Statement
+{
+    enum
+    {
+        ASSIGN,
+        PRINT,
+        IF_STATEMENT,
+        READ,
+        WHILE_STATEMENT,
+        FOR_STATEMENT,
+        SWITCH_STATEMENT
+    } type;
+    union
+    {
+        struct
+        {
+            char *var_name;
+            Expression *value;
+        } assign;
         ExpressionList *print_exprs;
-        struct { Expression *condition; struct StatementList *then_branch; struct StatementList *else_branch; } if_stmt;
+        struct
+        {
+            Expression *condition;
+            struct StatementList *then_branch;
+            struct StatementList *else_branch;
+        } if_stmt;
         char *read_var_name;
-        struct { Expression *condition; struct StatementList *body; } while_stmt;
-        struct { char *counter; Expression *start; Expression *end; struct StatementList *body; } for_stmt;
-        struct { Expression *value; CaseList *cases; struct StatementList *default_case; } switch_stmt;
+        struct
+        {
+            Expression *condition;
+            struct StatementList *body;
+        } while_stmt;
+        struct
+        {
+            char *counter;
+            Expression *start;
+            Expression *end;
+            struct StatementList *body;
+        } for_stmt;
+        struct
+        {
+            Expression *value;
+            CaseList *cases;
+            struct StatementList *default_case;
+        } switch_stmt;
     } data;
 } Statement;
-
 
 /**
  * struct StatementList - Represents a list of statements in the AST
@@ -120,7 +169,8 @@ typedef struct Statement {
  * This structure represents a linked list of statements, allowing
  * for the representation of sequences of statements in the program.
  */
-typedef struct StatementList {
+typedef struct StatementList
+{
     Statement *statement;
     struct StatementList *next;
 } StatementList;
@@ -148,8 +198,8 @@ Expression *new_string(char *string_value);
 Expression *new_binary_op(char op, Expression *left, Expression *right);
 Expression *new_boolean(bool value);
 Expression *new_unary_op(char op, Expression *operand);
-Expression* evaluate_expression(Expression *expr);
+Expression *evaluate_expression(Expression *expr);
 
-char* process_string(const char* str);
+char *process_string(const char *str);
 
 #endif

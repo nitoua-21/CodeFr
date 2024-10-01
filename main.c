@@ -1,31 +1,36 @@
 #include <stdio.h>
 #include "ast.h"
 
-
 extern int yyparse(void);
 extern FILE *yyin;
 extern StatementList *parsed_program;
 
-int main(int argc, char **argv) {
-    if (argc != 2) {
+int main(int argc, char **argv)
+{
+    if (argc != 2)
+    {
         fprintf(stderr, "Usage: %s <source_file>\n", argv[0]);
         return 1;
     }
 
     FILE *file = fopen(argv[1], "r");
-    if (!file) {
+    if (!file)
+    {
         perror("Error opening file");
         return 1;
     }
 
     yyin = file;
 
-    //extern int yydebug;
-    //yydebug = 1;
+    // extern int yydebug;
+    // yydebug = 1;
 
-    if (yyparse() == 0) {
+    if (yyparse() == 0)
+    {
         execute_statement_list(parsed_program);
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "Parsing failed.\n");
     }
 
