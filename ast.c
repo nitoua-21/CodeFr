@@ -50,10 +50,10 @@ Statement *new_assign(char *var_name, Expression *value) {
  *
  * Return: A pointer to the newly created Statement
  */
-Statement *new_print(Expression *expr) {
+Statement *new_print(ExpressionList *exprs) {
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = PRINT;
-    stmt->data.print_expr = expr;
+    stmt->data.print_exprs = exprs;
     return stmt;
 }
 
@@ -164,46 +164,30 @@ void execute_statement_list(StatementList *list) {
             set_symbol_value(stmt->data.assign.var_name, result);
             free(result);
         } else if (stmt->type == PRINT) {
-            switch (stmt->data.print_expr->type)
+            ExpressionList *expr_list = stmt->data.print_exprs;
+
+            while (expr_list)
             {
-            case INTEGER:
-                int value = evaluate_expression(stmt->data.print_expr)->data.int_value;
-                printf("%d", value);
-                break;
-            case DECIMAL:
-                double fvalue = evaluate_expression(stmt->data.print_expr)->data.double_value;
-                printf("%f", fvalue);
-                break;
-            case STRING:
-                char *cvalue = strdup(evaluate_expression(stmt->data.print_expr)->data.string_value);
-                printf("%s", cvalue);
-                free(cvalue);
-                break; 
-            case VARIABLE:
-                Symbol *sym = get_symbol(stmt->data.print_expr->data.var_name);
-                if (!sym) {
-                    printf("Erreur ligne %d: Undefined variable: %s\n", yylineno, stmt->data.print_expr->data.var_name);
-                    exit(1);
-                }
-                switch (sym->type)
+                Expression *print_expr = evaluate_expression(expr_list->expression);
+            
+                switch (print_expr->type)
                 {
-                case TYPE_ENTIER:
-                    printf("%d", sym->value.int_val);
-                    break;
-                case TYPE_DECIMAL:
-                    printf("%f", sym->value.float_val);
-                    break;
-                case TYPE_CHAINE:
-                    printf("%s", sym->value.string_val);
-                    break;
-                case TYPE_LOGIQUE:
-                    printf("%s", sym->value.bool_val ? "Vrai" : "Faux");
-                    break;
-                default:
-                    break;
+                    case INTEGER:
+                        printf("%d", print_expr->data.int_value);
+                        break;
+                    case DECIMAL:
+                        printf("%f", print_expr->data.double_value);
+                        break;
+                    case STRING:
+                        printf("%s", print_expr->data.string_value);
+                        break; 
+                    case TYPE_LOGIQUE:
+                        printf("%s", print_expr->data.bool_value? "Vrai" : "Faux");
+                        break;
+                    default:
+                        break;
                 }
-            default:
-                break;
+                expr_list = expr_list->next;
             }
         } else if (stmt->type == IF_STATEMENT) {
             int condition = evaluate_expression(stmt->data.if_stmt.condition)->data.int_value;

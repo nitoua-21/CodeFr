@@ -144,8 +144,9 @@ union YYSTYPE
     Statement *statement;
     StatementList *statement_list;
     CaseList *case_list;
+    ExpressionList *expression_list;
 
-#line 149 "parser.tab.h"
+#line 150 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

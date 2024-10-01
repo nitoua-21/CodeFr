@@ -125,6 +125,13 @@ Expression *new_unary_op(char op, Expression *operand) {
     return expr;
 }
 
+ExpressionList *new_expression_list(Expression *expression, ExpressionList *next) {
+    ExpressionList *list = malloc(sizeof(ExpressionList));
+    list->expression = expression;
+    list->next = next;
+    return list;
+}
+
 /**
  * evaluate_expression - Evaluates an expression
  * @expr: Pointer to the Expression to evaluate

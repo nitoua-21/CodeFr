@@ -9,12 +9,10 @@ Constante PI = 3.14
 Variable nom : Chaine
 Variable prenom : Chaine
 Debut
-    Ecrire(PI)
-    Ecrire("\n")
+    Ecrire(PI, "\n")
     prenom = "Normich"
     nom = "Normich"
     x = Comparer("Normich", "Normich")
-    Ecrire("\n")
-    Ecrire("Haha")
+    Ecrire(prenom, " ", nom, 2*10, "\n")
     Ecrire("\n")
 Fin

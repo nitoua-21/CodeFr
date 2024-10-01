@@ -32,6 +32,7 @@ StatementList *parsed_program = NULL;
     Statement *statement;
     StatementList *statement_list;
     CaseList *case_list;
+    ExpressionList *expression_list;
 }
 
 %token <int_value> ENTIER_VAL
@@ -55,6 +56,7 @@ StatementList *parsed_program = NULL;
 %type <expression> expression
 %type <type> type
 %type <case_list> case_list
+%type <expression_list> expression_list
 
 %left OR XOR
 %left AND
@@ -93,12 +95,17 @@ statement:
     IDENTIFIANT EQUALS expression { $$ = new_assign($1, $3); }
     | SI expression ALORS statement_list FINSI { $$ = new_if($2, $4, NULL); }
     | SI expression ALORS statement_list SINON statement_list FINSI { $$ = new_if($2, $4, $6); }
-    | ECRIRE LPAREN expression RPAREN { $$ = new_print($3); }
+    | ECRIRE LPAREN expression_list RPAREN { $$ = new_print($3); }
     | LIRE LPAREN IDENTIFIANT RPAREN { $$ = new_read($3); }
     | TANTQUE expression FAIRE statement_list FINTANTQUE { $$ = new_while($2, $4); }
     | POUR IDENTIFIANT DE expression A expression FAIRE statement_list FINPOUR { $$ = new_for($2, $4, $6, $8); }
     | SELON expression FAIRE case_list FINSELON { $$ = new_switch($2, $4, NULL); }
     | SELON expression FAIRE case_list SINON statement_list FINSELON { $$ = new_switch($2, $4, $6); }
+    ;
+
+expression_list:
+    expression { $$ = new_expression_list($1, NULL); }
+    | expression COMMA expression_list { $$ = new_expression_list($1, $3); }
     ;
 
 case_list:

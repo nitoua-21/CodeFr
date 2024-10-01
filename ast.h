@@ -78,6 +78,11 @@ typedef struct Expression {
     } data;
 } Expression;
 
+typedef struct ExpressionList {
+    Expression *expression;
+    struct ExpressionList *next;
+} ExpressionList;
+
 typedef struct CaseList {
     Expression *condition;
     struct StatementList *body;
@@ -97,7 +102,7 @@ typedef struct Statement {
     enum { ASSIGN, PRINT, IF_STATEMENT, READ, WHILE_STATEMENT, FOR_STATEMENT, SWITCH_STATEMENT } type;
     union {
         struct { char *var_name; Expression *value; } assign;
-        Expression *print_expr;
+        ExpressionList *print_exprs;
         struct { Expression *condition; struct StatementList *then_branch; struct StatementList *else_branch; } if_stmt;
         char *read_var_name;
         struct { Expression *condition; struct StatementList *body; } while_stmt;
@@ -126,13 +131,14 @@ void set_symbol_value(const char *name, Expression *value);
 
 StatementList *new_statement_list(Statement *statement, StatementList *next);
 Statement *new_assign(char *var_name, Expression *value);
-Statement *new_print(Expression *expr);
+Statement *new_print(ExpressionList *exprs);
 Statement *new_if(Expression *condition, StatementList *then_branch, StatementList *else_branch);
 Statement *new_read(char *var_name);
 Statement *new_while(Expression *condition, StatementList *body);
 Statement *new_for(char *counter, Expression *start, Expression *end, StatementList *body);
 Statement *new_switch(Expression *value, CaseList *cases, StatementList *default_case);
 CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *next);
+ExpressionList *new_expression_list(Expression *expression, ExpressionList *next);
 void execute_statement_list(StatementList *list);
 
 Expression *new_integer(int value);
