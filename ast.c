@@ -14,13 +14,13 @@
  *
  * Return: A pointer to the newly created StatementList
  */
-StatementList *new_statement_list(Statement *statement, StatementList *next) {
+StatementList *new_statement_list(Statement *statement, StatementList *next)
+{
     StatementList *list = malloc(sizeof(StatementList));
     list->statement = statement;
     list->next = next;
     return list;
 }
-
 
 /**
  * new_assign - Creates a new assignment statement
@@ -32,14 +32,14 @@ StatementList *new_statement_list(Statement *statement, StatementList *next) {
  *
  * Return: A pointer to the newly created Statement
  */
-Statement *new_assign(char *var_name, Expression *value) {
+Statement *new_assign(char *var_name, Expression *value)
+{
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = ASSIGN;
     stmt->data.assign.var_name = strdup(var_name);
     stmt->data.assign.value = value;
     return stmt;
 }
-
 
 /**
  * new_print - Creates a new print statement
@@ -50,7 +50,8 @@ Statement *new_assign(char *var_name, Expression *value) {
  *
  * Return: A pointer to the newly created Statement
  */
-Statement *new_print(ExpressionList *exprs) {
+Statement *new_print(ExpressionList *exprs)
+{
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = PRINT;
     stmt->data.print_exprs = exprs;
@@ -68,7 +69,8 @@ Statement *new_print(ExpressionList *exprs) {
  *
  * Return: A pointer to the newly created Statement
  */
-Statement *new_if(Expression *condition, StatementList *then_branch, StatementList *else_branch) {
+Statement *new_if(Expression *condition, StatementList *then_branch, StatementList *else_branch)
+{
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = IF_STATEMENT;
     stmt->data.if_stmt.condition = condition;
@@ -87,14 +89,16 @@ Statement *new_if(Expression *condition, StatementList *then_branch, StatementLi
  *
  * Return: A pointer to the newly created Statement
  */
-Statement *new_read(char *var_name) {
+Statement *new_read(char *var_name)
+{
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = READ;
     stmt->data.read_var_name = strdup(var_name);
     return stmt;
 }
 
-Statement *new_while(Expression *condition, StatementList *body) {
+Statement *new_while(Expression *condition, StatementList *body)
+{
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = WHILE_STATEMENT;
     stmt->data.while_stmt.condition = condition;
@@ -102,7 +106,8 @@ Statement *new_while(Expression *condition, StatementList *body) {
     return stmt;
 }
 
-Statement *new_for(char *counter, Expression *start, Expression *end, StatementList *body) {
+Statement *new_for(char *counter, Expression *start, Expression *end, StatementList *body)
+{
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = FOR_STATEMENT;
     stmt->data.for_stmt.counter = strdup(counter);
@@ -112,7 +117,8 @@ Statement *new_for(char *counter, Expression *start, Expression *end, StatementL
     return stmt;
 }
 
-Statement *new_switch(Expression *value, CaseList *cases, StatementList *default_case) {
+Statement *new_switch(Expression *value, CaseList *cases, StatementList *default_case)
+{
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = SWITCH_STATEMENT;
     stmt->data.switch_stmt.value = value;
@@ -121,7 +127,8 @@ Statement *new_switch(Expression *value, CaseList *cases, StatementList *default
     return stmt;
 }
 
-CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *next) {
+CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *next)
+{
     CaseList *case_list = malloc(sizeof(CaseList));
     case_list->condition = condition;
     case_list->body = body;
@@ -138,23 +145,34 @@ CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *ne
  *
  * Return: void
  */
-void execute_statement_list(StatementList *list) {
+void execute_statement_list(StatementList *list)
+{
     int statement_count = 0;
-    while (list) {
+    while (list)
+    {
         statement_count++;
         Statement *stmt = list->statement;
-        if (stmt->type == ASSIGN) {
+        if (stmt->type == ASSIGN)
+        {
             Symbol *sym = get_symbol(stmt->data.assign.var_name);
-            if (!sym) {
+            if (!sym)
+            {
                 printf("Undefined variable: %s\n", stmt->data.assign.var_name);
                 exit(1);
             }
-            if (sym->is_constant) {
+            if (sym->is_constant)
+            {
                 printf("Erreur ligne %d : Reassignment of constant variable %s not allowed\n", yylineno, stmt->data.assign.var_name);
                 exit(1);
             }
             Expression *result = evaluate_expression(stmt->data.assign.value);
-            if (sym->type != result->type) {
+            if (sym->type != result->type)
+            {
+                if ((sym->type == TYPE_ENTIER || sym->type == DECIMAL) && result->type == BOOLEAN)
+                {
+                    result->type = INTEGER;
+                    result->data.int_value = result->data.bool_value;
+                }
                 if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
                 {
                     printf("Erreur ligne %d : Incompatible type for assignment to variable %s\n", yylineno, stmt->data.assign.var_name);
@@ -163,42 +181,52 @@ void execute_statement_list(StatementList *list) {
             }
             set_symbol_value(stmt->data.assign.var_name, result);
             free(result);
-        } else if (stmt->type == PRINT) {
+        }
+        else if (stmt->type == PRINT)
+        {
             ExpressionList *expr_list = stmt->data.print_exprs;
 
             while (expr_list)
             {
                 Expression *print_expr = evaluate_expression(expr_list->expression);
-            
+
                 switch (print_expr->type)
                 {
-                    case INTEGER:
-                        printf("%d", print_expr->data.int_value);
-                        break;
-                    case DECIMAL:
-                        printf("%f", print_expr->data.double_value);
-                        break;
-                    case STRING:
-                        printf("%s", print_expr->data.string_value);
-                        break; 
-                    case TYPE_LOGIQUE:
-                        printf("%s", print_expr->data.bool_value? "Vrai" : "Faux");
-                        break;
-                    default:
-                        break;
+                case INTEGER:
+                    printf("%d", print_expr->data.int_value);
+                    break;
+                case DECIMAL:
+                    printf("%f", print_expr->data.double_value);
+                    break;
+                case STRING:
+                    printf("%s", print_expr->data.string_value);
+                    break;
+                case TYPE_LOGIQUE:
+                    printf("%s", print_expr->data.bool_value ? "Vrai" : "Faux");
+                    break;
+                default:
+                    break;
                 }
                 expr_list = expr_list->next;
             }
-        } else if (stmt->type == IF_STATEMENT) {
+        }
+        else if (stmt->type == IF_STATEMENT)
+        {
             int condition = evaluate_expression(stmt->data.if_stmt.condition)->data.int_value;
-            if (condition) {
+            if (condition)
+            {
                 execute_statement_list(stmt->data.if_stmt.then_branch);
-            } else if (stmt->data.if_stmt.else_branch) {
+            }
+            else if (stmt->data.if_stmt.else_branch)
+            {
                 execute_statement_list(stmt->data.if_stmt.else_branch);
             }
-        } else if (stmt->type == READ) {
+        }
+        else if (stmt->type == READ)
+        {
             Symbol *sym = get_symbol(stmt->data.read_var_name);
-            if (!sym) {
+            if (!sym)
+            {
                 printf("Erreur ligne %d: Undefined variable: %s\n", yylineno, stmt->data.read_var_name);
                 exit(1);
             }
@@ -207,66 +235,79 @@ void execute_statement_list(StatementList *list) {
             input[strcspn(input, "\n")] = 0; // Remove newline
 
             Expression *exp = malloc(sizeof(Expression));
-            switch (sym->type) {
-                case TYPE_ENTIER:
-                    exp->type = INTEGER;
-                    exp->data.int_value = atoi(input);
-                    break;
-                case TYPE_DECIMAL:
-                    exp->type = DECIMAL;
-                    exp->data.double_value = atof(input);
-                    break;
-                case TYPE_CHAINE:
-                    exp->type = STRING;
-                    exp->data.string_value = strdup(input);
-                    break;
-                case TYPE_LOGIQUE:
-                    printf("Erreur ligne %d: Boolean input not supported\n", yylineno);
-                    free(exp);
-                    exit(1);
+            switch (sym->type)
+            {
+            case TYPE_ENTIER:
+                exp->type = INTEGER;
+                exp->data.int_value = atoi(input);
+                break;
+            case TYPE_DECIMAL:
+                exp->type = DECIMAL;
+                exp->data.double_value = atof(input);
+                break;
+            case TYPE_CHAINE:
+                exp->type = STRING;
+                exp->data.string_value = strdup(input);
+                break;
+            case TYPE_LOGIQUE:
+                printf("Erreur ligne %d: Boolean input not supported\n", yylineno);
+                free(exp);
+                exit(1);
             }
             set_symbol_value(stmt->data.read_var_name, exp);
             free(exp);
-        } else if (stmt->type == WHILE_STATEMENT) {
-            while (evaluate_expression(stmt->data.while_stmt.condition)->data.bool_value) {
+        }
+        else if (stmt->type == WHILE_STATEMENT)
+        {
+            while (evaluate_expression(stmt->data.while_stmt.condition)->data.bool_value)
+            {
                 execute_statement_list(stmt->data.while_stmt.body);
             }
-        }else if (stmt->type == FOR_STATEMENT) {
+        }
+        else if (stmt->type == FOR_STATEMENT)
+        {
             int start = evaluate_expression(stmt->data.for_stmt.start)->data.int_value;
             int end = evaluate_expression(stmt->data.for_stmt.end)->data.int_value;
             Symbol *counter = get_symbol(stmt->data.for_stmt.counter);
-            
-            for (counter->value.int_val = start; counter->value.int_val <= end; counter->value.int_val++) {
+
+            for (counter->value.int_val = start; counter->value.int_val <= end; counter->value.int_val++)
+            {
                 execute_statement_list(stmt->data.for_stmt.body);
             }
-        } else if (stmt->type == SWITCH_STATEMENT) {
+        }
+        else if (stmt->type == SWITCH_STATEMENT)
+        {
             Expression *switch_value = evaluate_expression(stmt->data.switch_stmt.value);
             CaseList *current_case = stmt->data.switch_stmt.cases;
             bool case_executed = false;
 
-            while (current_case != NULL) {
+            while (current_case != NULL)
+            {
                 Expression *case_value = evaluate_expression(current_case->condition);
-                if (switch_value->type == case_value->type) {
+                if (switch_value->type == case_value->type)
+                {
                     bool match = false;
-                    switch (switch_value->type) {
-                        case INTEGER:
-                            match = (switch_value->data.int_value == case_value->data.int_value);
-                            break;
-                        case DECIMAL:
-                            match = (switch_value->data.double_value == case_value->data.double_value);
-                            break;
-                        case STRING:
-                            match = (strcmp(switch_value->data.string_value, case_value->data.string_value) == 0);
-                            break;
-                        case BOOLEAN:
-                            match = (switch_value->data.bool_value == case_value->data.bool_value);
-                            break;
-                        default:
-                            printf("Erreur ligne %d: Unsupported type in switch statement\n", yylineno);
-                            exit(1);
+                    switch (switch_value->type)
+                    {
+                    case INTEGER:
+                        match = (switch_value->data.int_value == case_value->data.int_value);
+                        break;
+                    case DECIMAL:
+                        match = (switch_value->data.double_value == case_value->data.double_value);
+                        break;
+                    case STRING:
+                        match = (strcmp(switch_value->data.string_value, case_value->data.string_value) == 0);
+                        break;
+                    case BOOLEAN:
+                        match = (switch_value->data.bool_value == case_value->data.bool_value);
+                        break;
+                    default:
+                        printf("Erreur ligne %d: Unsupported type in switch statement\n", yylineno);
+                        exit(1);
                     }
 
-                    if (match) {
+                    if (match)
+                    {
                         execute_statement_list(current_case->body);
                         case_executed = true;
                         break;
@@ -275,7 +316,8 @@ void execute_statement_list(StatementList *list) {
                 current_case = current_case->next;
             }
 
-            if (!case_executed && stmt->data.switch_stmt.default_case != NULL) {
+            if (!case_executed && stmt->data.switch_stmt.default_case != NULL)
+            {
                 execute_statement_list(stmt->data.switch_stmt.default_case);
             }
 

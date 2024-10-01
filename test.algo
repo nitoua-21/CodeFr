@@ -8,11 +8,13 @@ Variable x : Decimal
 Constante PI = 3.14
 Variable nom : Chaine
 Variable prenom : Chaine
+Variable test : Logique
 Debut
     Ecrire(PI, "\n")
     prenom = "Normich"
     nom = "Normich"
-    x = Cos(Faux)
+    x = Vrai
+    test = Vrai
     Ecrire("\tx=", x, "\n")
     Ecrire("\n")
 Fin
