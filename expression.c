@@ -512,12 +512,17 @@ Expression *evaluate_expression(Expression *expr) {
             {
                 Expression *exp = evaluate_expression(expr->data.unary_op.operand);
 
-                printf("\nUnary exp type : %d\n", exp->type);
+                bool isnumber = exp->type == INTEGER || exp->type == DECIMAL || exp->type == BOOLEAN;
+
+                if (exp->type == BOOLEAN) {
+                    exp->type = INTEGER;
+                    exp->data.int_value = exp->data.bool_value;
+                }
 
                 switch (expr->data.unary_op.op)
                 {
                     case 'R':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Racine'\n", yylineno);
                             free(new_expr);
@@ -529,7 +534,7 @@ Expression *evaluate_expression(Expression *expr) {
                         break;
 
                     case 'S':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Sin'\n", yylineno);
                             free(new_expr);
@@ -540,7 +545,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->data.double_value = exp->type == INTEGER ? sin(exp->data.int_value) : sin(exp->data.double_value);
                         break;
                     case 'C':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Cos'\n", yylineno);
                             free(new_expr);
@@ -551,7 +556,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->data.double_value = exp->type == INTEGER ? cos(exp->data.int_value) : cos(exp->data.double_value);
                         break;
                     case 'T':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Tangent'\n", yylineno);
                             free(new_expr);
@@ -562,7 +567,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->data.double_value = exp->type == INTEGER ? tan(exp->data.int_value) : tan(exp->data.double_value);
                         break;
                     case 'L':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Log'\n", yylineno);
                             free(new_expr);
@@ -573,7 +578,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->data.double_value = exp->type == INTEGER ? log(exp->data.int_value) : log(exp->data.double_value);
                         break;
                     case 'l':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Log10'\n", yylineno);
                             free(new_expr);
@@ -584,7 +589,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->data.double_value = exp->type == INTEGER ? log10(exp->data.int_value) : log10(exp->data.double_value);
                         break;
                     case 'D':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Arrondi'\n", yylineno);
                             free(new_expr);
@@ -595,7 +600,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->data.double_value = exp->type == INTEGER ? round(exp->data.int_value) : round(exp->data.double_value);
                         break;
                     case 'A':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Abs'\n", yylineno);
                             free(new_expr);
@@ -606,7 +611,7 @@ Expression *evaluate_expression(Expression *expr) {
                         new_expr->data.double_value = exp->type == INTEGER ? abs(exp->data.int_value) : abs(exp->data.double_value);
                         break;
                     case 'E':
-                        if (!(exp->type == INTEGER || exp->type == DECIMAL))
+                        if (!isnumber)
                         {
                             printf("Erreur ligne %d: Invalid argument type for 'Entier'\n", yylineno);
                             free(new_expr);

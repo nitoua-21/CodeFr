@@ -12,7 +12,7 @@ Debut
     Ecrire(PI, "\n")
     prenom = "Normich"
     nom = "Normich"
-    x = Comparer("Normich", "Normich")
-    Ecrire(prenom, " ", nom, 2*10, "\n")
+    x = Cos(Faux)
+    Ecrire("\tx=", x, "\n")
     Ecrire("\n")
 Fin
