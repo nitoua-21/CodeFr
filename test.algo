@@ -15,6 +15,6 @@ Debut
     nom = "Normich"
     x = Comparer("Normich", "Normich")
     Ecrire("\n")
-    Ecrire(x)
+    Ecrire("Haha")
     Ecrire("\n")
 Fin
