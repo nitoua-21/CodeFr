@@ -12,8 +12,8 @@ Variable test : Logique
 Debut
     Ecrire(PI, "\n")
     prenom = "Normich"
-    nom = "Normich"
-    x = Vrai
+    nom = "mich"
+    x = Recherche(prenom, nom)
     test = Vrai
     Ecrire("\tx=", x, "\n")
     Ecrire("\n")

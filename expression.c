@@ -482,12 +482,12 @@ Expression *evaluate_expression(Expression *expr) {
                         {
                             int pos = 0;
 
-                            char *result = strstr(lval->data.string_value, lval->data.string_value);
+                            char *result = strstr(lval->data.string_value, rval->data.string_value);
+
                         if (result != NULL)
                             pos = (int)(result - lval->data.string_value + 1);
 
                         new_expr->data.int_value = pos;
-                        free(result);
                         }                         
                         else {
                             printf("Erreur ligne %d: Invalid type for 'Recherche'\n", yylineno);
