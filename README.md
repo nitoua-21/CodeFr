@@ -1,5 +1,7 @@
 # CodeFr
 
+[Version Française](README.fr.md) | [English Version](README.md)
+
 ## Introduction
 
 CodeFr is an educational interpreter aimed at simplifying programming for French-speaking beginners. It allows users to write and execute algorithms directly in French, providing a more intuitive way for newcomers to grasp programming concepts. CodeFr is built using the power of modern interpreter technologies, including Flex for lexical analysis, Bison for syntax parsing, and C for execution, seamlessly translating French pseudocode into executable instructions.
@@ -7,7 +9,6 @@ CodeFr is an educational interpreter aimed at simplifying programming for French
 The aim is to bridge the gap between algorithmic thinking and practical programming, helping users develop foundational skills without the overhead of learning English programming syntax.
 
 - [Landing Page](https://nitoua-21.github.io/codefr_page/)
-- [Blog post]()
 
 ## Version
 
@@ -182,7 +183,7 @@ To build and run the CodeFr Compiler, you need:
 
 ```bash
 git clone https://github.com/nitoua-21/CodeFr
-cd codefr-compiler
+cd Codefr
 ```
 
 2. Build the project:
