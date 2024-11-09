@@ -34,6 +34,7 @@ StatementList *parsed_program = NULL;
     CaseList *case_list;
     ExpressionList *expression_list;
     ArrayDimensions dims;
+    ElseIfList *elseif_list;
 }
 
 %token <int_value> ENTIER_VAL
@@ -61,6 +62,7 @@ StatementList *parsed_program = NULL;
 %type <expression_list> expression_list
 %type <dims> array_dimensions
 %type <var_name> array_ref
+%type <elseif_list> elif_list
 
 %left OR XOR
 %left AND
@@ -126,14 +128,23 @@ statement:
         free($1);
     }
     | IDENTIFIANT EQUALS expression { $$ = new_assign($1, $3); }
-    | SI expression ALORS statement_list FINSI { $$ = new_if($2, $4, NULL); }
-    | SI expression ALORS statement_list SINON statement_list FINSI { $$ = new_if($2, $4, $6); }
+    | SI expression ALORS statement_list FINSI { $$ = new_if_elif($2, $4, NULL, NULL); }
+    | SI expression ALORS statement_list elif_list FINSI { $$ = new_if_elif($2, $4, $5, NULL); }
+    | SI expression ALORS statement_list elif_list SINON statement_list FINSI { $$ = new_if_elif($2, $4, $5, $7); }
+    | SI expression ALORS statement_list SINON statement_list FINSI { $$ = new_if_elif($2, $4, NULL, $6); }
     | ECRIRE LPAREN expression_list RPAREN { $$ = new_print($3); }
     | LIRE LPAREN IDENTIFIANT RPAREN { $$ = new_read($3); }
     | TANTQUE expression FAIRE statement_list FINTANTQUE { $$ = new_while($2, $4); }
     | POUR IDENTIFIANT DE expression A expression FAIRE statement_list FINPOUR { $$ = new_for($2, $4, $6, $8); }
     | SELON expression FAIRE case_list FINSELON { $$ = new_switch($2, $4, NULL); }
     | SELON expression FAIRE case_list SINON statement_list FINSELON { $$ = new_switch($2, $4, $6); }
+    ;
+
+elif_list:
+    SINONSI expression ALORS statement_list
+        { $$ = new_elif_list($2, $4, NULL); }
+    | SINONSI expression ALORS statement_list elif_list
+        { $$ = new_elif_list($2, $4, $5); }
     ;
 
 array_ref:

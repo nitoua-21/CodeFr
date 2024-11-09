@@ -149,8 +149,9 @@ union YYSTYPE
     CaseList *case_list;
     ExpressionList *expression_list;
     ArrayDimensions dims;
+    ElseIfList *elseif_list;
 
-#line 154 "parser.tab.h"
+#line 155 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

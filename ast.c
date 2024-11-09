@@ -80,6 +80,50 @@ Statement *new_if(Expression *condition, StatementList *then_branch, StatementLi
 }
 
 /**
+ * new_elif_list - Creates a new elif branch in the elif list
+ * @condition: Expression to evaluate for this branch
+ * @body: Statements to execute if condition is true
+ * @next: Pointer to the next elif branch (or NULL)
+ *
+ * Return: Pointer to new ElseIfList structure
+ */
+ElseIfList *new_elif_list(Expression *condition, StatementList *body, ElseIfList *next) {
+    ElseIfList *elif = malloc(sizeof(ElseIfList));
+    if (!elif) {
+        printf("Memory allocation failed for elif list\n");
+        exit(1);
+    }
+    elif->branch.condition = condition;
+    elif->branch.body = body;
+    elif->next = next;
+    return elif;
+}
+
+/**
+ * new_if_elif - Creates a new if statement with elif branches
+ * @condition: Main if condition
+ * @then_branch: Statements for main if branch
+ * @elif_branches: List of elif branches (can be NULL)
+ * @else_branch: Statements for else branch (can be NULL)
+ *
+ * Return: Pointer to new Statement structure
+ */
+Statement *new_if_elif(Expression *condition, StatementList *then_branch,
+                      ElseIfList *elif_branches, StatementList *else_branch) {
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt) {
+        printf("Memory allocation failed for if statement\n");
+        exit(1);
+    }
+    stmt->type = IF_STATEMENT;
+    stmt->data.if_stmt.condition = condition;
+    stmt->data.if_stmt.then_branch = then_branch;
+    stmt->data.if_stmt.elif_branches = elif_branches;
+    stmt->data.if_stmt.else_branch = else_branch;
+    return stmt;
+}
+
+/**
  * new_read - Creates a new read statement
  * @var_name: The name of the variable to store the read value
  *
@@ -384,15 +428,28 @@ void execute_statement_list(StatementList *list)
         }
         else if (stmt->type == IF_STATEMENT)
         {
-            int condition = evaluate_expression(stmt->data.if_stmt.condition)->data.int_value;
-            if (condition)
-            {
-                execute_statement_list(stmt->data.if_stmt.then_branch);
-            }
-            else if (stmt->data.if_stmt.else_branch)
-            {
-                execute_statement_list(stmt->data.if_stmt.else_branch);
-            }
+               int condition = evaluate_expression(stmt->data.if_stmt.condition)->data.int_value;
+                if (condition) {
+                    execute_statement_list(stmt->data.if_stmt.then_branch);
+                } else {
+                    bool executed = false;
+                    ElseIfList *elif = stmt->data.if_stmt.elif_branches;
+                    
+                    // Try each elif branch in order
+                    while (elif && !executed) {
+                        condition = evaluate_expression(elif->branch.condition)->data.int_value;
+                        if (condition) {
+                            execute_statement_list(elif->branch.body);
+                            executed = true;
+                        }
+                        elif = elif->next;
+                    }
+                    
+                    // If no elif branch executed and there's an else branch
+                    if (!executed && stmt->data.if_stmt.else_branch) {
+                        execute_statement_list(stmt->data.if_stmt.else_branch);
+                    }
+                }
         }
         else if (stmt->type == READ)
         {

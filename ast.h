@@ -187,6 +187,7 @@ typedef struct Statement
         {
             Expression *condition;
             struct StatementList *then_branch;
+            struct ElseIfList *elif_branches;
             struct StatementList *else_branch;
         } if_stmt;
         char *read_var_name;
@@ -216,6 +217,7 @@ typedef struct Statement
     } data;
 } Statement;
 
+
 /**
  * struct StatementList - Represents a list of statements in the AST
  * @statement: Pointer to the current Statement
@@ -230,6 +232,32 @@ typedef struct StatementList
     struct StatementList *next;
 } StatementList;
 
+/**
+ * struct ElseIfBranch - Represents a single elif (SinonSi) branch
+ * @condition: The condition to be evaluated for this branch
+ * @body: The statements to execute if condition is true
+ *
+ * Description: This structure represents one SinonSi branch in an if statement,
+ * containing both its condition and the statements to execute.
+ */
+typedef struct ElseIfBranch {
+    Expression *condition;
+    StatementList *body;
+} ElseIfBranch;
+
+/**
+ * struct ElseIfList - Linked list of elif branches
+ * @branch: The current elif branch
+ * @next: Pointer to the next elif branch
+ *
+ * Description: This structure maintains a linked list of elif branches,
+ * allowing for multiple SinonSi statements in sequence.
+ */
+typedef struct ElseIfList {
+    ElseIfBranch branch;
+    struct ElseIfList *next;
+} ElseIfList;
+
 void add_symbol(const char *name, SymbolType type, bool is_constant);
 Symbol *get_symbol(const char *name);
 void set_symbol_value(const char *name, Expression *value);
@@ -238,6 +266,10 @@ StatementList *new_statement_list(Statement *statement, StatementList *next);
 Statement *new_assign(char *var_name, Expression *value);
 Statement *new_print(ExpressionList *exprs);
 Statement *new_if(Expression *condition, StatementList *then_branch, StatementList *else_branch);
+Statement *new_if_elif(Expression *condition, StatementList *then_branch,
+                      ElseIfList *elif_branches, StatementList *else_branch);
+ElseIfList *new_elif_list(Expression *condition, StatementList *body,
+                         ElseIfList *next);
 Statement *new_read(char *var_name);
 Statement *new_while(Expression *condition, StatementList *body);
 Statement *new_for(char *counter, Expression *start, Expression *end, StatementList *body);
