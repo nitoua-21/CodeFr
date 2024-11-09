@@ -1,0 +1,175 @@
+Algorithme TestComplet
+
+// Test variables with all data types
+Variable entier: Entier
+Variable decimal: Decimal
+Variable chaine: Chaine
+Variable booleen: Logique
+Variable i: Entier
+Variable j: Entier
+Variable somme: Entier
+Variable resultat: Decimal
+Variable valeur: Entier
+Variable texte: Chaine
+
+// Test constants
+Constante PI = 3.14159
+Constante MESSAGE = "Hello World"
+Constante VRAI_CONST = Vrai
+Constante ENTIER_CONST = 42
+
+// Test arrays
+Tableau tab1[5]: Entier
+Tableau mat[3][2]: Decimal
+
+Debut
+    // Test basic assignments and data types
+    Ecrire("\n=== Test des affectations de base ===\n")
+    entier = 10
+    decimal = 3.14
+    chaine = "Test string"
+    booleen = Vrai
+    Ecrire("Entier: ", entier, "\n")
+    Ecrire("Decimal: ", decimal, "\n")
+    Ecrire("Chaine: ", chaine, "\n")
+    Ecrire("Booleen: ", booleen, "\n")
+
+    // Test constants
+    Ecrire("\n=== Test des constantes ===\n")
+    Ecrire("PI: ", PI, "\n")
+    Ecrire("MESSAGE: ", MESSAGE, "\n")
+    Ecrire("VRAI_CONST: ", VRAI_CONST, "\n")
+    Ecrire("ENTIER_CONST: ", ENTIER_CONST, "\n")
+
+    // Test arithmetic operations
+    Ecrire("\n=== Test des opérations arithmétiques ===\n")
+    resultat = 10 + 5
+    Ecrire("Addition (10 + 5): ", resultat, "\n")
+    resultat = 10 - 5
+    Ecrire("Soustraction (10 - 5): ", resultat, "\n")
+    resultat = 10 * 5
+    Ecrire("Multiplication (10 * 5): ", resultat, "\n")
+    resultat = 10 / 5
+    Ecrire("Division (10 / 5): ", resultat, "\n")
+    resultat = 10 Mod 3
+    Ecrire("Modulo (10 Mod 3): ", resultat, "\n")
+    resultat = 2 ^ 3
+    Ecrire("Puissance (2 ^ 3): ", resultat, "\n")
+
+    // Test logical operations
+    Ecrire("\n=== Test des opérations logiques ===\n")
+    booleen = Vrai Et Vrai
+    Ecrire("ET (Vrai Et Vrai): ", booleen, "\n")
+    booleen = Vrai Ou Faux
+    Ecrire("OU (Vrai Ou Faux): ", booleen, "\n")
+    //booleen = Non Vrai
+    //Ecrire("NON (Non Vrai): ", booleen, "\n")
+    booleen = Vrai Oux Faux
+    Ecrire("XOR (Vrai Oux Faux): ", booleen, "\n")
+
+    // Test comparison operators
+    Ecrire("\n=== Test des opérateurs de comparaison ===\n")
+    booleen = 5 < 10
+    Ecrire("5 < 10: ", booleen, "\n")
+    booleen = 5 > 10
+    Ecrire("5 > 10: ", booleen, "\n")
+    booleen = 5 <= 5
+    Ecrire("5 <= 5: ", booleen, "\n")
+    booleen = 5 >= 10
+    Ecrire("5 >= 10: ", booleen, "\n")
+    booleen = 5 == 5
+    Ecrire("5 == 5: ", booleen, "\n")
+    booleen = 5 != 10
+    Ecrire("5 != 10: ", booleen, "\n")
+
+    // Test 1D array operations
+    Ecrire("\n=== Test des tableaux 1D ===\n")
+    Pour i De 0 A 4 Faire
+        tab1[i] = i * 2
+    FinPour
+
+    Pour i De 0 A 4 Faire
+        Ecrire("tab1[", i, "] = ", tab1[i], "\n")
+    FinPour
+
+    // Test 2D array operations
+    Ecrire("\n=== Test des tableaux 2D ===\n")
+    Pour i De 0 A 2 Faire
+        Pour j De 0 A 1 Faire
+            mat[i][j] = i + j
+        FinPour
+    FinPour
+
+    Pour i De 0 A 2 Faire
+        Pour j De 0 A 1 Faire
+            Ecrire("mat[", i, "][", j, "] = ", mat[i][j], "\n")
+        FinPour
+    FinPour
+
+    // Test If-SinonSi-Sinon
+    Ecrire("\n=== Test des structures conditionnelles ===\n")
+    valeur = 15
+    Si valeur > 20 Alors
+        Ecrire("Valeur supérieure à 20\n")
+    SinonSi valeur > 10 Alors
+        Ecrire("Valeur entre 11 et 20\n")
+    SinonSi valeur > 5 Alors
+        Ecrire("Valeur entre 6 et 10\n")
+    Sinon
+        Ecrire("Valeur inférieure ou égale à 5\n")
+    FinSi
+
+    // Test TantQue (while)
+    Ecrire("\n=== Test de la boucle TantQue ===\n")
+    i = 0
+    TantQue i < 5 Faire
+        Ecrire("Iteration TantQue ", i, "\n")
+        i = i + 1
+    FinTantQue
+
+    // Test Pour (for)
+    Ecrire("\n=== Test de la boucle Pour ===\n")
+    Pour i De 0 A 4 Faire
+        Ecrire("Iteration Pour ", i, "\n")
+    FinPour
+
+    // Test Selon (switch)
+    Ecrire("\n=== Test de la structure Selon ===\n")
+    valeur = 2
+    Selon valeur Faire
+        Cas 1:
+            Ecrire("Valeur est 1\n")
+        Cas 2:
+            Ecrire("Valeur est 2\n")
+        Cas 3:
+            Ecrire("Valeur est 3\n")
+        Sinon
+            Ecrire("Autre valeur\n")
+    FinSelon
+
+    // Test mathematical functions
+    Ecrire("\n=== Test des fonctions mathématiques ===\n")
+    Ecrire("Racine(16): ", Racine(16), "\n")
+    Ecrire("Sin(PI/2): ", Sin(PI/2), "\n")
+    Ecrire("Cos(0): ", Cos(0), "\n")
+    Ecrire("Tan(PI/4): ", Tan(PI/4), "\n")
+    Ecrire("Log(2.71828): ", Log(2.71828), "\n")
+    Ecrire("Log10(100): ", Log10(100), "\n")
+    Ecrire("Arrondi(3.7): ", Arrondi(3.7), "\n")
+    Ecrire("Abs(-5): ", Abs(-5), "\n")
+    Ecrire("Alea(1, 10): ", Alea(1, 10), "\n")
+
+    // Test string operations
+    Ecrire("\n=== Test des opérations sur les chaînes ===\n")
+    texte = "Hello"
+    Ecrire("Longueur('", texte, "'): ", Longueur(texte), "\n")
+    //Ecrire("Concatener('Hello', ' World'): ", Concatener(texte, " World"), "\n")
+    Ecrire("Comparer('Hello', 'Hello'): ", Comparer(texte, "Hello"), "\n")
+    Ecrire("Recherche('Hello World', 'World'): ", Recherche("Hello World", "World"), "\n")
+
+    // Test input
+    Ecrire("\n=== Test de la lecture ===\n")
+    Ecrire("Entrez un nombre: ")
+    Lire(entier)
+    Ecrire("Vous avez saisi: ", entier, "\n")
+Fin

@@ -61,7 +61,6 @@ StatementList *parsed_program = NULL;
 %type <case_list> case_list
 %type <expression_list> expression_list
 %type <dims> array_dimensions
-%type <var_name> array_ref
 %type <elseif_list> elif_list
 
 %left OR XOR
@@ -86,7 +85,7 @@ Declarations:
     ;
 Declaration:    
     VARIABLE_KWRD IDENTIFIANT COLON type { add_symbol($2, $4, false); }
-    | CONSTANT IDENTIFIANT COLON ENTIER_VAL { add_symbol($2, TYPE_ENTIER, true); set_symbol_value($2, new_integer($4)); }
+    | CONSTANT IDENTIFIANT EQUALS ENTIER_VAL { add_symbol($2, TYPE_ENTIER, true); set_symbol_value($2, new_integer($4)); }
     | CONSTANT IDENTIFIANT EQUALS DECIMAL_VAL { add_symbol($2, TYPE_DECIMAL, true); set_symbol_value($2, new_decimal($4)); }
     | CONSTANT IDENTIFIANT EQUALS STRING_VAL { add_symbol($2, TYPE_CHAINE, true); set_symbol_value($2, new_string($4));}
     | CONSTANT IDENTIFIANT EQUALS LOGIQUE_VAL { add_symbol($2, TYPE_LOGIQUE, true); set_symbol_value($2, new_boolean($4)); }
@@ -123,8 +122,12 @@ statement_list:
     ;
 
 statement:
-    array_ref EQUALS expression { 
-        $$ = new_assign($1, $3); 
+    IDENTIFIANT LBRACKET expression RBRACKET EQUALS expression { 
+        $$ = new_array_assign($1, $3, NULL, $6); 
+        free($1);
+    }
+    | IDENTIFIANT LBRACKET expression RBRACKET LBRACKET expression RBRACKET EQUALS expression { 
+        $$ = new_array_assign($1, $3, $6, $9); 
         free($1);
     }
     | IDENTIFIANT EQUALS expression { $$ = new_assign($1, $3); }
@@ -145,22 +148,6 @@ elif_list:
         { $$ = new_elif_list($2, $4, NULL); }
     | SINONSI expression ALORS statement_list elif_list
         { $$ = new_elif_list($2, $4, $5); }
-    ;
-
-array_ref:
-    IDENTIFIANT LBRACKET expression RBRACKET {
-        char buffer[256];
-        snprintf(buffer, sizeof(buffer), "%s[%d]", $1, 
-                evaluate_expression($3)->data.int_value);
-        $$ = strdup(buffer);
-    }
-    | IDENTIFIANT LBRACKET expression RBRACKET LBRACKET expression RBRACKET {
-        char buffer[256];
-        snprintf(buffer, sizeof(buffer), "%s[%d][%d]", $1,
-                evaluate_expression($3)->data.int_value,
-                evaluate_expression($6)->data.int_value);
-        $$ = strdup(buffer);
-    }
     ;
 
 expression_list:

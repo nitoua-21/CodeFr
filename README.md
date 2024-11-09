@@ -206,11 +206,12 @@ make
 ### Example 1: Basic Calculator
 ```
 Algorithme Calculator
-Variable 
-    a: Entier
-    b: Entier
-    op: Chaine
-    result: Decimal
+
+Variable a: Entier
+Variable b: Entier
+Variable op: Chaine
+Variable resultat: Decimal
+
 Debut
     Ecrire("Enter first number: ")
     Lire(a)
@@ -233,16 +234,18 @@ Debut
         FinSi
     FinSi
 
-    Ecrire("Result: ", result)
+    Ecrire("Result: ", result, "\n")
 Fin
 ```
 
 ### Example 2: Array Operations
 ```
 Algorithme ArrayExample
-Variable
-    sum: Entier
-    i: Entier
+
+Variable sum: Entier
+Variable i: Entier
+Tableau numbers[5]: Entier
+
 Tableau 
     numbers[5]: Entier
 Debut
@@ -257,7 +260,7 @@ Debut
         sum = sum + numbers[i]
     FinPour
 
-    Ecrire("Sum of array elements: ", sum)
+    Ecrire("Sum of array elements: ", sum, "\n")
 Fin
 ```
 

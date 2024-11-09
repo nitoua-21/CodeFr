@@ -204,11 +204,12 @@ make
 ### Exemple 1 : Calculatrice Simple
 ```
 Algorithme Calculatrice
-Variable 
-    a: Entier
-    b: Entier
-    op: Chaine
-    resultat: Decimal
+
+Variable a: Entier
+Variable b: Entier
+Variable op: Chaine
+Variable resultat: Decimal
+
 Debut
     Ecrire("Entrez le premier nombre : ")
     Lire(a)
@@ -231,18 +232,18 @@ Debut
         FinSi
     FinSi
 
-    Ecrire("Résultat : ", resultat)
+    Ecrire("Résultat : ", resultat, "\n")
 Fin
 ```
 
 ### Exemple 2 : Opérations sur Tableaux
 ```
 Algorithme ExempleTableau
-Variable
-    somme: Entier
-    i: Entier
-Tableau 
-    nombres[5]: Entier
+
+Variable somme: Entier
+Variable i: Entier
+Tableau nombres[5]: Entier
+
 Debut
     // Initialisation du tableau
     Pour i De 0 A 4 Faire

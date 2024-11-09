@@ -42,6 +42,31 @@ Statement *new_assign(char *var_name, Expression *value)
 }
 
 /**
+ * new_array_assign - Creates a new array assignment statement
+ * @array_name: Name of the array
+ * @index: First dimension index expression
+ * @index1: Second dimension index expression (can be NULL for 1D arrays)
+ * @value: Expression representing the value to assign
+ *
+ * Return: Pointer to the new Statement structure
+ */
+Statement *new_array_assign(char *array_name, Expression *index, Expression *index1, Expression *value)
+{
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt)
+    {
+        printf("Memory allocation failed for array assignment\n");
+        exit(1);
+    }
+    stmt->type = ARRAY_ASSIGN;
+    stmt->data.array_assign.array_name = strdup(array_name);
+    stmt->data.array_assign.index = index;
+    stmt->data.array_assign.index1 = index1;
+    stmt->data.array_assign.value = value;
+    return stmt;
+}
+
+/**
  * new_print - Creates a new print statement
  * @expr: Pointer to the Expression to be printed
  *
@@ -87,9 +112,11 @@ Statement *new_if(Expression *condition, StatementList *then_branch, StatementLi
  *
  * Return: Pointer to new ElseIfList structure
  */
-ElseIfList *new_elif_list(Expression *condition, StatementList *body, ElseIfList *next) {
+ElseIfList *new_elif_list(Expression *condition, StatementList *body, ElseIfList *next)
+{
     ElseIfList *elif = malloc(sizeof(ElseIfList));
-    if (!elif) {
+    if (!elif)
+    {
         printf("Memory allocation failed for elif list\n");
         exit(1);
     }
@@ -109,9 +136,11 @@ ElseIfList *new_elif_list(Expression *condition, StatementList *body, ElseIfList
  * Return: Pointer to new Statement structure
  */
 Statement *new_if_elif(Expression *condition, StatementList *then_branch,
-                      ElseIfList *elif_branches, StatementList *else_branch) {
+                       ElseIfList *elif_branches, StatementList *else_branch)
+{
     Statement *stmt = malloc(sizeof(Statement));
-    if (!stmt) {
+    if (!stmt)
+    {
         printf("Memory allocation failed for if statement\n");
         exit(1);
     }
@@ -301,102 +330,140 @@ void execute_statement_list(StatementList *list)
         Statement *stmt = list->statement;
         if (stmt->type == ASSIGN)
         {
-            if (stmt->data.assign.value->type == ARRAY_ACCESS)
+
+            Symbol *sym = get_symbol(stmt->data.assign.var_name);
+            if (!sym)
             {
-                // Handle array to array assignment
-                Expression *result = evaluate_expression(stmt->data.assign.value);
-                set_symbol_value(stmt->data.assign.var_name, result);
-                free(result);
+                printf("Variable non définie: %s\n", stmt->data.assign.var_name);
+                exit(1);
             }
-            else if (stmt->data.assign.var_name && strchr(stmt->data.assign.var_name, '['))
+            if (sym->is_constant)
             {
-                // This is an array element assignment
-                char *array_name = strdup(stmt->data.assign.var_name);
-                char *bracket = strchr(array_name, '[');
-                *bracket = '\0'; // Split the string at the first bracket
-
-                Symbol *sym = get_symbol(array_name);
-                if (!sym || !sym->is_array)
-                {
-                    printf("Erreur ligne %d: Affectation de tableau invalide\n", yylineno);
-                    free(array_name);
-                    exit(1);
-                }
-
-                // Parse the index expressions from the assignment target
-                char *index_str = bracket + 1; // Skip the '['
-                char *end_bracket = strchr(index_str, ']');
-                if (!end_bracket)
-                {
-                    printf("Erreur ligne %d: Accès au tableau malformé\n", yylineno);
-                    free(array_name);
-                    exit(1);
-                }
-
-                *end_bracket = '\0'; // Temporarily terminate the first index
-                Expression *index1 = new_integer(atoi(index_str));
-
-                Expression *index2 = NULL;
-                if (sym->dimensions.num_dimensions > 1)
-                {
-                    char *second_bracket = strchr(end_bracket + 1, '[');
-                    if (second_bracket)
-                    {
-                        char *second_index = second_bracket + 1;
-                        char *second_end = strchr(second_index, ']');
-                        if (!second_end)
-                        {
-                            printf("Erreur ligne %d: Accès à un tableau 2D mal formé\n", yylineno);
-                            free(array_name);
-                            free(index1);
-                            exit(1);
-                        }
-                        *second_end = '\0';
-                        index2 = new_integer(atoi(second_index));
-                    }
-                }
-
-                // Create the array access expression
-                Expression *array_access = new_array_access(array_name, index1, index2);
-
-                Expression *value = evaluate_expression(stmt->data.assign.value);
-                set_array_element(array_name, array_access, value);
-
-                // Clean up
-                free(array_name);
-                free(array_access);
-                free(value);
+                printf("Erreur ligne %d : La réaffectation de la variable constante %s n'est pas autorisée\n", yylineno, stmt->data.assign.var_name);
+                exit(1);
             }
-            else
+            Expression *result = evaluate_expression(stmt->data.assign.value);
+            if (sym->type != result->type)
             {
-                Symbol *sym = get_symbol(stmt->data.assign.var_name);
-                if (!sym)
+                if ((sym->type == TYPE_ENTIER || sym->type == DECIMAL) && result->type == BOOLEAN)
                 {
-                    printf("Variable non définie: %s\n", stmt->data.assign.var_name);
+                    result->type = INTEGER;
+                    result->data.int_value = result->data.bool_value;
+                }
+                if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
+                {
+                    printf("Erreur ligne %d : Type incompatible pour l'affectation à la variable %s\n", yylineno, stmt->data.assign.var_name);
                     exit(1);
                 }
-                if (sym->is_constant)
-                {
-                    printf("Erreur ligne %d : La réaffectation de la variable constante %s n'est pas autorisée\n", yylineno, stmt->data.assign.var_name);
-                    exit(1);
-                }
-                Expression *result = evaluate_expression(stmt->data.assign.value);
-                if (sym->type != result->type)
-                {
-                    if ((sym->type == TYPE_ENTIER || sym->type == DECIMAL) && result->type == BOOLEAN)
-                    {
-                        result->type = INTEGER;
-                        result->data.int_value = result->data.bool_value;
-                    }
-                    if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
-                    {
-                        printf("Erreur ligne %d : Type incompatible pour l'affectation à la variable %s\n", yylineno, stmt->data.assign.var_name);
-                        exit(1);
-                    }
-                }
-                set_symbol_value(stmt->data.assign.var_name, result);
-                free(result);
             }
+            set_symbol_value(stmt->data.assign.var_name, result);
+            free(result);
+        }
+
+        if (stmt->type == ARRAY_ASSIGN)
+        {
+            Symbol *sym = get_symbol(stmt->data.array_assign.array_name);
+            if (!sym || !sym->is_array)
+            {
+                printf("Erreur ligne %d: Invalid array: %s\n", yylineno,
+                       stmt->data.array_assign.array_name);
+                exit(1);
+            }
+
+            // Evaluate indices
+            Expression *index_result = evaluate_expression(stmt->data.array_assign.index);
+            int index = index_result->data.int_value;
+            free(index_result);
+
+            // Check first dimension bounds
+            if (index < 0 || index >= sym->dimensions.sizes[0])
+            {
+                printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+                exit(1);
+            }
+
+            // Calculate offset
+            int offset = index;
+
+            // Handle second dimension if present
+            if (stmt->data.array_assign.index1)
+            {
+                if (sym->dimensions.num_dimensions != 2)
+                {
+                    printf("Erreur ligne %d: Invalid dimension access for array %s\n",
+                           yylineno, stmt->data.array_assign.array_name);
+                    exit(1);
+                }
+
+                Expression *index2_result = evaluate_expression(stmt->data.array_assign.index1);
+                int index2 = index2_result->data.int_value;
+                free(index2_result);
+
+                if (index2 < 0 || index2 >= sym->dimensions.sizes[1])
+                {
+                    printf("Erreur ligne %d: Second dimension index out of bounds\n", yylineno);
+                    exit(1);
+                }
+
+                offset = index * sym->dimensions.sizes[1] + index2;
+            }
+
+            // Evaluate value to assign
+            Expression *value = evaluate_expression(stmt->data.array_assign.value);
+
+            // Perform type checking and conversion if needed
+            if (sym->type != value->type)
+            {
+                if ((sym->type == TYPE_ENTIER || sym->type == TYPE_DECIMAL) &&
+                    value->type == BOOLEAN)
+                {
+                    value->type = INTEGER;
+                    value->data.int_value = value->data.bool_value;
+                }
+                if (!((sym->type == TYPE_ENTIER && value->type == TYPE_DECIMAL) ||
+                      (sym->type == TYPE_DECIMAL && value->type == TYPE_ENTIER)))
+                {
+                    printf("Erreur ligne %d: Type incompatible for array assignment\n",
+                           yylineno);
+                    free(value);
+                    exit(1);
+                }
+            }
+
+            // Assign value based on type
+            switch (sym->type)
+            {
+            case TYPE_ENTIER:
+            {
+                int *arr = (int *)sym->value.array_val;
+                arr[offset] = value->type == INTEGER ? value->data.int_value : (int)value->data.double_value;
+                break;
+            }
+            case TYPE_DECIMAL:
+            {
+                double *arr = (double *)sym->value.array_val;
+                arr[offset] = value->type == DECIMAL ? value->data.double_value : (double)value->data.int_value;
+                break;
+            }
+            case TYPE_LOGIQUE:
+            {
+                bool *arr = (bool *)sym->value.array_val;
+                arr[offset] = value->data.bool_value;
+                break;
+            }
+            case TYPE_CHAINE:
+            {
+                char **arr = (char **)sym->value.array_val;
+                if (arr[offset])
+                {
+                    free(arr[offset]);
+                }
+                arr[offset] = strdup(value->data.string_value);
+                break;
+            }
+            }
+
+            free(value);
         }
         else if (stmt->type == PRINT)
         {
@@ -428,28 +495,34 @@ void execute_statement_list(StatementList *list)
         }
         else if (stmt->type == IF_STATEMENT)
         {
-               int condition = evaluate_expression(stmt->data.if_stmt.condition)->data.int_value;
-                if (condition) {
-                    execute_statement_list(stmt->data.if_stmt.then_branch);
-                } else {
-                    bool executed = false;
-                    ElseIfList *elif = stmt->data.if_stmt.elif_branches;
-                    
-                    // Try each elif branch in order
-                    while (elif && !executed) {
-                        condition = evaluate_expression(elif->branch.condition)->data.int_value;
-                        if (condition) {
-                            execute_statement_list(elif->branch.body);
-                            executed = true;
-                        }
-                        elif = elif->next;
+            int condition = evaluate_expression(stmt->data.if_stmt.condition)->data.int_value;
+            if (condition)
+            {
+                execute_statement_list(stmt->data.if_stmt.then_branch);
+            }
+            else
+            {
+                bool executed = false;
+                ElseIfList *elif = stmt->data.if_stmt.elif_branches;
+
+                // Try each elif branch in order
+                while (elif && !executed)
+                {
+                    condition = evaluate_expression(elif->branch.condition)->data.int_value;
+                    if (condition)
+                    {
+                        execute_statement_list(elif->branch.body);
+                        executed = true;
                     }
-                    
-                    // If no elif branch executed and there's an else branch
-                    if (!executed && stmt->data.if_stmt.else_branch) {
-                        execute_statement_list(stmt->data.if_stmt.else_branch);
-                    }
+                    elif = elif->next;
                 }
+
+                // If no elif branch executed and there's an else branch
+                if (!executed && stmt->data.if_stmt.else_branch)
+                {
+                    execute_statement_list(stmt->data.if_stmt.else_branch);
+                }
+            }
         }
         else if (stmt->type == READ)
         {
@@ -495,14 +568,31 @@ void execute_statement_list(StatementList *list)
         }
         else if (stmt->type == FOR_STATEMENT)
         {
-            int start = evaluate_expression(stmt->data.for_stmt.start)->data.int_value;
-            int end = evaluate_expression(stmt->data.for_stmt.end)->data.int_value;
-            Symbol *counter = get_symbol(stmt->data.for_stmt.counter);
+            Expression *start_expr = evaluate_expression(stmt->data.for_stmt.start);
+            Expression *end_expr = evaluate_expression(stmt->data.for_stmt.end);
+            int start = start_expr->data.int_value;
+            int end = end_expr->data.int_value;
+            free(start_expr);
+            free(end_expr);
 
-            for (counter->value.int_val = start; counter->value.int_val <= end; counter->value.int_val++)
+            // First, create a temporary expression for the counter variable
+            Expression *counter_var = new_variable(stmt->data.for_stmt.counter);
+
+            // Execute loop for each value in range
+            for (int i = start; i <= end; i++)
             {
+                // Create an integer expression for current loop value
+                Expression *current_value = new_integer(i);
+
+                // Update the counter variable with current value
+                set_symbol_value(stmt->data.for_stmt.counter, current_value);
+                free(current_value);
+
+                // Execute loop body
                 execute_statement_list(stmt->data.for_stmt.body);
             }
+
+            free(counter_var);
         }
         else if (stmt->type == SWITCH_STATEMENT)
         {

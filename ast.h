@@ -167,6 +167,7 @@ typedef struct Statement
     enum
     {
         ASSIGN,
+        ARRAY_ASSIGN,
         PRINT,
         IF_STATEMENT,
         READ,
@@ -182,6 +183,13 @@ typedef struct Statement
             char *var_name;
             Expression *value;
         } assign;
+        struct
+        {
+            char *array_name;
+            Expression *index;
+            Expression *index1;
+            Expression *value;
+        } array_assign;
         ExpressionList *print_exprs;
         struct
         {
@@ -264,6 +272,7 @@ void set_symbol_value(const char *name, Expression *value);
 
 StatementList *new_statement_list(Statement *statement, StatementList *next);
 Statement *new_assign(char *var_name, Expression *value);
+Statement *new_array_assign(char *array_name, Expression *index, Expression *index1, Expression *value);
 Statement *new_print(ExpressionList *exprs);
 Statement *new_if(Expression *condition, StatementList *then_branch, StatementList *else_branch);
 Statement *new_if_elif(Expression *condition, StatementList *then_branch,

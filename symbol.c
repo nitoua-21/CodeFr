@@ -77,29 +77,29 @@ Symbol *get_symbol(const char *name)
  *
  * Return: void
  */
-void set_symbol_value(const char *name, Expression *exp)
-{
+void set_symbol_value(const char *name, Expression *exp) {
     Symbol *sym = get_symbol(name);
-    if (sym)
-    {
-        switch (sym->type)
-        {
-        case TYPE_ENTIER:
-            sym->value.int_val = exp->type == INTEGER ? exp->data.int_value : (int)exp->data.double_value;
-            break;
-        case TYPE_DECIMAL:
-            sym->value.float_val = exp->type == DECIMAL ? exp->data.double_value : exp->data.int_value;
-            break;
-        case TYPE_LOGIQUE:
-            sym->value.bool_val = exp->data.bool_value;
-            break;
-        case TYPE_CHAINE:
-            if (sym->value.string_val)
-            {
-                free(sym->value.string_val);
-            }
-            sym->value.string_val = strdup(exp->data.string_value);
-            break;
+    if (sym) {
+        switch (sym->type) {
+            case TYPE_ENTIER:
+                sym->value.int_val = exp->type == INTEGER ? exp->data.int_value : 
+                                   exp->type == DECIMAL ? (int)exp->data.double_value : 
+                                   exp->type == BOOLEAN ? exp->data.bool_value : 0;
+                break;
+            case TYPE_DECIMAL:
+                sym->value.float_val = exp->type == DECIMAL ? exp->data.double_value : 
+                                     exp->type == INTEGER ? (double)exp->data.int_value :
+                                     exp->type == BOOLEAN ? (double)exp->data.bool_value : 0.0;
+                break;
+            case TYPE_LOGIQUE:
+                sym->value.bool_val = exp->data.bool_value;
+                break;
+            case TYPE_CHAINE:
+                if (sym->value.string_val) {
+                    free(sym->value.string_val);
+                }
+                sym->value.string_val = strdup(exp->data.string_value);
+                break;
         }
     }
 }
@@ -258,10 +258,27 @@ void set_array_element(const char *name, Expression *indices, Expression *value)
         printf("Erreur ligne %d: Accès au tableau invalide\n", yylineno);
         exit(1);
     }
-
+    
     Expression *eval_value = evaluate_expression(value);
-    int offset = get_array_offset(sym, indices->data.array_access.index,
-                                indices->data.array_access.index2);
+    int index1 = evaluate_expression(indices->data.array_access.index)->data.int_value;
+
+    printf("Indice: %d\n", index1);
+    
+    // Validate index bounds
+    if (index1 < 0 || index1 >= sym->dimensions.sizes[0]) {
+        printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+        exit(1);
+    }
+
+    int offset = index1;
+    if (indices->data.array_access.index2) {
+        int index2 = evaluate_expression(indices->data.array_access.index2)->data.int_value;
+        if (index2 < 0 || index2 >= sym->dimensions.sizes[1]) {
+            printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+            exit(1);
+        }
+        offset = index1 * sym->dimensions.sizes[1] + index2;
+    }
 
     switch (sym->type) {
         case TYPE_ENTIER: {
@@ -312,9 +329,23 @@ Expression *get_array_element(const char *name, Expression *indices) {
         printf("Erreur ligne %d: Accès au tableau invalide\n", yylineno);
         exit(1);
     }
+    int index1 = evaluate_expression(indices->data.array_access.index)->data.int_value;
+    
+    // Validate index bounds
+    if (index1 < 0 || index1 >= sym->dimensions.sizes[0]) {
+        printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+        exit(1);
+    }
 
-    int offset = get_array_offset(sym, indices->data.array_access.index,
-                                indices->data.array_access.index2);
+    int offset = index1;
+    if (indices->data.array_access.index2) {
+        int index2 = evaluate_expression(indices->data.array_access.index2)->data.int_value;
+        if (index2 < 0 || index2 >= sym->dimensions.sizes[1]) {
+            printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+            exit(1);
+        }
+        offset = index1 * sym->dimensions.sizes[1] + index2;
+    }
 
     Expression *result = malloc(sizeof(Expression));
     result->type = sym->type == TYPE_ENTIER ? INTEGER :
