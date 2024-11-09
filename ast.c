@@ -97,6 +97,18 @@ Statement *new_read(char *var_name)
     return stmt;
 }
 
+/**
+ * new_while - Creates a new while loop statement
+ * @condition: Pointer to the Expression representing the loop condition
+ * @body: Pointer to the StatementList containing the loop body
+ *
+ * Description: This function allocates and initializes a new Statement structure
+ * representing a while loop. The loop continues executing the body statements
+ * as long as the condition evaluates to true.
+ *
+ * Return: Pointer to the newly created Statement structure
+ *         NULL if memory allocation fails
+ */
 Statement *new_while(Expression *condition, StatementList *body)
 {
     Statement *stmt = malloc(sizeof(Statement));
@@ -106,6 +118,20 @@ Statement *new_while(Expression *condition, StatementList *body)
     return stmt;
 }
 
+/**
+ * new_for - Creates a new for loop statement
+ * @counter: String containing the loop counter variable name
+ * @start: Pointer to Expression representing the initial counter value
+ * @end: Pointer to Expression representing the final counter value
+ * @body: Pointer to StatementList containing the loop body
+ *
+ * Description: This function allocates and initializes a new Statement structure
+ * representing a for loop. The loop iterates from the start value to the end value,
+ * using the specified counter variable, executing the body statements in each iteration.
+ *
+ * Return: Pointer to the newly created Statement structure
+ *         NULL if memory allocation fails
+ */
 Statement *new_for(char *counter, Expression *start, Expression *end, StatementList *body)
 {
     Statement *stmt = malloc(sizeof(Statement));
@@ -117,6 +143,19 @@ Statement *new_for(char *counter, Expression *start, Expression *end, StatementL
     return stmt;
 }
 
+/**
+ * new_switch - Creates a new switch statement
+ * @value: Pointer to Expression representing the switch value to match
+ * @cases: Pointer to CaseList containing the switch cases
+ * @default_case: Pointer to StatementList for the default case (can be NULL)
+ *
+ * Description: This function allocates and initializes a new Statement structure
+ * representing a switch statement. It includes the value to match against,
+ * a list of cases with their corresponding statements, and an optional default case.
+ *
+ * Return: Pointer to the newly created Statement structure
+ *         NULL if memory allocation fails
+ */
 Statement *new_switch(Expression *value, CaseList *cases, StatementList *default_case)
 {
     Statement *stmt = malloc(sizeof(Statement));
@@ -127,6 +166,20 @@ Statement *new_switch(Expression *value, CaseList *cases, StatementList *default
     return stmt;
 }
 
+/**
+ * new_case_list - Creates a new case entry in a switch statement
+ * @condition: Pointer to Expression representing the case value to match
+ * @body: Pointer to StatementList containing statements to execute for this case
+ * @next: Pointer to the next CaseList node in the switch statement
+ *
+ * Description: This function allocates and initializes a new CaseList structure
+ * representing a case in a switch statement. It creates a linked list node
+ * containing the case condition, its corresponding statements, and a link
+ * to the next case.
+ *
+ * Return: Pointer to the newly created CaseList structure
+ *         NULL if memory allocation fails
+ */
 CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *next)
 {
     CaseList *case_list = malloc(sizeof(CaseList));
@@ -136,11 +189,28 @@ CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *ne
     return case_list;
 }
 
+/**
+ * execute_array_declaration - Processes and executes an array declaration statement
+ * @stmt: Pointer to the Statement structure containing array declaration information
+ *
+ * Description: This function handles the execution of array declarations in the
+ * program. It validates the array dimensions, ensures the array name isn't already
+ * in use, and creates the array symbol in the symbol table. It performs necessary
+ * error checking for array dimensions and memory allocation.
+ *
+ * Return: void
+ *
+ * Error conditions:
+ * - Exits with error if the statement type is invalid
+ * - Exits with error if array dimensions are not positive
+ * - Exits with error if the array name is already declared
+ * - Exits with error if memory allocation fails
+ */
 void execute_array_declaration(Statement *stmt)
 {
     if (stmt->type != ARRAY_DECL)
     {
-        printf("Erreur ligne %d: Invalid statement type passed to execute_array_declaration\n", yylineno);
+        printf("Erreur ligne %d: Type de déclaration invalide\n", yylineno);
         exit(1);
     }
 
@@ -149,7 +219,7 @@ void execute_array_declaration(Statement *stmt)
     {
         if (stmt->data.array_decl.dimensions.sizes[i] <= 0)
         {
-            printf("Erreur ligne %d: Array dimension must be positive\n", yylineno);
+            printf("Erreur ligne %d: La dimension du tableau doit être positive\n", yylineno);
             exit(1);
         }
     }
@@ -157,7 +227,7 @@ void execute_array_declaration(Statement *stmt)
     // Check if symbol already exists
     if (get_symbol(stmt->data.array_decl.array_name) != NULL)
     {
-        printf("Erreur ligne %d: Symbol %s already declared\n",
+        printf("Erreur ligne %d: Variable %s Variable déjà déclarée\n",
                yylineno, stmt->data.array_decl.array_name);
         exit(1);
     }
@@ -204,7 +274,7 @@ void execute_statement_list(StatementList *list)
                 Symbol *sym = get_symbol(array_name);
                 if (!sym || !sym->is_array)
                 {
-                    printf("Erreur ligne %d: Invalid array assignment\n", yylineno);
+                    printf("Erreur ligne %d: Affectation de tableau invalide\n", yylineno);
                     free(array_name);
                     exit(1);
                 }
@@ -214,7 +284,7 @@ void execute_statement_list(StatementList *list)
                 char *end_bracket = strchr(index_str, ']');
                 if (!end_bracket)
                 {
-                    printf("Erreur ligne %d: Malformed array access\n", yylineno);
+                    printf("Erreur ligne %d: Accès au tableau malformé\n", yylineno);
                     free(array_name);
                     exit(1);
                 }
@@ -232,7 +302,7 @@ void execute_statement_list(StatementList *list)
                         char *second_end = strchr(second_index, ']');
                         if (!second_end)
                         {
-                            printf("Erreur ligne %d: Malformed 2D array access\n", yylineno);
+                            printf("Erreur ligne %d: Accès à un tableau 2D mal formé\n", yylineno);
                             free(array_name);
                             free(index1);
                             exit(1);
@@ -258,12 +328,12 @@ void execute_statement_list(StatementList *list)
                 Symbol *sym = get_symbol(stmt->data.assign.var_name);
                 if (!sym)
                 {
-                    printf("Undefined variable: %s\n", stmt->data.assign.var_name);
+                    printf("Variable non définie: %s\n", stmt->data.assign.var_name);
                     exit(1);
                 }
                 if (sym->is_constant)
                 {
-                    printf("Erreur ligne %d : Reassignment of constant variable %s not allowed\n", yylineno, stmt->data.assign.var_name);
+                    printf("Erreur ligne %d : La réaffectation de la variable constante %s n'est pas autorisée\n", yylineno, stmt->data.assign.var_name);
                     exit(1);
                 }
                 Expression *result = evaluate_expression(stmt->data.assign.value);
@@ -276,7 +346,7 @@ void execute_statement_list(StatementList *list)
                     }
                     if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
                     {
-                        printf("Erreur ligne %d : Incompatible type for assignment to variable %s\n", yylineno, stmt->data.assign.var_name);
+                        printf("Erreur ligne %d : Type incompatible pour l'affectation à la variable %s\n", yylineno, stmt->data.assign.var_name);
                         exit(1);
                     }
                 }
@@ -329,7 +399,7 @@ void execute_statement_list(StatementList *list)
             Symbol *sym = get_symbol(stmt->data.read_var_name);
             if (!sym)
             {
-                printf("Erreur ligne %d: Undefined variable: %s\n", yylineno, stmt->data.read_var_name);
+                printf("Erreur ligne %d: Variable non définie: %s\n", yylineno, stmt->data.read_var_name);
                 exit(1);
             }
             char input[256];
@@ -352,7 +422,7 @@ void execute_statement_list(StatementList *list)
                 exp->data.string_value = strdup(input);
                 break;
             case TYPE_LOGIQUE:
-                printf("Erreur ligne %d: Boolean input not supported\n", yylineno);
+                printf("Erreur ligne %d: Entrée booléenne non prise en charge\n", yylineno);
                 free(exp);
                 exit(1);
             }
@@ -404,7 +474,7 @@ void execute_statement_list(StatementList *list)
                         match = (switch_value->data.bool_value == case_value->data.bool_value);
                         break;
                     default:
-                        printf("Erreur ligne %d: Unsupported type in switch statement\n", yylineno);
+                        printf("Erreur ligne %d: Type non pris en charge dans l'instruction switch\n", yylineno);
                         exit(1);
                     }
 

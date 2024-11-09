@@ -104,9 +104,25 @@ void set_symbol_value(const char *name, Expression *exp)
     }
 }
 
+/**
+ * add_array_symbol - Adds a new array symbol to the symbol table
+ * @name: The name of the array to be added
+ * @type: The type of elements in the array (SymbolType)
+ * @dims: Structure containing array dimensions information
+ *
+ * Description: This function creates a new symbol table entry for an array.
+ * It allocates memory for the array based on its dimensions and type,
+ * initializes the memory to zero, and adds the symbol to the table.
+ *
+ * Return: void
+ *
+ * Error conditions:
+ * - Exits if symbol table is full (MAX_SYMBOLS reached)
+ * - Exits if memory allocation for array fails
+ */
 void add_array_symbol(const char *name, SymbolType type, ArrayDimensions dims) {
     if (symbol_count >= MAX_SYMBOLS) {
-        printf("Erreur ligne %d: Too many symbols\n", yylineno);
+        printf("Erreur ligne %d: Trop de symboles\n", yylineno);
         exit(1);
     }
 
@@ -140,13 +156,26 @@ void add_array_symbol(const char *name, SymbolType type, ArrayDimensions dims) {
     }
 
     if (!sym->value.array_val) {
-        printf("Erreur ligne %d: Memory allocation failed for array\n", yylineno);
+        printf("Erreur ligne %d: Échec de l'allocation de mémoire pour le tableau\n", yylineno);
         exit(1);
     }
 
     symbol_count++;
 }
 
+/**
+ * new_array_declaration - Creates a new array declaration statement
+ * @name: The name of the array being declared
+ * @dims: Structure containing array dimensions information
+ * @type: The type of elements in the array (SymbolType)
+ *
+ * Description: This function allocates and initializes a new Statement
+ * structure specifically for array declarations. It stores the array's
+ * name, dimensions, and element type for later processing during execution.
+ *
+ * Return: Pointer to the newly created Statement structure
+ *         NULL if memory allocation fails
+ */
 Statement *new_array_declaration(char *name, ArrayDimensions dims, SymbolType type) {
     Statement *stmt = malloc(sizeof(Statement));
     stmt->type = ARRAY_DECL;
@@ -156,6 +185,19 @@ Statement *new_array_declaration(char *name, ArrayDimensions dims, SymbolType ty
     return stmt;
 }
 
+/**
+ * new_array_access - Creates a new array access expression
+ * @array_name: Name of the array being accessed
+ * @index: Expression representing the first dimension index
+ * @index2: Expression representing the second dimension index (NULL for 1D arrays)
+ *
+ * Description: This function creates an Expression structure representing
+ * an array access operation. It handles both single and multi-dimensional
+ * array access, where index2 is only used for 2D arrays.
+ *
+ * Return: Pointer to the newly created Expression structure
+ *         NULL if memory allocation fails
+ */
 Expression *new_array_access(char *array_name, Expression *index, Expression *index2) {
     Expression *expr = malloc(sizeof(Expression));
     expr->type = ARRAY_ACCESS;
@@ -165,13 +207,14 @@ Expression *new_array_access(char *array_name, Expression *index, Expression *in
     return expr;
 }
 
+
 static int get_array_offset(Symbol *sym, Expression *index1, Expression *index2) {
     Expression *idx1 = evaluate_expression(index1);
     int i1 = idx1->data.int_value;
     free(idx1);
 
     if (i1 < 0 || i1 >= sym->dimensions.sizes[0]) {
-        printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+        printf("Erreur ligne %d: Index de tableau hors limites\n", yylineno);
         exit(1);
     }
 
@@ -184,17 +227,35 @@ static int get_array_offset(Symbol *sym, Expression *index1, Expression *index2)
     free(idx2);
 
     if (i2 < 0 || i2 >= sym->dimensions.sizes[1]) {
-        printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+        printf("Erreur ligne %d: Index de tableau hors limites\n", yylineno);
         exit(1);
     }
 
     return i1 * sym->dimensions.sizes[1] + i2;
 }
 
+
+/**
+ * set_array_element - Sets the value of an array element
+ * @name: Name of the array
+ * @indices: Expression containing array access indices
+ * @value: Expression containing the value to be set
+ *
+ * Description: This function assigns a value to an array element at the
+ * specified indices. It handles type checking and conversion, bounds
+ * checking, and memory management for string types.
+ *
+ * Return: void
+ *
+ * Error conditions:
+ * - Exits if array name is not found in symbol table
+ * - Exits if indices are out of bounds
+ * - Exits if type mismatch between value and array
+ */
 void set_array_element(const char *name, Expression *indices, Expression *value) {
     Symbol *sym = get_symbol(name);
     if (!sym || !sym->is_array) {
-        printf("Erreur ligne %d: Invalid array access\n", yylineno);
+        printf("Erreur ligne %d: Accès au tableau invalide\n", yylineno);
         exit(1);
     }
 
@@ -228,10 +289,27 @@ void set_array_element(const char *name, Expression *indices, Expression *value)
     free(eval_value);
 }
 
+/**
+ * get_array_element - Retrieves the value of an array element
+ * @name: Name of the array
+ * @indices: Expression containing array access indices
+ *
+ * Description: This function creates a new Expression containing the value
+ * of the array element at the specified indices. It performs bounds checking
+ * and handles all supported types (integer, decimal, boolean, string).
+ *
+ * Return: Pointer to a new Expression containing the array element's value
+ *         NULL if array access is invalid
+ *
+ * Error conditions:
+ * - Exits if array name is not found in symbol table
+ * - Exits if indices are out of bounds
+ * - Exits if memory allocation fails
+ */
 Expression *get_array_element(const char *name, Expression *indices) {
     Symbol *sym = get_symbol(name);
     if (!sym || !sym->is_array) {
-        printf("Erreur ligne %d: Invalid array access\n", yylineno);
+        printf("Erreur ligne %d: Accès au tableau invalide\n", yylineno);
         exit(1);
     }
 

@@ -47,3 +47,20 @@ char *process_string(const char *str)
     processed[j] = '\0';
     return processed;
 }
+
+/**
+ * check_file_extension - Verifies if a file has .algo extension
+ * @filename: Name of the file to check
+ *
+ * Description: This function checks if the given filename ends with
+ * the .algo extension. Case sensitive comparison is performed.
+ *
+ * Return: true if file has .algo extension, false otherwise
+ */
+bool check_file_extension(const char *filename) {
+    const char *dot = strrchr(filename, '.');
+    if (!dot || dot == filename) {
+        return false;
+    }
+    return strcmp(dot, ".algo") == 0;
+}

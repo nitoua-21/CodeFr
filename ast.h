@@ -28,12 +28,21 @@ typedef enum
     TYPE_CHAINE
 } SymbolType;
 
-// Array dimensions structure
+/**
+ * struct ArrayDimensions - Stores dimensions information for arrays
+ * @sizes: Array holding the size of each dimension
+ * @num_dimensions: Number of dimensions in the array (1 or 2)
+ *
+ * Description: This structure is used to store information about array
+ * dimensions for both single and multi-dimensional arrays. The sizes array
+ * holds the size of each dimension, where sizes[0] is the first dimension
+ * and sizes[1] is the second dimension (if present). The num_dimensions
+ * field indicates whether the array is 1D or 2D.
+ */
 typedef struct {
-    int sizes[MAX_DIMENSIONS];  // Size of each dimension
-    int num_dimensions;         // Number of dimensions (1 or 2)
+    int sizes[MAX_DIMENSIONS];
+    int num_dimensions;
 } ArrayDimensions;
-
 
 /**
  * struct Symbol - Represents a symbol in the symbol table
@@ -108,12 +117,35 @@ typedef struct Expression
     } data;
 } Expression;
 
+/**
+ * struct ExpressionList - Linked list node for storing expressions
+ * @expression: Pointer to an Expression structure
+ * @next: Pointer to the next node in the ExpressionList
+ *
+ * Description: This structure represents a node in a linked list of expressions.
+ * It is used to store multiple expressions in sequence, such as when handling
+ * multiple arguments in a print statement or function call. The list is
+ * implemented as a singly linked list where each node contains an expression
+ * and a pointer to the next node.
+ */
 typedef struct ExpressionList
 {
     Expression *expression;
     struct ExpressionList *next;
 } ExpressionList;
 
+/**
+ * struct CaseList - Linked list node for switch-case statements
+ * @condition: Pointer to the Expression representing the case condition
+ * @body: Pointer to the StatementList containing the case body
+ * @next: Pointer to the next case in the switch statement
+ *
+ * Description: This structure represents a case within a switch statement.
+ * Each node contains the case condition, the statements to execute when the
+ * condition matches, and a pointer to the next case. The structure is used
+ * to build a linked list of cases within a switch statement, allowing for
+ * multiple case branches to be stored and evaluated sequentially.
+ */
 typedef struct CaseList
 {
     Expression *condition;
@@ -231,5 +263,6 @@ Expression *get_array_element(const char *name, Expression *indices);
 void execute_array_declaration(Statement *stmt);
 
 char *process_string(const char *str);
+bool check_file_extension(const char *filename);
 
 #endif
