@@ -13,43 +13,159 @@ The aim is to bridge the gap between algorithmic thinking and practical programm
 
 Current version: 1.1
 
-## Features
+## Language Documentation
 
-- __Arithmetic operations__: Supports basic operations like addition, subtraction, multiplication, and division.
-- __Variable declaration and assignment__: Variables can be declared and assigned values with support for integers, decimals, booleans, and strings.
-- __Conditional statements__: Implement `Si`, `Sinon`, and `FinSi` (if, else, endif) structures.
-- Input and output:   
-    - `Ecrire`: Outputs values to the screen.
-    - `Lire`: Reads input from the user.    
-- __Data types__: Supports integers (`Entier`), decimals (`Decimal`), booleans (`Logique`), and strings (`Chaine`).
-
-- __Comments__: Supports single-line (`//`) and multi-line (`/* ... */`) comments.
-
-
-## How Does It Work?
-
-CodeFr integrates several core technologies to interpret French pseudocode into executable programs. Here's a breakdown of how the different tools work together:
-
-1. Lexical Analysis (Flex):
-- Flex is responsible for scanning the input source code and breaking it down into tokens. Tokens are individual elements of the language, such as keywords (`Algorithme`, `Si`, `TantQue`), variables, operators, and symbols.
-- The `lexer.l` file defines patterns to recognize these tokens and generates a token stream for the parser to process.
-
-2. Parsing and Syntax Analysis (Bison):   
-- Bison processes the token stream provided by Flex and constructs a hierarchical structure, known as the abstract syntax tree (AST).
-- The `parser.y` file defines the grammar of the NI+ language, specifying how different statements (like conditionals, loops, and expressions) are structured.
-For example, the rule for parsing a TantQue loop looks like this
-```plaintext
-SI expression ALORS statement_list FINSI { $$ = new_if($2, $4, NULL); }
+### Program Structure
+Every program must follow this basic structure:
 ```
-- The parser then builds a representation of the program using nodes like loops, conditionals, and expressions.
+Algorithme ProgramName
+    // Variable declarations
+    // Constants declarations
+    // Array declarations
+Debut
+    // Program statements
+Fin
+```
 
-3. Abstract Syntax Tree (AST):
-- The AST is a data structure that represents the entire program in a tree format. Each node represents an operation (e.g., an assignment, a loop, or a condition).
-- Nodes are generated through helper functions in ast.c, such as `new_print()` for print or `new_if()` for conditionals.
+### Variables and Data Types
 
-4.  Evaluation (C Code):
-- The AST is then passed to an evaluator, which recursively traverses the tree, executing statements and evaluating expressions in the correct order.
-- The main logic for executing the program is implemented in C, specifically in files like ast.c, which contains functions that evaluate various constructs like `Si` (if), `TantQue` (while), assignments, arithmetic operations, and more.
+#### Variable Declaration
+```
+Variable name: Type
+```
+
+#### Supported Data Types
+- `Entier`: Integer numbers
+- `Decimal`: Floating-point numbers
+- `Chaine`: String values
+- `Logique`: Boolean values (Vrai/Faux)
+
+#### Constants Declaration
+```
+Constante PI: 3.14159
+Constante MESSAGE: "Hello"
+Constante ENABLED: Vrai
+```
+
+### Arrays
+
+#### Single Dimension Arrays
+Declaration:
+```
+Tableau T[5]: Entier
+```
+
+Usage:
+```
+T[0] = 10
+T[1] = 20
+Ecrire(T[0])
+```
+
+#### Two-Dimensional Arrays
+Declaration:
+```
+Tableau M[3][2]: Entier
+```
+
+Usage:
+```
+M[0][0] = 10
+M[1][1] = 20
+Ecrire(M[0][0])
+```
+
+### Operators
+
+#### Arithmetic Operators
+- `+` : Addition
+- `-` : Subtraction
+- `*` : Multiplication
+- `/` : Division
+- `Mod` : Modulo
+- `^` : Power
+
+#### Comparison Operators
+- `<` : Less than
+- `>` : Greater than
+- `<=` : Less than or equal
+- `>=` : Greater than or equal
+- `==` : Equal to
+- `!=` : Not equal to
+
+#### Logical Operators
+- `Et` : Logical AND
+- `Ou` : Logical OR
+- `Non` : Logical NOT
+- `Oux` : Logical XOR
+
+### Control Structures
+
+#### If Statement
+```
+Si condition Alors
+    // statements
+FinSi
+
+Si condition Alors
+    // statements
+Sinon
+    // statements
+FinSi
+```
+
+#### While Loop
+```
+TantQue condition Faire
+    // statements
+FinTantQue
+```
+
+#### For Loop
+```
+Pour counter De start A end Faire
+    // statements
+FinPour
+```
+
+#### Switch Statement
+```
+Selon expression Faire
+    Cas value1:
+        // statements
+    Cas value2:
+        // statements
+    Sinon
+        // default statements
+FinSelon
+```
+
+### Mathematical Functions
+- `Racine(x)`: Square root
+- `Sin(x)`: Sine
+- `Cos(x)`: Cosine
+- `Tan(x)`: Tangent
+- `Log(x)`: Natural logarithm
+- `Log10(x)`: Base-10 logarithm
+- `Arrondi(x)`: Round
+- `Abs(x)`: Absolute value
+- `Ent(x)`: Integer part
+- `Alea()`: Random number between 0 and 1
+- `Alea(min, max)`: Random number between min and max
+
+### String Operations
+- `Longueur(str)`: String length
+- `Concatener(str1, str2)`: String concatenation
+- `Comparer(str1, str2)`: String comparison
+- `Recherche(str1, str2)`: Search substring
+- `Copie(str, pos, n)`: Extract substring
+
+### Input/Output
+```
+Ecrire(expression)        // Output
+Ecrire("Hello", x, y)    // Multiple values output
+Lire(variable)           // Input
+```
 
 ## Prerequisites
 
@@ -65,7 +181,7 @@ To build and run the CodeFr Compiler, you need:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/codefr-compiler.git
+git clone https://github.com/nitoua-21/CodeFr
 cd codefr-compiler
 ```
 
@@ -77,29 +193,71 @@ make
 
 ## Usage
 
-1. Run the interpreter:
+1. Create a file with `.algo` extension containing your program
+2. Run the interpreter:
 
+```bash
+./codefr program.algo
 ```
-./codefr file.fr
+
+## Example Programs
+
+### Example 1: Basic Calculator
 ```
-
-### Conditional Example:
-
-```c
-Algorithme Signe_numbre
-
-Variable n : Entier
-
+Algorithme Calculator
+Variable 
+    a: Entier
+    b: Entier
+    op: Chaine
+    result: Decimal
 Debut
-    Ecrire("Enter an integer: ")
-    Lire(n)
+    Ecrire("Enter first number: ")
+    Lire(a)
+    Ecrire("Enter operation (+,-,*,/): ")
+    Lire(op)
+    Ecrire("Enter second number: ")
+    Lire(b)
 
-    // Check if the number is positive
-    Si n > 0 Alors
-        Ecrire("You entered a positive number: ", n, "\n")
+    Si op == "+" Alors
+        result = a + b
+    SinonSi op == "-" Alors
+        result = a - b
+    SinonSi op == "*" Alors
+        result = a * b
+    SinonSi op == "/" Alors
+        Si b == 0 Alors
+            Ecrire("Error: Division by zero!")
+        Sinon
+            result = a / b
+        FinSi
     FinSi
-Fin
 
+    Ecrire("Result: ", result)
+Fin
+```
+
+### Example 2: Array Operations
+```
+Algorithme ArrayExample
+Variable
+    sum: Entier
+    i: Entier
+Tableau 
+    numbers[5]: Entier
+Debut
+    // Initialize array
+    Pour i De 0 A 4 Faire
+        numbers[i] = i * 2
+    FinPour
+
+    // Calculate sum
+    sum = 0
+    Pour i De 0 A 4 Faire
+        sum = sum + numbers[i]
+    FinPour
+
+    Ecrire("Sum of array elements: ", sum)
+Fin
 ```
 
 ## Project Structure
@@ -107,7 +265,7 @@ Fin
 - `lexer.l`: The Flex file responsible for breaking the source code into tokens (lexical analysis).
 - `parser.y`: The Bison file that parses the tokens and generates the abstract syntax tree (syntax analysis).
 - `main.c`: The main entry point of the interpreter.
-- `Makefile`:Automates the build process using gcc, flex, and bison.
+- `Makefile`: Automates the build process using gcc, flex, and bison.
 - `ast.c`, `expression.c`: Contains the logic for evaluating the program's AST (execution).
 - `symbol.c`: Contains the logic for managing the Symbol Table.
 - `helpers`: Helper functions
@@ -116,23 +274,11 @@ Fin
 
 Contributions are welcome! If you'd like to improve CodeFr, feel free to submit a pull request. Some areas that need enhancement include adding more complex control structures, expanding data types, and improving error handling.
 
-
 ## Authors
 
 - Normich ITOUA - Initial work | [Github](https://github.com/nitoua-21) / [Twitter](https://x.com/ItouaNormich) 
 
-## Future Enhancements
 
-- Support for arrays: Allow users to declare and manipulate arrays.
-- Functions: Enable users to define and call functions.
-- Error handling: Provide detailed and helpful error messages during lexical, syntactic, and runtime analysis.
-- Standard library: Implement a set of utility functions for string manipulation, mathematical operations, and more.
-
-## Related Projects
-
-- __AlgoBox__: A free, educational software designed to introduce beginners to algorithmic thinking. It allows users to write pseudocode and execute algorithms in a structured, easy-to-learn environment.
-    - [Website](https://www.xm1math.net/algobox/)
-
-## Licencing:
+## License
 
 This project is open-source, public, and free to use, modify, and distribute. You are welcome to use CodeFr for any purpose, including personal, educational, or commercial projects.
