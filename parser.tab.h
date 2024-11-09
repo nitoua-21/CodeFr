@@ -123,7 +123,10 @@ extern int yydebug;
     COMPARE = 324,                 /* COMPARE  */
     CONCATENATE = 325,             /* CONCATENATE  */
     COPY = 326,                    /* COPY  */
-    SEARCH = 327                   /* SEARCH  */
+    SEARCH = 327,                  /* SEARCH  */
+    TABLEAU = 328,                 /* TABLEAU  */
+    LBRACKET = 329,                /* LBRACKET  */
+    RBRACKET = 330                 /* RBRACKET  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -145,8 +148,9 @@ union YYSTYPE
     StatementList *statement_list;
     CaseList *case_list;
     ExpressionList *expression_list;
+    ArrayDimensions dims;
 
-#line 150 "parser.tab.h"
+#line 154 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

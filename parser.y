@@ -33,6 +33,7 @@ StatementList *parsed_program = NULL;
     StatementList *statement_list;
     CaseList *case_list;
     ExpressionList *expression_list;
+    ArrayDimensions dims;
 }
 
 %token <int_value> ENTIER_VAL
@@ -50,6 +51,7 @@ StatementList *parsed_program = NULL;
 %token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10 ROUND
 %token ABS INT RANDOM
 %token LENGTH COMPARE CONCATENATE COPY SEARCH
+%token TABLEAU LBRACKET RBRACKET
 
 %type <statement> statement
 %type <statement_list> statement_list
@@ -57,6 +59,8 @@ StatementList *parsed_program = NULL;
 %type <type> type
 %type <case_list> case_list
 %type <expression_list> expression_list
+%type <dims> array_dimensions
+%type <var_name> array_ref
 
 %left OR XOR
 %left AND
@@ -84,6 +88,31 @@ Declaration:
     | CONSTANT IDENTIFIANT EQUALS DECIMAL_VAL { add_symbol($2, TYPE_DECIMAL, true); set_symbol_value($2, new_decimal($4)); }
     | CONSTANT IDENTIFIANT EQUALS STRING_VAL { add_symbol($2, TYPE_CHAINE, true); set_symbol_value($2, new_string($4));}
     | CONSTANT IDENTIFIANT EQUALS LOGIQUE_VAL { add_symbol($2, TYPE_LOGIQUE, true); set_symbol_value($2, new_boolean($4)); }
+    | TABLEAU IDENTIFIANT array_dimensions COLON type {
+        add_array_symbol($2, $5, $3);
+    }
+    ;
+
+array_dimensions:
+    LBRACKET expression RBRACKET {
+        ArrayDimensions dims;
+        Expression *size = evaluate_expression($2);
+        dims.sizes[0] = size->data.int_value;
+        dims.num_dimensions = 1;
+        free(size);
+        $$ = dims;
+    }
+    | LBRACKET expression RBRACKET LBRACKET expression RBRACKET {
+        ArrayDimensions dims;
+        Expression *size1 = evaluate_expression($2);
+        Expression *size2 = evaluate_expression($5);
+        dims.sizes[0] = size1->data.int_value;
+        dims.sizes[1] = size2->data.int_value;
+        dims.num_dimensions = 2;
+        free(size1);
+        free(size2);
+        $$ = dims;
+    }
     ;
 
 statement_list:
@@ -92,7 +121,11 @@ statement_list:
     ;
 
 statement:
-    IDENTIFIANT EQUALS expression { $$ = new_assign($1, $3); }
+    array_ref EQUALS expression { 
+        $$ = new_assign($1, $3); 
+        free($1);
+    }
+    | IDENTIFIANT EQUALS expression { $$ = new_assign($1, $3); }
     | SI expression ALORS statement_list FINSI { $$ = new_if($2, $4, NULL); }
     | SI expression ALORS statement_list SINON statement_list FINSI { $$ = new_if($2, $4, $6); }
     | ECRIRE LPAREN expression_list RPAREN { $$ = new_print($3); }
@@ -101,6 +134,22 @@ statement:
     | POUR IDENTIFIANT DE expression A expression FAIRE statement_list FINPOUR { $$ = new_for($2, $4, $6, $8); }
     | SELON expression FAIRE case_list FINSELON { $$ = new_switch($2, $4, NULL); }
     | SELON expression FAIRE case_list SINON statement_list FINSELON { $$ = new_switch($2, $4, $6); }
+    ;
+
+array_ref:
+    IDENTIFIANT LBRACKET expression RBRACKET {
+        char buffer[256];
+        snprintf(buffer, sizeof(buffer), "%s[%d]", $1, 
+                evaluate_expression($3)->data.int_value);
+        $$ = strdup(buffer);
+    }
+    | IDENTIFIANT LBRACKET expression RBRACKET LBRACKET expression RBRACKET {
+        char buffer[256];
+        snprintf(buffer, sizeof(buffer), "%s[%d][%d]", $1,
+                evaluate_expression($3)->data.int_value,
+                evaluate_expression($6)->data.int_value);
+        $$ = strdup(buffer);
+    }
     ;
 
 expression_list:
@@ -179,6 +228,12 @@ expression:
         //free(new_str);
     }
     | SEARCH LPAREN expression COMMA expression RPAREN { $$ = new_binary_op('r', $3, $5); }
+    | IDENTIFIANT LBRACKET expression RBRACKET {
+        $$ = new_array_access($1, $3, NULL);
+    }
+    | IDENTIFIANT LBRACKET expression RBRACKET LBRACKET expression RBRACKET {
+        $$ = new_array_access($1, $3, $6);
+    }
     ;
 
 type:

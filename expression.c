@@ -640,6 +640,10 @@ Expression *evaluate_expression(Expression *expr) {
                         break;
                     }
             }
+            case ARRAY_ACCESS:
+            {
+                return get_array_element(expr->data.array_access.array_name, expr);
+            }
             break;
         default:
             printf("Erreur ligne %d: Unknown expression type\n", yylineno);

@@ -60,6 +60,9 @@
 "Copie"         { return COPY; }
 "Comparer"      { return COMPARE; }
 "Recherche"     { return SEARCH; }
+"Tableau"       { return TABLEAU; }
+"["            { return LBRACKET; }
+"]"            { return RBRACKET; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }

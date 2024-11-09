@@ -136,6 +136,39 @@ CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *ne
     return case_list;
 }
 
+void execute_array_declaration(Statement *stmt)
+{
+    if (stmt->type != ARRAY_DECL)
+    {
+        printf("Erreur ligne %d: Invalid statement type passed to execute_array_declaration\n", yylineno);
+        exit(1);
+    }
+
+    // Validate dimensions
+    for (int i = 0; i < stmt->data.array_decl.dimensions.num_dimensions; i++)
+    {
+        if (stmt->data.array_decl.dimensions.sizes[i] <= 0)
+        {
+            printf("Erreur ligne %d: Array dimension must be positive\n", yylineno);
+            exit(1);
+        }
+    }
+
+    // Check if symbol already exists
+    if (get_symbol(stmt->data.array_decl.array_name) != NULL)
+    {
+        printf("Erreur ligne %d: Symbol %s already declared\n",
+               yylineno, stmt->data.array_decl.array_name);
+        exit(1);
+    }
+
+    // Add array symbol to symbol table
+    add_array_symbol(
+        stmt->data.array_decl.array_name,
+        stmt->data.array_decl.element_type,
+        stmt->data.array_decl.dimensions);
+}
+
 /**
  * execute_statement_list - Executes a list of statements
  * @list: Pointer to the StatementList to be executed
@@ -154,33 +187,102 @@ void execute_statement_list(StatementList *list)
         Statement *stmt = list->statement;
         if (stmt->type == ASSIGN)
         {
-            Symbol *sym = get_symbol(stmt->data.assign.var_name);
-            if (!sym)
+            if (stmt->data.assign.value->type == ARRAY_ACCESS)
             {
-                printf("Undefined variable: %s\n", stmt->data.assign.var_name);
-                exit(1);
+                // Handle array to array assignment
+                Expression *result = evaluate_expression(stmt->data.assign.value);
+                set_symbol_value(stmt->data.assign.var_name, result);
+                free(result);
             }
-            if (sym->is_constant)
+            else if (stmt->data.assign.var_name && strchr(stmt->data.assign.var_name, '['))
             {
-                printf("Erreur ligne %d : Reassignment of constant variable %s not allowed\n", yylineno, stmt->data.assign.var_name);
-                exit(1);
-            }
-            Expression *result = evaluate_expression(stmt->data.assign.value);
-            if (sym->type != result->type)
-            {
-                if ((sym->type == TYPE_ENTIER || sym->type == DECIMAL) && result->type == BOOLEAN)
+                // This is an array element assignment
+                char *array_name = strdup(stmt->data.assign.var_name);
+                char *bracket = strchr(array_name, '[');
+                *bracket = '\0'; // Split the string at the first bracket
+
+                Symbol *sym = get_symbol(array_name);
+                if (!sym || !sym->is_array)
                 {
-                    result->type = INTEGER;
-                    result->data.int_value = result->data.bool_value;
-                }
-                if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
-                {
-                    printf("Erreur ligne %d : Incompatible type for assignment to variable %s\n", yylineno, stmt->data.assign.var_name);
+                    printf("Erreur ligne %d: Invalid array assignment\n", yylineno);
+                    free(array_name);
                     exit(1);
                 }
+
+                // Parse the index expressions from the assignment target
+                char *index_str = bracket + 1; // Skip the '['
+                char *end_bracket = strchr(index_str, ']');
+                if (!end_bracket)
+                {
+                    printf("Erreur ligne %d: Malformed array access\n", yylineno);
+                    free(array_name);
+                    exit(1);
+                }
+
+                *end_bracket = '\0'; // Temporarily terminate the first index
+                Expression *index1 = new_integer(atoi(index_str));
+
+                Expression *index2 = NULL;
+                if (sym->dimensions.num_dimensions > 1)
+                {
+                    char *second_bracket = strchr(end_bracket + 1, '[');
+                    if (second_bracket)
+                    {
+                        char *second_index = second_bracket + 1;
+                        char *second_end = strchr(second_index, ']');
+                        if (!second_end)
+                        {
+                            printf("Erreur ligne %d: Malformed 2D array access\n", yylineno);
+                            free(array_name);
+                            free(index1);
+                            exit(1);
+                        }
+                        *second_end = '\0';
+                        index2 = new_integer(atoi(second_index));
+                    }
+                }
+
+                // Create the array access expression
+                Expression *array_access = new_array_access(array_name, index1, index2);
+
+                Expression *value = evaluate_expression(stmt->data.assign.value);
+                set_array_element(array_name, array_access, value);
+
+                // Clean up
+                free(array_name);
+                free(array_access);
+                free(value);
             }
-            set_symbol_value(stmt->data.assign.var_name, result);
-            free(result);
+            else
+            {
+                Symbol *sym = get_symbol(stmt->data.assign.var_name);
+                if (!sym)
+                {
+                    printf("Undefined variable: %s\n", stmt->data.assign.var_name);
+                    exit(1);
+                }
+                if (sym->is_constant)
+                {
+                    printf("Erreur ligne %d : Reassignment of constant variable %s not allowed\n", yylineno, stmt->data.assign.var_name);
+                    exit(1);
+                }
+                Expression *result = evaluate_expression(stmt->data.assign.value);
+                if (sym->type != result->type)
+                {
+                    if ((sym->type == TYPE_ENTIER || sym->type == DECIMAL) && result->type == BOOLEAN)
+                    {
+                        result->type = INTEGER;
+                        result->data.int_value = result->data.bool_value;
+                    }
+                    if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
+                    {
+                        printf("Erreur ligne %d : Incompatible type for assignment to variable %s\n", yylineno, stmt->data.assign.var_name);
+                        exit(1);
+                    }
+                }
+                set_symbol_value(stmt->data.assign.var_name, result);
+                free(result);
+            }
         }
         else if (stmt->type == PRINT)
         {
@@ -322,6 +424,10 @@ void execute_statement_list(StatementList *list)
             }
 
             free(switch_value);
+        }
+        else if (stmt->type == ARRAY_DECL)
+        {
+            execute_array_declaration(stmt);
         }
         list = list->next;
     }

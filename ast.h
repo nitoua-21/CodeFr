@@ -7,6 +7,7 @@
 #include <math.h>
 
 #define MAX_SYMBOLS 100
+#define MAX_DIMENSIONS 2
 extern int yylineno;
 
 /**
@@ -27,6 +28,13 @@ typedef enum
     TYPE_CHAINE
 } SymbolType;
 
+// Array dimensions structure
+typedef struct {
+    int sizes[MAX_DIMENSIONS];  // Size of each dimension
+    int num_dimensions;         // Number of dimensions (1 or 2)
+} ArrayDimensions;
+
+
 /**
  * struct Symbol - Represents a symbol in the symbol table
  * @name: The name of the symbol (variable name)
@@ -40,12 +48,15 @@ typedef struct
 {
     char *name;
     bool is_constant;
+    bool is_array;
+    ArrayDimensions dimensions;
     union
     {
         int int_val;
         double float_val;
         bool bool_val;
         char *string_val;
+        void *array_val;
     } value;
     SymbolType type;
 } Symbol;
@@ -68,7 +79,8 @@ typedef struct Expression
         STRING,
         VARIABLE,
         BINARY_OP,
-        UNARY_OP
+        UNARY_OP,
+        ARRAY_ACCESS
     } type;
     union
     {
@@ -88,6 +100,11 @@ typedef struct Expression
             char op;
             struct Expression *operand;
         } unary_op;
+        struct {
+            char *array_name;
+            struct Expression *index;       // For 1D arrays
+            struct Expression *index2;      // For 2D arrays
+        } array_access;
     } data;
 } Expression;
 
@@ -123,7 +140,8 @@ typedef struct Statement
         READ,
         WHILE_STATEMENT,
         FOR_STATEMENT,
-        SWITCH_STATEMENT
+        SWITCH_STATEMENT,
+        ARRAY_DECL
     } type;
     union
     {
@@ -158,6 +176,11 @@ typedef struct Statement
             CaseList *cases;
             struct StatementList *default_case;
         } switch_stmt;
+        struct {
+            char *array_name;
+            ArrayDimensions dimensions;
+            SymbolType element_type;
+        } array_decl;
     } data;
 } Statement;
 
@@ -199,6 +222,13 @@ Expression *new_binary_op(char op, Expression *left, Expression *right);
 Expression *new_boolean(bool value);
 Expression *new_unary_op(char op, Expression *operand);
 Expression *evaluate_expression(Expression *expr);
+
+void add_array_symbol(const char *name, SymbolType type, ArrayDimensions dims);
+Statement *new_array_declaration(char *name, ArrayDimensions dims, SymbolType type);
+Expression *new_array_access(char *array_name, Expression *index, Expression *index2);
+void set_array_element(const char *name, Expression *indices, Expression *value);
+Expression *get_array_element(const char *name, Expression *indices);
+void execute_array_declaration(Statement *stmt);
 
 char *process_string(const char *str);
 
