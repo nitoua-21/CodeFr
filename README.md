@@ -12,7 +12,7 @@ The aim is to bridge the gap between algorithmic thinking and practical programm
 
 ## Version
 
-Current version: 1.1
+Current version: 1.0
 
 ## Language Documentation
 
@@ -177,7 +177,22 @@ To build and run the CodeFr Compiler, you need:
 - Bison (GNU Parser Generator)
 - Make
 
-## Installation
+## Installation option 1: using the prebuilt `.deb` package
+
+To install the CodeFr Interpreter using the prebuilt `.deb` package, follow these steps:
+
+1. Download the `.deb` package:
+```bash
+   wget https://github.com/nitoua-21/CodeFr/builds/codefr-interpreter_1.0_amd64.deb
+```
+
+2. Install the package using dpkg:
+
+```bash
+   sudo dpkg -i codefr-interpreter_1.0_amd64.deb
+```
+
+## Installation option 2: compiling the code
 
 1. Clone the repository:
 

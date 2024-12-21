@@ -48,7 +48,7 @@ chmod 755 "${DEB_DIR}/DEBIAN/prerm"
 dpkg-deb --build "${DEB_DIR}"
 
 # Move the generated .deb file to the current directory
-mv "${DEB_DIR}.deb" "./${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
+mv "${DEB_DIR}.deb" "./builds/${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
 
 # Clean up
 rm -rf $BUILD_DIR

@@ -5,6 +5,8 @@ extern int yyparse(void);
 extern FILE *yyin;
 extern StatementList *parsed_program;
 
+#define CODEFR_VERSION "1.0"
+
 /**
  * main - Entry point of the interpreter
  * @argc: Number of command line arguments
@@ -23,10 +25,16 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    // Handle the --version argument
+    if (strcmp(argv[1], "--version") == 0 || strcmp(argv[1], "-v") == 0) {
+        printf("CodeFr Interpreter version %s\n", CODEFR_VERSION);
+        return 0;
+    }
+
     // Check file extension
     if (!check_file_extension(argv[1]))
     {
-        fprintf(stderr, "Erreur: Le fichier doit qvoir l'extension .algo\n");
+        fprintf(stderr, "Erreur: Le fichier doit avoir l'extension .cfr\n");
         return 1;
     }
 
