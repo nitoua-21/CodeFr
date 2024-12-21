@@ -194,11 +194,11 @@ make
 
 ## Usage
 
-1. Create a file with `.algo` extension containing your program
+1. Create a file with `.cfr` extension containing your program
 2. Run the interpreter:
 
 ```bash
-./codefr program.algo
+./codefr program.cfr
 ```
 
 ## Example Programs

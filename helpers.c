@@ -62,5 +62,5 @@ bool check_file_extension(const char *filename) {
     if (!dot || dot == filename) {
         return false;
     }
-    return strcmp(dot, ".algo") == 0;
+    return strcmp(dot, ".cfr") == 0;
 }
