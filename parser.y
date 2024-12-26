@@ -131,16 +131,16 @@ statement:
         free($1);
     }
     | IDENTIFIANT EQUALS expression { $$ = new_assign($1, $3); }
-    | SI expression ALORS statement_list FINSI { $$ = new_if_elif($2, $4, NULL, NULL); }
-    | SI expression ALORS statement_list elif_list FINSI { $$ = new_if_elif($2, $4, $5, NULL); }
-    | SI expression ALORS statement_list elif_list SINON statement_list FINSI { $$ = new_if_elif($2, $4, $5, $7); }
-    | SI expression ALORS statement_list SINON statement_list FINSI { $$ = new_if_elif($2, $4, NULL, $6); }
+    | SI expression ALORS Declarations statement_list FINSI { $$ = new_if_elif($2, $5, NULL, NULL); }
+    | SI expression ALORS Declarations statement_list elif_list FINSI { $$ = new_if_elif($2, $5, $6, NULL); }
+    | SI expression ALORS Declarations statement_list elif_list SINON Declarations statement_list FINSI { $$ = new_if_elif($2, $5, $6, $9); }
+    | SI expression ALORS Declarations statement_list SINON Declarations statement_list FINSI { $$ = new_if_elif($2, $5, NULL, $8); }
     | ECRIRE LPAREN expression_list RPAREN { $$ = new_print($3); }
     | LIRE LPAREN IDENTIFIANT RPAREN { $$ = new_read($3); }
-    | TANTQUE expression FAIRE statement_list FINTANTQUE { $$ = new_while($2, $4); }
-    | POUR IDENTIFIANT DE expression A expression FAIRE statement_list FINPOUR { $$ = new_for($2, $4, $6, $8); }
-    | SELON expression FAIRE case_list FINSELON { $$ = new_switch($2, $4, NULL); }
-    | SELON expression FAIRE case_list SINON statement_list FINSELON { $$ = new_switch($2, $4, $6); }
+    | TANTQUE expression FAIRE Declarations statement_list FINTANTQUE { $$ = new_while($2, $5); }
+    | POUR IDENTIFIANT DE expression A expression FAIRE Declarations statement_list FINPOUR { $$ = new_for($2, $4, $6, $9); }
+    | SELON expression FAIRE Declarations case_list FINSELON { $$ = new_switch($2, $5, NULL); }
+    | SELON expression FAIRE Declarations case_list SINON Declarations statement_list FINSELON { $$ = new_switch($2, $5, $8); }
     ;
 
 elif_list:

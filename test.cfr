@@ -1,6 +1,11 @@
 Variable i: Entier
 
 Pour i De 0 A 12 Faire
-    Ecrire("15 x ", " ", i, " = ")
-    Ecrire(15 * i, "\n")
+    Variable n: Entier
+
+    n = 2
+    Ecrire(n, " x ", " ", i, " = ")
+    Ecrire(n * i, "\n")
 FinPour
+
+

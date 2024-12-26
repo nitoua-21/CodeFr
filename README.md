@@ -19,13 +19,11 @@ Current version: 1.0
 ### Program Structure
 Every program must follow this basic structure:
 ```
-Algorithme ProgramName
-    // Variable declarations
-    // Constants declarations
-    // Array declarations
-Debut
-    // Program statements
-Fin
+// Variable declarations
+// Constants declarations
+// Array declarations
+
+// Program statements
 ```
 
 ### Variables and Data Types
@@ -220,37 +218,33 @@ make
 
 ### Example 1: Basic Calculator
 ```
-Algorithme Calculator
-
 Variable a: Entier
 Variable b: Entier
 Variable op: Chaine
 Variable resultat: Decimal
 
-Debut
-    Ecrire("Enter first number: ")
-    Lire(a)
-    Ecrire("Enter operation (+,-,*,/): ")
-    Lire(op)
-    Ecrire("Enter second number: ")
-    Lire(b)
+Ecrire("Enter first number: ")
+Lire(a)
+Ecrire("Enter operation (+,-,*,/): ")
+Lire(op)
+Ecrire("Enter second number: ")
+Lire(b)
 
-    Si op == "+" Alors
-        result = a + b
-    SinonSi op == "-" Alors
-        result = a - b
-    SinonSi op == "*" Alors
-        result = a * b
-    SinonSi op == "/" Alors
-        Si b == 0 Alors
-            Ecrire("Error: Division by zero!")
-        Sinon
-            result = a / b
-        FinSi
+Si op == "+" Alors
+    result = a + b
+SinonSi op == "-" Alors
+    result = a - b
+SinonSi op == "*" Alors
+    result = a * b
+SinonSi op == "/" Alors
+    Si b == 0 Alors
+        Ecrire("Error: Division by zero!")
+    Sinon
+        result = a / b
     FinSi
+FinSi
 
-    Ecrire("Result: ", result, "\n")
-Fin
+Ecrire("Result: ", result, "\n")
 ```
 
 ### Example 2: Array Operations
@@ -261,22 +255,18 @@ Variable sum: Entier
 Variable i: Entier
 Tableau numbers[5]: Entier
 
-Tableau 
-    numbers[5]: Entier
-Debut
-    // Initialize array
-    Pour i De 0 A 4 Faire
-        numbers[i] = i * 2
-    FinPour
+// Initialize array
+Pour i De 0 A 4 Faire
+    numbers[i] = i * 2
+FinPour
 
-    // Calculate sum
-    sum = 0
-    Pour i De 0 A 4 Faire
-        sum = sum + numbers[i]
-    FinPour
+// Calculate sum
+sum = 0
+Pour i De 0 A 4 Faire
+    sum = sum + numbers[i]
+FinPour
 
-    Ecrire("Sum of array elements: ", sum, "\n")
-Fin
+Ecrire("Sum of array elements: ", sum, "\n")
 ```
 
 ## Project Structure

@@ -1,12 +1,8 @@
-Algorithme TestMultiVar
-
 Variables i, j, k : Entier
 Variable msg : Chaine
 
-Debut
-    i = 10
-    j = 24
-    k = i + j
-    msg = "La somme est: "
-    Ecrire(msg, k, "\n")
-Fin
+i = 10
+j = 24
+k = i + j
+msg = "La somme est: "
+Ecrire(msg, k, "\n")

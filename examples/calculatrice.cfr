@@ -1,31 +1,27 @@
-Algorithme Calculatrice
-
 Variable a: Entier
 Variable b: Entier
 Variable op: Chaine
 Variable resultat: Decimal
 
-Debut
-    Ecrire("Entrez le premier nombre : ")
-    Lire(a)
-    Ecrire("Entrez l'opération (+,-,*,/) : ")
-    Lire(op)
-    Ecrire("Entrez le deuxième nombre : ")
-    Lire(b)
+Ecrire("Entrez le premier nombre : ")
+Lire(a)
+Ecrire("Entrez l'opération (+,-,*,/) : ")
+Lire(op)
+Ecrire("Entrez le deuxième nombre : ")
+Lire(b)
 
-    Si op == "+" Alors
-        resultat = a + b
-    SinonSi op == "-" Alors
-        resultat = a - b
-    SinonSi op == "*" Alors
-        resultat = a * b
-    SinonSi op == "/" Alors
-        Si b == 0 Alors
-            Ecrire("Erreur : Division par zéro!\n")
-        Sinon
-            resultat = a / b
-        FinSi
+Si op == "+" Alors
+    resultat = a + b
+SinonSi op == "-" Alors
+    resultat = a - b
+SinonSi op == "*" Alors
+    resultat = a * b
+SinonSi op == "/" Alors
+    Si b == 0 Alors
+        Ecrire("Erreur : Division par zéro!\n")
+    Sinon
+        resultat = a / b
     FinSi
+FinSi
 
-    Ecrire("Résultat : ", resultat, "\n")
-Fin
+Ecrire("Résultat : ", resultat, "\n")

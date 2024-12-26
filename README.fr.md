@@ -17,13 +17,13 @@ Version actuelle : 1.1
 ### Structure du Programme
 Chaque programme doit suivre cette structure de base :
 ```
-Algorithme NomProgramme
-    // Déclarations de variables
-    // Déclarations de constantes
-    // Déclarations de tableaux
-Debut
-    // Instructions du programme
-Fin
+
+// Déclarations de variables
+// Déclarations de constantes
+// Déclarations de tableaux
+
+// Instructions du programme
+
 ```
 
 ### Variables et Types de Données
@@ -203,61 +203,53 @@ make
 
 ### Exemple 1 : Calculatrice Simple
 ```
-Algorithme Calculatrice
-
 Variable a: Entier
 Variable b: Entier
 Variable op: Chaine
 Variable resultat: Decimal
 
-Debut
-    Ecrire("Entrez le premier nombre : ")
-    Lire(a)
-    Ecrire("Entrez l'opération (+,-,*,/) : ")
-    Lire(op)
-    Ecrire("Entrez le deuxième nombre : ")
-    Lire(b)
+Ecrire("Entrez le premier nombre : ")
+Lire(a)
+Ecrire("Entrez l'opération (+,-,*,/) : ")
+Lire(op)
+Ecrire("Entrez le deuxième nombre : ")
+Lire(b)
 
-    Si op == "+" Alors
-        resultat = a + b
-    SinonSi op == "-" Alors
-        resultat = a - b
-    SinonSi op == "*" Alors
-        resultat = a * b
-    SinonSi op == "/" Alors
-        Si b == 0 Alors
-            Ecrire("Erreur : Division par zéro!")
-        Sinon
-            resultat = a / b
-        FinSi
+Si op == "+" Alors
+    resultat = a + b
+SinonSi op == "-" Alors
+    resultat = a - b
+SinonSi op == "*" Alors
+    resultat = a * b
+SinonSi op == "/" Alors
+    Si b == 0 Alors
+        Ecrire("Erreur : Division par zéro!")
+    Sinon
+        resultat = a / b
     FinSi
+FinSi
 
-    Ecrire("Résultat : ", resultat, "\n")
-Fin
+Ecrire("Résultat : ", resultat, "\n")
 ```
 
 ### Exemple 2 : Opérations sur Tableaux
 ```
-Algorithme ExempleTableau
-
 Variable somme: Entier
 Variable i: Entier
 Tableau nombres[5]: Entier
 
-Debut
-    // Initialisation du tableau
-    Pour i De 0 A 4 Faire
-        nombres[i] = i * 2
-    FinPour
+// Initialisation du tableau
+Pour i De 0 A 4 Faire
+    nombres[i] = i * 2
+FinPour
 
-    // Calcul de la somme
-    somme = 0
-    Pour i De 0 A 4 Faire
-        somme = somme + nombres[i]
-    FinPour
+// Calcul de la somme
+somme = 0
+Pour i De 0 A 4 Faire
+    somme = somme + nombres[i]
+FinPour
 
-    Ecrire("Somme des éléments du tableau : ", somme)
-Fin
+Ecrire("Somme des éléments du tableau : ", somme)
 ```
 
 ## Structure du Projet
