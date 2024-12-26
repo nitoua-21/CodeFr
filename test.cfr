@@ -1,0 +1,6 @@
+Variable i: Entier
+
+Pour i De 0 A 12 Faire
+    Ecrire("15 x ", " ", i, " = ")
+    Ecrire(15 * i, "\n")
+FinPour

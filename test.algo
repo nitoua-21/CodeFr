@@ -1,0 +1,8 @@
+Algorithme Afficher
+
+Debut
+    Ecrire("Hello World\n")
+    Ecrire("Hello World\n")
+    Ecrire("Hello World\n")
+    Ecrire("Hello World\n")
+Fin

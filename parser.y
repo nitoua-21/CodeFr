@@ -76,7 +76,7 @@ StatementList *parsed_program = NULL;
 %%
 
 program:
-    ALGORITHME IDENTIFIANT Declarations DEBUT statement_list FIN { printf("*********************\nAlgorithme %s\n\n*********************\n\n", $2); parsed_program = $5; }
+    Declarations statement_list {  parsed_program = $2; }
 ;
 
 Declarations:
