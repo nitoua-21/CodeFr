@@ -54,10 +54,6 @@ int main(int argc, char **argv)
     {
         execute_statement_list(parsed_program);
     }
-    else
-    {
-        fprintf(stderr, "Parsing failed.\n");
-    }
 
     fclose(file);
     return 0;

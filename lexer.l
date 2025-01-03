@@ -20,6 +20,9 @@
 "Algorithme"    { return ALGORITHME; }
 "Debut"         { return DEBUT; }
 "Variable"      { return VARIABLE_KWRD; }
+"Variables"     { return VARIABLES; }
+"Fonction"      { return FONCTION; }
+"Retourner"     { return RETOURNER; }
 "Ecrire"        { return ECRIRE; }
 "Lire"          { return LIRE; }
 "Entier"        { return ENTIER_KWRD; }

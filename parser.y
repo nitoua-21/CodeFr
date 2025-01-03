@@ -17,6 +17,7 @@ void yyerror(const char *s);
 int yylex(void);
 
 StatementList *parsed_program = NULL;
+
 %}
 %define parse.trace
 
@@ -52,7 +53,8 @@ StatementList *parsed_program = NULL;
 %token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10 ROUND
 %token ABS INT RANDOM
 %token LENGTH COMPARE CONCATENATE COPY SEARCH
-%token TABLEAU LBRACKET RBRACKET
+%token TABLEAU LBRACKET RBRACKET VARIABLES
+%token FONCTION RETOURNER
 
 %type <statement> statement
 %type <statement_list> statement_list
@@ -76,7 +78,7 @@ StatementList *parsed_program = NULL;
 %%
 
 program:
-    Declarations statement_list {  parsed_program = $2; }
+    Declarations DEBUT statement_list FIN { parsed_program = $3; }
 ;
 
 Declarations:
@@ -244,5 +246,10 @@ type:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erreur ligne %d: %s\n", yylineno, s);
+    if (strcmp(s, "syntax error") == 0) {
+        fprintf(stderr, "Erreur ligne %d: Syntaxe incorrecte\n", yylineno);
+    }
+    else {
+        fprintf(stderr, "Erreur ligne %d: %s\n", yylineno, s);
+    }
 }
