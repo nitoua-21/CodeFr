@@ -42,6 +42,44 @@ Statement *new_assign(char *var_name, Expression *value)
 }
 
 /**
+ * new_identifier_list - Creates a new identifier list node
+ * @identifier: The identifier name to store
+ * @next: Pointer to the next IdentifierList node
+ *
+ * Description: This function creates a new node in the identifier list,
+ * which is used to store multiple variable names during declaration.
+ *
+ * Return: A pointer to the newly created IdentifierList node
+ */
+IdentifierList *new_identifier_list(char *identifier, IdentifierList *next)
+{
+    IdentifierList *list = malloc(sizeof(IdentifierList));
+    if (!list) {
+        printf("Memory allocation failed for identifier list\n");
+        exit(1);
+    }
+    list->identifier = strdup(identifier);
+    list->next = next;
+    return list;
+}
+
+/**
+ * add_multiple_symbols - Adds multiple symbols to the symbol table
+ * @list: Pointer to the IdentifierList containing variable names
+ * @type: The type to assign to all variables in the list
+ *
+ * Description: This function processes a list of identifiers and adds
+ * each one to the symbol table with the specified type.
+ */
+void add_multiple_symbols(IdentifierList *list, SymbolType type)
+{
+    while (list != NULL) {
+        add_symbol(list->identifier, type, false);
+        list = list->next;
+    }
+}
+
+/**
  * new_array_assign - Creates a new array assignment statement
  * @array_name: Name of the array
  * @index: First dimension index expression

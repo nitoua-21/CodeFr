@@ -1,13 +1,16 @@
 //Algorithme Boucle
 
-Variable i: Entier
+Variables i, n: Entier
+Variables message, nom: Chaine
 
 Debut
+    Ecrire("Quel est votre nom?\n")
+    Lire(nom)
+    Ecrire("Bonjour ", nom, "!\n")
     Pour i De 0 A 12 Faire
-        Variable n: Entier
-
         n = 2
         Ecrire(n, " x ", " ", i, " = ")
         Ecrire(n * i, "\n")
     FinPour
+
 Fin

@@ -36,6 +36,7 @@ StatementList *parsed_program = NULL;
     ExpressionList *expression_list;
     ArrayDimensions dims;
     ElseIfList *elseif_list;
+    IdentifierList *identifier_list;
 }
 
 %token <int_value> ENTIER_VAL
@@ -64,6 +65,7 @@ StatementList *parsed_program = NULL;
 %type <expression_list> expression_list
 %type <dims> array_dimensions
 %type <elseif_list> elif_list
+%type <identifier_list> identifier_list
 
 %left OR XOR
 %left AND
@@ -87,6 +89,7 @@ Declarations:
     ;
 Declaration:    
     VARIABLE_KWRD IDENTIFIANT COLON type { add_symbol($2, $4, false); }
+    | VARIABLES identifier_list COLON type { add_multiple_symbols($2, $4); }
     | CONSTANT IDENTIFIANT EQUALS ENTIER_VAL { add_symbol($2, TYPE_ENTIER, true); set_symbol_value($2, new_integer($4)); }
     | CONSTANT IDENTIFIANT EQUALS DECIMAL_VAL { add_symbol($2, TYPE_DECIMAL, true); set_symbol_value($2, new_decimal($4)); }
     | CONSTANT IDENTIFIANT EQUALS STRING_VAL { add_symbol($2, TYPE_CHAINE, true); set_symbol_value($2, new_string($4));}
@@ -94,6 +97,11 @@ Declaration:
     | TABLEAU IDENTIFIANT array_dimensions COLON type {
         add_array_symbol($2, $5, $3);
     }
+    ;
+
+identifier_list:
+    IDENTIFIANT { $$ = new_identifier_list($1, NULL); }
+    | IDENTIFIANT COMMA identifier_list { $$ = new_identifier_list($1, $3); }
     ;
 
 array_dimensions:

@@ -135,6 +135,22 @@ typedef struct ExpressionList
 } ExpressionList;
 
 /**
+ * struct IdentifierList - Linked list node for storing identifiers
+ * @identifier: The identifier name
+ * @next: Pointer to the next node in the IdentifierList
+ *
+ * Description: This structure represents a node in a linked list of identifiers.
+ * It is used to store multiple identifiers in sequence, such as when handling
+ * multiple variables in a declaration statement. The list is implemented as a
+ * singly linked list where each node contains an identifier and a pointer to
+ * the next node.
+ */
+typedef struct IdentifierList {
+    char *identifier;
+    struct IdentifierList *next;
+} IdentifierList;
+
+/**
  * struct CaseList - Linked list node for switch-case statements
  * @condition: Pointer to the Expression representing the case condition
  * @body: Pointer to the StatementList containing the case body
@@ -225,7 +241,6 @@ typedef struct Statement
     } data;
 } Statement;
 
-
 /**
  * struct StatementList - Represents a list of statements in the AST
  * @statement: Pointer to the current Statement
@@ -285,6 +300,7 @@ Statement *new_for(char *counter, Expression *start, Expression *end, StatementL
 Statement *new_switch(Expression *value, CaseList *cases, StatementList *default_case);
 CaseList *new_case_list(Expression *condition, StatementList *body, CaseList *next);
 ExpressionList *new_expression_list(Expression *expression, ExpressionList *next);
+IdentifierList *new_identifier_list(char *identifier, IdentifierList *next);
 void execute_statement_list(StatementList *list);
 
 Expression *new_integer(int value);
@@ -302,6 +318,7 @@ Expression *new_array_access(char *array_name, Expression *index, Expression *in
 void set_array_element(const char *name, Expression *indices, Expression *value);
 Expression *get_array_element(const char *name, Expression *indices);
 void execute_array_declaration(Statement *stmt);
+void add_multiple_symbols(IdentifierList *list, SymbolType type);
 
 char *process_string(const char *str);
 bool check_file_extension(const char *filename);
