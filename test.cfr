@@ -11,5 +11,7 @@ Debut
     Lire(x)
     Lire(y)
     resultat = Ajouter(x, y)
+    Ecrire("x :", Type(x), "\n")
+    Ecrire("y :", type(y), "\n")
     Ecrire("La somme est: ", Type(resultat), resultat, "\n")
 Fin

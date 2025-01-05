@@ -155,6 +155,10 @@ Expression *new_function_expression(char *name, ExpressionList *arguments) {
 ExpressionList *new_expression_list(Expression *expression, ExpressionList *next)
 {
     ExpressionList *list = malloc(sizeof(ExpressionList));
+    if (!list) {
+        printf("Erreur ligne %d: Échec de l'allocation mémoire pour la liste d'expressions\n", yylineno);
+        exit(1);
+    }
     list->expression = expression;
     list->next = next;
     return list;
@@ -177,9 +181,8 @@ Expression *evaluate_expression(Expression *expr)
     }
 
     Expression *new_expr = malloc(sizeof(Expression));
-    if (new_expr == NULL)
-    {
-        printf("Erreur ligne %d: Erreur d'allocation de la mémoire.\n", yylineno);
+    if (!new_expr) {
+        printf("Erreur ligne %d: Échec de l'allocation mémoire pour l'expression\n", yylineno);
         exit(1);
     }
 
@@ -200,6 +203,7 @@ Expression *evaluate_expression(Expression *expr)
         new_expr->data.string_value = strdup(expr->data.string_value);
         if (new_expr->data.string_value == NULL)
         {
+            printf("Erreur ligne %d: Échec de l'allocation mémoire pour la chaîne\n", yylineno);
             free(new_expr);
             exit(1);
         }
@@ -232,7 +236,7 @@ Expression *evaluate_expression(Expression *expr)
             new_expr->data.string_value = strdup(sym->value.string_val);
             if (new_expr->data.string_value == NULL)
             {
-                printf("Erreur ligne %d: Erreur d'allocation de la mémoire.\n", yylineno);
+                printf("Erreur ligne %d: Échec de l'allocation mémoire pour la chaîne\n", yylineno);
                 free(new_expr);
                 exit(1);
             }
@@ -247,19 +251,19 @@ Expression *evaluate_expression(Expression *expr)
 
     case BINARY_OP:
     {
-        Expression *lval = evaluate_expression(expr->data.binary_op.left);
-        Expression *rval = evaluate_expression(expr->data.binary_op.right);
+        Expression *left = evaluate_expression(expr->data.binary_op.left);
+        Expression *right = evaluate_expression(expr->data.binary_op.right);
 
         double lvalue, rvalue;
 
-        bool isint = (lval->type == INTEGER && rval->type == INTEGER) || (lval->type == BOOLEAN && rval->type == BOOLEAN);
-        bool isnumber = (lval->type == INTEGER || lval->type == DECIMAL || lval->type == BOOLEAN) && (rval->type == INTEGER || rval->type == DECIMAL || rval->type == BOOLEAN);
-        bool isstring = lval->type == STRING && rval->type == STRING;
+        bool isint = (left->type == INTEGER && right->type == INTEGER) || (left->type == BOOLEAN && right->type == BOOLEAN);
+        bool isnumber = (left->type == INTEGER || left->type == DECIMAL || left->type == BOOLEAN) && (right->type == INTEGER || right->type == DECIMAL || right->type == BOOLEAN);
+        bool isstring = left->type == STRING && right->type == STRING;
 
         if (isint || isnumber)
         {
-            lvalue = lval->type == DECIMAL ? lval->data.double_value : lval->data.int_value;
-            rvalue = rval->type == DECIMAL ? rval->data.double_value : rval->data.int_value;
+            lvalue = left->type == DECIMAL ? left->data.double_value : left->data.int_value;
+            rvalue = right->type == DECIMAL ? right->data.double_value : right->data.int_value;
         }
 
         switch (expr->data.binary_op.op)
@@ -275,11 +279,24 @@ Expression *evaluate_expression(Expression *expr)
                 new_expr->type = DECIMAL;
                 new_expr->data.double_value = lvalue + rvalue;
             }
+            else if (isstring)
+            {
+                new_expr->type = STRING;
+                char *result = malloc(strlen(left->data.string_value) + 
+                                   strlen(right->data.string_value) + 1);
+                if (!result) {
+                    printf("Erreur ligne %d: Échec de l'allocation mémoire pour la concaténation\n", yylineno);
+                    exit(1);
+                }
+                strcpy(result, left->data.string_value);
+                strcat(result, right->data.string_value);
+                new_expr->data.string_value = result;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour une addition\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'addition\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
@@ -297,9 +314,9 @@ Expression *evaluate_expression(Expression *expr)
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour une soustraction\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour la soustraction\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
@@ -317,9 +334,9 @@ Expression *evaluate_expression(Expression *expr)
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour une multiplication\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour la multiplication\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
@@ -327,11 +344,11 @@ Expression *evaluate_expression(Expression *expr)
         case '/':
             if (isnumber)
             {
-                if (((rval->data.int_value + rval->data.double_value) == 0))
+                if (((rvalue == 0)))
                 {
                     printf("Erreur ligne %d: Division par zéro\n", yylineno);
-                    free(lval);
-                    free(rval);
+                    free(left);
+                    free(right);
                     free(new_expr);
                     exit(1);
                 }
@@ -340,9 +357,9 @@ Expression *evaluate_expression(Expression *expr)
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour une division\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour la division\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
@@ -360,9 +377,9 @@ Expression *evaluate_expression(Expression *expr)
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour une puissance\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour la puissance\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
@@ -380,129 +397,177 @@ Expression *evaluate_expression(Expression *expr)
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour un modulo\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour le modulo\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case 'C': // CONCAT
-            char *result = malloc(sizeof(char) * (strlen(lval->data.string_value) + strlen(rval->data.string_value)) + 1);
-            new_expr->type = STRING;
-            strcpy(result, lval->data.string_value);
-            strcat(result, rval->data.string_value);
-            new_expr->data.string_value = strdup(result);
-            free(result);
-            break;
-        case '&': // AND
-            new_expr->type = BOOLEAN;
-            new_expr->data.bool_value = lval->data.bool_value && rval->data.bool_value;
-            break;
-        case '|': // OR
-            new_expr->type = BOOLEAN;
-            if (isnumber)
-                new_expr->data.bool_value = lvalue || rvalue;
+            if (isstring)
+            {
+                new_expr->type = STRING;
+                char *result = malloc(strlen(left->data.string_value) + 
+                                   strlen(right->data.string_value) + 1);
+                if (!result) {
+                    printf("Erreur ligne %d: Échec de l'allocation mémoire pour la concaténation\n", yylineno);
+                    exit(1);
+                }
+                strcpy(result, left->data.string_value);
+                strcat(result, right->data.string_value);
+                new_expr->data.string_value = result;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour un OU\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour la concaténation\n", yylineno);
+                free(left);
+                free(right);
+                free(new_expr);
+                exit(1);
+            }
+            break;
+        case '&': // AND
+            if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
+                new_expr->data.bool_value = lvalue && rvalue;
+            }
+            else
+            {
+                printf("Erreur ligne %d: Types incompatibles pour l'opération ET\n", yylineno);
+                free(left);
+                free(right);
+                free(new_expr);
+                exit(1);
+            }
+            break;
+        case '|': // OR
+            if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
+                new_expr->data.bool_value = lvalue || rvalue;
+            }
+            else
+            {
+                printf("Erreur ligne %d: Types incompatibles pour l'opération OU\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case '^': // XOR
-            new_expr->type = BOOLEAN;
             if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
                 new_expr->data.bool_value = lvalue != rvalue;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour un XOR\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération XOR\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case '<':
-            new_expr->type = BOOLEAN;
             if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
                 new_expr->data.bool_value = lvalue < rvalue;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour <\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération <\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case '>':
-            new_expr->type = BOOLEAN;
             if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
                 new_expr->data.bool_value = lvalue > rvalue;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour >\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération >\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case 'L': // <=
-            new_expr->type = BOOLEAN;
             if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
                 new_expr->data.bool_value = lvalue <= rvalue;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour <=\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération <=\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case 'G': // >=
-            new_expr->type = BOOLEAN;
             if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
                 new_expr->data.bool_value = lvalue >= rvalue;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour >=\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération >=\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case '=': // ==
-            new_expr->type = BOOLEAN;
             if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
                 new_expr->data.bool_value = lvalue == rvalue;
+            }
             else if (isstring)
-                new_expr->data.bool_value = strcmp(lval->data.string_value, rval->data.string_value) == 0;
+            {
+                new_expr->type = BOOLEAN;
+                new_expr->data.bool_value = strcmp(left->data.string_value, right->data.string_value) == 0;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour ==\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération ==\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case '!': // !=
-            new_expr->type = BOOLEAN;
             if (isnumber)
+            {
+                new_expr->type = BOOLEAN;
                 new_expr->data.bool_value = lvalue != rvalue;
+            }
             else if (isstring)
-                new_expr->data.bool_value = strcmp(lval->data.string_value, rval->data.string_value) != 0;
+            {
+                new_expr->type = BOOLEAN;
+                new_expr->data.bool_value = strcmp(left->data.string_value, right->data.string_value) != 0;
+            }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour Non\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération !=\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
@@ -512,16 +577,16 @@ Expression *evaluate_expression(Expression *expr)
             new_expr->type = DECIMAL;
             if (isnumber)
             {
-                int min = lval->type == INTEGER ? (int)lval->data.int_value : (int)lval->data.double_value;
-                int max = rval->type == INTEGER ? (int)rval->data.int_value : (int)rval->data.double_value;
+                int min = left->type == INTEGER ? (int)left->data.int_value : (int)left->data.double_value;
+                int max = right->type == INTEGER ? (int)right->data.int_value : (int)right->data.double_value;
 
                 new_expr->data.double_value = rand() % (max - min + 1) + min;
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour 'Alea'\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération Alea\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
@@ -529,50 +594,50 @@ Expression *evaluate_expression(Expression *expr)
         case 'p': // Comparer(x, n)
             srand(time(0));
             new_expr->type = INTEGER;
-            if (lval->type == STRING && rval->type == STRING)
+            if (left->type == STRING && right->type == STRING)
             {
-                new_expr->data.int_value = strcmp(lval->data.string_value, rval->data.string_value);
+                new_expr->data.int_value = strcmp(left->data.string_value, right->data.string_value);
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour 'Comparer'\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération Comparer\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         case 'r': // Recherche(s1, s2)
             new_expr->type = INTEGER;
-            if (lval->type == STRING && rval->type == STRING)
+            if (left->type == STRING && right->type == STRING)
             {
                 int pos = 0;
 
-                char *result = strstr(lval->data.string_value, rval->data.string_value);
+                char *result = strstr(left->data.string_value, right->data.string_value);
 
                 if (result != NULL)
-                    pos = (int)(result - lval->data.string_value + 1);
+                    pos = (int)(result - left->data.string_value + 1);
 
                 new_expr->data.int_value = pos;
             }
             else
             {
-                printf("Erreur ligne %d: Type invalide pour 'Recherche'\n", yylineno);
-                free(lval);
-                free(rval);
+                printf("Erreur ligne %d: Types incompatibles pour l'opération Recherche\n", yylineno);
+                free(left);
+                free(right);
                 free(new_expr);
                 exit(1);
             }
             break;
         default:
             printf("Erreur ligne %d: Opérateur binaire inconnu\n", yylineno);
-            free(lval);
-            free(rval);
+            free(left);
+            free(right);
             free(new_expr);
             exit(1);
         }
-        free(lval);
-        free(rval);
+        free(left);
+        free(right);
     }
     break;
     case UNARY_OP:
@@ -592,7 +657,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'R':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Racine'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour la racine carrée\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -604,7 +669,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'S':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Sin'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour le sinus\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -615,7 +680,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'C':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Cos'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour le cosinus\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -626,7 +691,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'T':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Tangent'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour la tangente\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -637,7 +702,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'L':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Log'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour le logarithme\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -648,7 +713,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'l':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Log10'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour le logarithme décimal\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -659,7 +724,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'D':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Arrondi'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour l'arrondi\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -670,7 +735,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'A':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Abs'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour la valeur absolue\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -681,7 +746,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'E':
             if (!isnumber)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Entier'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour la conversion en entier\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -693,7 +758,7 @@ Expression *evaluate_expression(Expression *expr)
         case 'H':
             if (exp->type != STRING)
             {
-                printf("Erreur ligne %d: Type invalide pour 'Longueur'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour la longueur de chaîne\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -725,7 +790,7 @@ Expression *evaluate_expression(Expression *expr)
                 new_expr->data.string_value = "Fonction";
                 break;
             default:
-                printf("Erreur ligne %d: Type invalide pour 'String'\n", yylineno);
+                printf("Erreur ligne %d: Type invalide pour la fonction Type\n", yylineno);
                 free(new_expr);
                 free(exp);
                 exit(1);
@@ -737,6 +802,7 @@ Expression *evaluate_expression(Expression *expr)
             exit(1);
             break;
         }
+        free(exp);
     }
     break;
     case ARRAY_ACCESS:

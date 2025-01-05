@@ -712,7 +712,7 @@ void execute_statement_list(StatementList *list)
 Expression *evaluate_function_call(const char *name, ExpressionList *arguments) {
     Function *func = get_function(name);
     if (!func) {
-        printf("Error: Function '%s' not found\n", name);
+        printf("Erreur ligne %d: Fonction '%s' non trouvée\n", yylineno, name);
         exit(1);
     }
 
@@ -731,7 +731,7 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     }
 
     if (param || arg) {
-        printf("Error: Wrong number of arguments in call to function '%s'\n", name);
+        printf("Erreur ligne %d: Nombre incorrect d'arguments dans l'appel de la fonction '%s'\n", yylineno, name);
         exit(1);
     }
 
@@ -742,7 +742,7 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     // Get return value
     Expression *result = get_return_value();
     if (!result && func->return_type != TYPE_VOID) {
-        printf("Error: Function '%s' must return a value\n", name);
+        printf("Erreur ligne %d: La fonction '%s' doit retourner une valeur\n", yylineno, name);
         exit(1);
     }
 
@@ -785,7 +785,7 @@ void set_return_value(Expression *value) {
 Parameter *new_parameter(char *name, SymbolType type, Parameter *next) {
     Parameter *param = malloc(sizeof(Parameter));
     if (!param) {
-        printf("Memory allocation failed for parameter\n");
+        printf("Erreur ligne %d: Échec de l'allocation mémoire pour le paramètre\n", yylineno);
         exit(1);
     }
     param->name = strdup(name);
@@ -808,7 +808,7 @@ Function *new_function(char *name, Parameter *params, SymbolType return_type,
                       StatementList *decls, StatementList *body) {
     Function *func = malloc(sizeof(Function));
     if (!func) {
-        printf("Memory allocation failed for function\n");
+        printf("Erreur ligne %d: Échec de l'allocation mémoire pour la fonction\n", yylineno);
         exit(1);
     }
     func->name = strdup(name);
@@ -828,7 +828,7 @@ Function *new_function(char *name, Parameter *params, SymbolType return_type,
 Statement *new_function_decl(Function *function) {
     Statement *stmt = malloc(sizeof(Statement));
     if (!stmt) {
-        printf("Memory allocation failed for function declaration\n");
+        printf("Erreur ligne %d: Échec de l'allocation mémoire pour la déclaration de fonction\n", yylineno);
         exit(1);
     }
     stmt->type = FUNCTION_DECL;
@@ -846,7 +846,7 @@ Statement *new_function_decl(Function *function) {
 Statement *new_function_call(char *name, ExpressionList *arguments) {
     Statement *stmt = malloc(sizeof(Statement));
     if (!stmt) {
-        printf("Memory allocation failed for function call\n");
+        printf("Erreur ligne %d: Échec de l'allocation mémoire pour l'appel de fonction\n", yylineno);
         exit(1);
     }
     stmt->type = FUNCTION_CALL;
@@ -864,7 +864,7 @@ Statement *new_function_call(char *name, ExpressionList *arguments) {
 Statement *new_return(Expression *value) {
     Statement *stmt = malloc(sizeof(Statement));
     if (!stmt) {
-        printf("Memory allocation failed for return statement\n");
+        printf("Erreur ligne %d: Échec de l'allocation mémoire pour l'instruction de retour\n", yylineno);
         exit(1);
     }
     stmt->type = RETURN_STMT;
@@ -878,11 +878,11 @@ Statement *new_return(Expression *value) {
  */
 void add_function(Function *function) {
     if (function_count >= MAX_FUNCTIONS) {
-        printf("Maximum number of functions reached\n");
+        printf("Nombre maximum de fonctions atteint\n");
         exit(1);
     }
     if (get_function(function->name) != NULL) {
-        printf("Function %s already defined\n", function->name);
+        printf("Fonction %s déjà définie\n", function->name);
         exit(1);
     }
     function_table[function_count++] = function;

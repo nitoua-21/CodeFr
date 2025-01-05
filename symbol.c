@@ -19,7 +19,7 @@ static int scope_depth = 0;
  */
 void push_scope(void) {
     if (scope_depth >= MAX_SCOPE_DEPTH) {
-        printf("Error: Maximum scope depth exceeded\n");
+        printf("Erreur: Profondeur maximale de portée dépassée\n");
         exit(1);
     }
     scope_stack[scope_depth++] = symbol_count;
@@ -34,7 +34,7 @@ void push_scope(void) {
  */
 void pop_scope(void) {
     if (scope_depth <= 0) {
-        printf("Error: Cannot pop global scope\n");
+        printf("Erreur: Impossible de supprimer la portée globale\n");
         exit(1);
     }
     
@@ -65,9 +65,19 @@ void add_symbol(const char *name, SymbolType type, bool is_constant)
 {
     if (symbol_count >= MAX_SYMBOLS)
     {
-        printf("Erreur ligne %d: Trop de symboles", yylineno);
-        return;
+        printf("Erreur ligne %d: Trop de symboles\n", yylineno);
+        exit(1);
     }
+
+    // Check if symbol already exists in current scope
+    for (int i = scope_stack[scope_depth - 1]; i < symbol_count; i++) {
+        if (strcmp(symbols[i].name, name) == 0) {
+            printf("Erreur ligne %d: Le symbole '%s' est déjà défini dans cette portée\n", 
+                   yylineno, name);
+            exit(1);
+        }
+    }
+
     symbols[symbol_count].name = strdup(name);
     symbols[symbol_count].type = type;
     symbols[symbol_count].is_constant = is_constant;
@@ -310,7 +320,7 @@ void set_array_element(const char *name, Expression *indices, Expression *value)
     
     // Validate index bounds
     if (index1 < 0 || index1 >= sym->dimensions.sizes[0]) {
-        printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+        printf("Erreur ligne %d: Index de tableau hors limites\n", yylineno);
         exit(1);
     }
 
@@ -318,7 +328,7 @@ void set_array_element(const char *name, Expression *indices, Expression *value)
     if (indices->data.array_access.index2) {
         int index2 = evaluate_expression(indices->data.array_access.index2)->data.int_value;
         if (index2 < 0 || index2 >= sym->dimensions.sizes[1]) {
-            printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+            printf("Erreur ligne %d: Index de tableau hors limites\n", yylineno);
             exit(1);
         }
         offset = index1 * sym->dimensions.sizes[1] + index2;
@@ -377,7 +387,7 @@ Expression *get_array_element(const char *name, Expression *indices) {
     
     // Validate index bounds
     if (index1 < 0 || index1 >= sym->dimensions.sizes[0]) {
-        printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+        printf("Erreur ligne %d: Index de tableau hors limites\n", yylineno);
         exit(1);
     }
 
@@ -385,7 +395,7 @@ Expression *get_array_element(const char *name, Expression *indices) {
     if (indices->data.array_access.index2) {
         int index2 = evaluate_expression(indices->data.array_access.index2)->data.int_value;
         if (index2 < 0 || index2 >= sym->dimensions.sizes[1]) {
-            printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+            printf("Erreur ligne %d: Index de tableau hors limites\n", yylineno);
             exit(1);
         }
         offset = index1 * sym->dimensions.sizes[1] + index2;
