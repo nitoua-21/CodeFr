@@ -1956,8 +1956,8 @@ yyreduce:
   case 54: /* expression: IDENTIFIANT LPAREN args_list RPAREN  */
 #line 247 "parser.y"
                                           { 
-        Statement *call = new_function_call((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
-        (yyval.expression) = evaluate_function_call((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
+        //Statement *call = new_function_call($1, $3);
+        (yyval.expression) = new_function_expression((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
     }
 #line 1963 "parser.tab.c"
     break;

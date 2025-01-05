@@ -131,6 +131,14 @@ Expression *new_unary_op(char op, Expression *operand)
     return expr;
 }
 
+Expression *new_function_expression(char *name, ExpressionList *arguments) {
+    Expression *expr = malloc(sizeof(Expression));
+    expr->type = FUNCTION;
+    expr->data.function_call.name = strdup(name);
+    expr->data.function_call.arguments = arguments;
+    return expr;
+}
+
 /**
  * new_expression_list - Creates a new node in the expression linked list
  * @expression: Pointer to the Expression to be stored in the new node
@@ -704,6 +712,11 @@ Expression *evaluate_expression(Expression *expr)
     case ARRAY_ACCESS:
     {
         return get_array_element(expr->data.array_access.array_name, expr);
+    }
+    break;
+    case FUNCTION:
+    {
+        return evaluate_function_call(expr->data.function_call.name, expr->data.function_call.arguments);
     }
     break;
     default:

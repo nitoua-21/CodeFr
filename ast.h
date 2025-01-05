@@ -91,7 +91,8 @@ typedef struct Expression
         VARIABLE,
         BINARY_OP,
         UNARY_OP,
-        ARRAY_ACCESS
+        ARRAY_ACCESS,
+        FUNCTION
     } type;
     union
     {
@@ -116,6 +117,10 @@ typedef struct Expression
             struct Expression *index;       // For 1D arrays
             struct Expression *index2;      // For 2D arrays
         } array_access;
+        struct {
+            char *name;
+            struct ExpressionList *arguments;
+        } function_call;
     } data;
 } Expression;
 

@@ -1,14 +1,13 @@
 // Algorithme UtiliserAjouter
 
 // A function to add two numbers and return the result.
-Fonction Ajouter(a: Entier, b: Entier): Entier
-    Ecrire("Ajouter(", a, ", ", b, ")\n")
-    Retourner a + b
+Fonction Ajouter(a: Entier, b: Entier): Chaine
+    Retourner (a + b)
 FinFonction
 
 Variables x, y, resultat: Entier
 Debut
-    Ecrire("Entrez deux nombres:")
+    Ecrire("Entrez deux nombres: \n")
     Lire(x)
     Lire(y)
     resultat = Ajouter(x, y)
