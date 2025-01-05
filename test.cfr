@@ -6,12 +6,11 @@ Fonction Ajouter(a: Entier, b: Entier): Entier
     Retourner a + b
 FinFonction
 
-Fonction Saluer(nom: Chaine)
-    Ecrire("Bonjour ", nom, "!\n")
-FinFonction
-
 Variables x, y, resultat: Entier
 Debut
-    Ecrire("Entrez deux nombres:\n")
-    Saluer("John")
+    Ecrire("Entrez deux nombres:")
+    Lire(x)
+    Lire(y)
+    resultat = Ajouter(x, y)
+    Ecrire("La somme est: ", resultat, "\n")
 Fin

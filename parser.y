@@ -17,7 +17,6 @@ void yyerror(const char *s);
 int yylex(void);
 
 StatementList *parsed_program = NULL;
-StatementList *function_declarations = NULL;
 
 %}
 %define parse.trace
@@ -85,18 +84,8 @@ StatementList *function_declarations = NULL;
 %%
 
 program:
-    function_declarations main_program { parsed_program = $2; }
-;
-
-function_declarations:
-    /* empty */ { $$ = NULL; }
-    | function_declarations function_decl {
-        $$ = $1;  // Just store the function, don't execute it
-    }
-;
-
-main_program:
-    Declarations DEBUT statement_list FIN { $$ = $3; }
+    Declarations DEBUT statement_list FIN { parsed_program = $3; }
+    | function_decl program
 ;
 
 function_decl:
@@ -256,6 +245,7 @@ expression:
     | LOGIQUE_VAL { $$ = new_boolean($1); }
     | IDENTIFIANT { $$ = new_variable($1); }
     | IDENTIFIANT LPAREN args_list RPAREN { 
+        Statement *call = new_function_call($1, $3);
         $$ = evaluate_function_call($1, $3);
     }
     | expression PLUS expression { $$ = new_binary_op('+', $1, $3); }

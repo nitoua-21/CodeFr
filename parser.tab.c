@@ -605,11 +605,11 @@ static const yytype_int16 yyrline[] =
      157,   162,   169,   170,   174,   182,   196,   197,   201,   205,
      209,   210,   211,   212,   213,   214,   215,   216,   217,   218,
      219,   220,   221,   225,   227,   232,   233,   237,   238,   242,
-     243,   244,   245,   246,   247,   250,   251,   252,   253,   254,
-     255,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   282,   283,   284,   285,   309,   310,   313,
-     319,   320,   321,   322
+     243,   244,   245,   246,   247,   251,   252,   253,   254,   255,
+     256,   257,   258,   259,   260,   261,   262,   263,   264,   265,
+     266,   267,   268,   269,   270,   271,   272,   273,   274,   275,
+     276,   277,   278,   283,   284,   285,   286,   310,   311,   314,
+     320,   321,   322,   323
 };
 #endif
 
@@ -1956,203 +1956,204 @@ yyreduce:
   case 54: /* expression: IDENTIFIANT LPAREN args_list RPAREN  */
 #line 247 "parser.y"
                                           { 
+        Statement *call = new_function_call((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
         (yyval.expression) = evaluate_function_call((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
     }
-#line 1962 "parser.tab.c"
+#line 1963 "parser.tab.c"
     break;
 
   case 55: /* expression: expression PLUS expression  */
-#line 250 "parser.y"
+#line 251 "parser.y"
                                  { (yyval.expression) = new_binary_op('+', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1968 "parser.tab.c"
+#line 1969 "parser.tab.c"
     break;
 
   case 56: /* expression: expression MINUS expression  */
-#line 251 "parser.y"
+#line 252 "parser.y"
                                   { (yyval.expression) = new_binary_op('-', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1974 "parser.tab.c"
+#line 1975 "parser.tab.c"
     break;
 
   case 57: /* expression: expression TIMES expression  */
-#line 252 "parser.y"
+#line 253 "parser.y"
                                   { (yyval.expression) = new_binary_op('*', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1980 "parser.tab.c"
+#line 1981 "parser.tab.c"
     break;
 
   case 58: /* expression: expression DIVIDE expression  */
-#line 253 "parser.y"
+#line 254 "parser.y"
                                    { (yyval.expression) = new_binary_op('/', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1986 "parser.tab.c"
+#line 1987 "parser.tab.c"
     break;
 
   case 59: /* expression: expression AND expression  */
-#line 254 "parser.y"
+#line 255 "parser.y"
                                 { (yyval.expression) = new_binary_op('&', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1992 "parser.tab.c"
+#line 1993 "parser.tab.c"
     break;
 
   case 60: /* expression: expression CONCAT expression  */
-#line 255 "parser.y"
+#line 256 "parser.y"
                                    { (yyval.expression) = new_binary_op('C', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 1998 "parser.tab.c"
+#line 1999 "parser.tab.c"
     break;
 
   case 61: /* expression: expression OR expression  */
-#line 256 "parser.y"
+#line 257 "parser.y"
                                { (yyval.expression) = new_binary_op('|', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2004 "parser.tab.c"
+#line 2005 "parser.tab.c"
     break;
 
   case 62: /* expression: expression XOR expression  */
-#line 257 "parser.y"
+#line 258 "parser.y"
                                 { (yyval.expression) = new_binary_op('^', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2010 "parser.tab.c"
+#line 2011 "parser.tab.c"
     break;
 
   case 63: /* expression: expression POWER expression  */
-#line 258 "parser.y"
+#line 259 "parser.y"
                                   { (yyval.expression) = new_binary_op('P', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2016 "parser.tab.c"
+#line 2017 "parser.tab.c"
     break;
 
   case 64: /* expression: expression MODULO expression  */
-#line 259 "parser.y"
+#line 260 "parser.y"
                                    { (yyval.expression) = new_binary_op('M', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2022 "parser.tab.c"
+#line 2023 "parser.tab.c"
     break;
 
   case 65: /* expression: NOT expression  */
-#line 260 "parser.y"
+#line 261 "parser.y"
                      { (yyval.expression) = new_unary_op('!', (yyvsp[0].expression)); }
-#line 2028 "parser.tab.c"
+#line 2029 "parser.tab.c"
     break;
 
   case 66: /* expression: expression LT expression  */
-#line 261 "parser.y"
+#line 262 "parser.y"
                                { (yyval.expression) = new_binary_op('<', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2034 "parser.tab.c"
+#line 2035 "parser.tab.c"
     break;
 
   case 67: /* expression: expression GT expression  */
-#line 262 "parser.y"
+#line 263 "parser.y"
                                { (yyval.expression) = new_binary_op('>', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2040 "parser.tab.c"
+#line 2041 "parser.tab.c"
     break;
 
   case 68: /* expression: expression LE expression  */
-#line 263 "parser.y"
+#line 264 "parser.y"
                                { (yyval.expression) = new_binary_op('L', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2046 "parser.tab.c"
+#line 2047 "parser.tab.c"
     break;
 
   case 69: /* expression: expression GE expression  */
-#line 264 "parser.y"
+#line 265 "parser.y"
                                { (yyval.expression) = new_binary_op('G', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2052 "parser.tab.c"
+#line 2053 "parser.tab.c"
     break;
 
   case 70: /* expression: expression EQ expression  */
-#line 265 "parser.y"
+#line 266 "parser.y"
                                { (yyval.expression) = new_binary_op('=', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2058 "parser.tab.c"
+#line 2059 "parser.tab.c"
     break;
 
   case 71: /* expression: expression NE expression  */
-#line 266 "parser.y"
+#line 267 "parser.y"
                                { (yyval.expression) = new_binary_op('!', (yyvsp[-2].expression), (yyvsp[0].expression)); }
-#line 2064 "parser.tab.c"
+#line 2065 "parser.tab.c"
     break;
 
   case 72: /* expression: LPAREN expression RPAREN  */
-#line 267 "parser.y"
+#line 268 "parser.y"
                                { (yyval.expression) = (yyvsp[-1].expression); }
-#line 2070 "parser.tab.c"
+#line 2071 "parser.tab.c"
     break;
 
   case 73: /* expression: SQUARE_ROOT LPAREN expression RPAREN  */
-#line 268 "parser.y"
+#line 269 "parser.y"
                                            { (yyval.expression) = new_unary_op('R', (yyvsp[-1].expression)); }
-#line 2076 "parser.tab.c"
+#line 2077 "parser.tab.c"
     break;
 
   case 74: /* expression: SINE LPAREN expression RPAREN  */
-#line 269 "parser.y"
+#line 270 "parser.y"
                                     { (yyval.expression) = new_unary_op('S', (yyvsp[-1].expression)); }
-#line 2082 "parser.tab.c"
+#line 2083 "parser.tab.c"
     break;
 
   case 75: /* expression: COSINE LPAREN expression RPAREN  */
-#line 270 "parser.y"
+#line 271 "parser.y"
                                       { (yyval.expression) = new_unary_op('C', (yyvsp[-1].expression)); }
-#line 2088 "parser.tab.c"
+#line 2089 "parser.tab.c"
     break;
 
   case 76: /* expression: TANGENT LPAREN expression RPAREN  */
-#line 271 "parser.y"
+#line 272 "parser.y"
                                        { (yyval.expression) = new_unary_op('T', (yyvsp[-1].expression)); }
-#line 2094 "parser.tab.c"
+#line 2095 "parser.tab.c"
     break;
 
   case 77: /* expression: LOG LPAREN expression RPAREN  */
-#line 272 "parser.y"
+#line 273 "parser.y"
                                    {(yyval.expression) = new_unary_op('L', (yyvsp[-1].expression)); }
-#line 2100 "parser.tab.c"
+#line 2101 "parser.tab.c"
     break;
 
   case 78: /* expression: LOG10 LPAREN expression RPAREN  */
-#line 273 "parser.y"
+#line 274 "parser.y"
                                      { (yyval.expression) = new_unary_op('l', (yyvsp[-1].expression));}
-#line 2106 "parser.tab.c"
+#line 2107 "parser.tab.c"
     break;
 
   case 79: /* expression: ROUND LPAREN expression RPAREN  */
-#line 274 "parser.y"
+#line 275 "parser.y"
                                      { (yyval.expression) = new_unary_op('D', (yyvsp[-1].expression));}
-#line 2112 "parser.tab.c"
+#line 2113 "parser.tab.c"
     break;
 
   case 80: /* expression: ABS LPAREN expression RPAREN  */
-#line 275 "parser.y"
+#line 276 "parser.y"
                                    { (yyval.expression) = new_unary_op('A', (yyvsp[-1].expression));}
-#line 2118 "parser.tab.c"
+#line 2119 "parser.tab.c"
     break;
 
   case 81: /* expression: INT LPAREN expression RPAREN  */
-#line 276 "parser.y"
+#line 277 "parser.y"
                                    { (yyval.expression) = new_unary_op('E', (yyvsp[-1].expression));}
-#line 2124 "parser.tab.c"
+#line 2125 "parser.tab.c"
     break;
 
   case 82: /* expression: RANDOM LPAREN RPAREN  */
-#line 277 "parser.y"
+#line 278 "parser.y"
                            {
         srand(time(0));
         double random_number = (double)rand() / (RAND_MAX + 1.0);
         (yyval.expression) = new_decimal(random_number);
     }
-#line 2134 "parser.tab.c"
+#line 2135 "parser.tab.c"
     break;
 
   case 83: /* expression: RANDOM LPAREN expression COMMA expression RPAREN  */
-#line 282 "parser.y"
+#line 283 "parser.y"
                                                        { (yyval.expression) = new_binary_op('A', (yyvsp[-3].expression), (yyvsp[-1].expression)); }
-#line 2140 "parser.tab.c"
+#line 2141 "parser.tab.c"
     break;
 
   case 84: /* expression: LENGTH LPAREN expression RPAREN  */
-#line 283 "parser.y"
+#line 284 "parser.y"
                                       { (yyval.expression) = new_unary_op('H', (yyvsp[-1].expression)); }
-#line 2146 "parser.tab.c"
+#line 2147 "parser.tab.c"
     break;
 
   case 85: /* expression: COMPARE LPAREN expression COMMA expression RPAREN  */
-#line 284 "parser.y"
+#line 285 "parser.y"
                                                         { (yyval.expression) = new_binary_op('p', (yyvsp[-3].expression), (yyvsp[-1].expression)); }
-#line 2152 "parser.tab.c"
+#line 2153 "parser.tab.c"
     break;
 
   case 86: /* expression: COPY LPAREN expression COMMA expression COMMA expression RPAREN  */
-#line 285 "parser.y"
+#line 286 "parser.y"
                                                                        {
         Expression *str_exp = evaluate_expression((yyvsp[-5].expression));
         Expression *pos_exp = evaluate_expression((yyvsp[-3].expression));
@@ -2177,57 +2178,57 @@ yyreduce:
         free(n_exp);
         //free(new_str);
     }
-#line 2181 "parser.tab.c"
+#line 2182 "parser.tab.c"
     break;
 
   case 87: /* expression: SEARCH LPAREN expression COMMA expression RPAREN  */
-#line 309 "parser.y"
+#line 310 "parser.y"
                                                        { (yyval.expression) = new_binary_op('r', (yyvsp[-3].expression), (yyvsp[-1].expression)); }
-#line 2187 "parser.tab.c"
+#line 2188 "parser.tab.c"
     break;
 
   case 88: /* expression: IDENTIFIANT LBRACKET expression RBRACKET  */
-#line 310 "parser.y"
+#line 311 "parser.y"
                                                {
         (yyval.expression) = new_array_access((yyvsp[-3].var_name), (yyvsp[-1].expression), NULL);
     }
-#line 2195 "parser.tab.c"
+#line 2196 "parser.tab.c"
     break;
 
   case 89: /* expression: IDENTIFIANT LBRACKET expression RBRACKET LBRACKET expression RBRACKET  */
-#line 313 "parser.y"
+#line 314 "parser.y"
                                                                             {
         (yyval.expression) = new_array_access((yyvsp[-6].var_name), (yyvsp[-4].expression), (yyvsp[-1].expression));
     }
-#line 2203 "parser.tab.c"
+#line 2204 "parser.tab.c"
     break;
 
   case 90: /* type: ENTIER_KWRD  */
-#line 319 "parser.y"
+#line 320 "parser.y"
                 { (yyval.type) = TYPE_ENTIER; }
-#line 2209 "parser.tab.c"
+#line 2210 "parser.tab.c"
     break;
 
   case 91: /* type: DECIMAL_KWRD  */
-#line 320 "parser.y"
+#line 321 "parser.y"
                    { (yyval.type) = TYPE_DECIMAL; }
-#line 2215 "parser.tab.c"
+#line 2216 "parser.tab.c"
     break;
 
   case 92: /* type: CHAINE_KWRD  */
-#line 321 "parser.y"
+#line 322 "parser.y"
                   { (yyval.type) = TYPE_CHAINE; }
-#line 2221 "parser.tab.c"
+#line 2222 "parser.tab.c"
     break;
 
   case 93: /* type: LOGIQUE_KWRD  */
-#line 322 "parser.y"
+#line 323 "parser.y"
                    { (yyval.type) = TYPE_LOGIQUE; }
-#line 2227 "parser.tab.c"
+#line 2228 "parser.tab.c"
     break;
 
 
-#line 2231 "parser.tab.c"
+#line 2232 "parser.tab.c"
 
       default: break;
     }
@@ -2420,7 +2421,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 325 "parser.y"
+#line 326 "parser.y"
 
 
 void yyerror(const char *s) {

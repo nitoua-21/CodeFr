@@ -364,6 +364,7 @@ Expression *new_binary_op(char op, Expression *left, Expression *right);
 Expression *new_boolean(bool value);
 Expression *new_unary_op(char op, Expression *operand);
 Expression *evaluate_expression(Expression *expr);
+Expression *new_function_expression(char *name, ExpressionList *arguments);
 
 void add_array_symbol(const char *name, SymbolType type, ArrayDimensions dims);
 Statement *new_array_declaration(char *name, ArrayDimensions dims, SymbolType type);

@@ -719,30 +719,13 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     // Create a new scope for function parameters
     push_scope();
 
-    // Evaluate all arguments first
-    ExpressionList *arg_values = NULL;
-    ExpressionList *current_arg = arguments;
-    while (current_arg) {
-        Expression *value = evaluate_expression(current_arg->expression);
-        arg_values = new_expression_list(value, arg_values);
-        current_arg = current_arg->next;
-    }
-
-    // Reverse the argument list to maintain correct order
-    ExpressionList *reversed_args = NULL;
-    while (arg_values) {
-        ExpressionList *next = arg_values->next;
-        arg_values->next = reversed_args;
-        reversed_args = arg_values;
-        arg_values = next;
-    }
-
     // Bind arguments to parameters
     Parameter *param = func->parameters;
-    ExpressionList *arg = reversed_args;
+    ExpressionList *arg = arguments;
     while (param && arg) {
+        Expression *value = evaluate_expression(arg->expression);
         add_symbol(param->name, param->type, false);
-        set_symbol_value(param->name, arg->expression);
+        set_symbol_value(param->name, value);
         param = param->next;
         arg = arg->next;
     }
@@ -763,18 +746,10 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
         exit(1);
     }
 
-    // Free argument expressions
-    while (reversed_args) {
-        ExpressionList *next = reversed_args->next;
-        free(reversed_args->expression);
-        free(reversed_args);
-        reversed_args = next;
-    }
-
     // Restore previous scope
     pop_scope();
 
-    return result ? result : new_integer(0);  // Return 0 for void functions
+    return result;
 }
 
 // Global variable to store return value
