@@ -57,7 +57,7 @@ StatementList *parsed_program = NULL;
 %token ABS INT RANDOM
 %token LENGTH COMPARE CONCATENATE COPY SEARCH
 %token TABLEAU LBRACKET RBRACKET VARIABLES
-%token FONCTION RETOURNER FINFONCTION
+%token FONCTION RETOURNER FINFONCTION TYPE_KWRD
 
 %type <statement> statement Declaration
 %type <statement_list> statement_list Declarations
@@ -313,6 +313,9 @@ expression:
     }
     | IDENTIFIANT LBRACKET expression RBRACKET LBRACKET expression RBRACKET {
         $$ = new_array_access($1, $3, $6);
+    }
+    | TYPE_KWRD LPAREN expression RPAREN { 
+        $$ = new_unary_op('t', $3);
     }
     ;
 

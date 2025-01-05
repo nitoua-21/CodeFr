@@ -701,6 +701,36 @@ Expression *evaluate_expression(Expression *expr)
             new_expr->type = INTEGER;
             new_expr->data.int_value = strlen(exp->data.string_value);
             break;
+        case 't':
+            switch (exp->type)
+            {
+            case INTEGER:
+                new_expr->type = STRING;
+                new_expr->data.string_value = "Entier";
+                break;
+            case DECIMAL:
+                new_expr->type = STRING;
+                new_expr->data.string_value = "Decimal";
+                break;
+            case BOOLEAN:
+                new_expr->type = STRING;
+                new_expr->data.string_value = "Logique";
+                break;
+            case STRING:
+                new_expr->type = STRING;
+                new_expr->data.string_value = "Chaine";
+                break;
+            case FUNCTION:
+                new_expr->type = STRING;
+                new_expr->data.string_value = "Fonction";
+                break;
+            default:
+                printf("Erreur ligne %d: Type invalide pour 'String'\n", yylineno);
+                free(new_expr);
+                free(exp);
+                exit(1);
+            }
+            break;
         default:
             printf("Erreur ligne %d: Opération unaire inconnue\n", yylineno);
             free(new_expr);

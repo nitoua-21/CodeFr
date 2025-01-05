@@ -130,7 +130,8 @@ extern int yydebug;
     VARIABLES = 331,               /* VARIABLES  */
     FONCTION = 332,                /* FONCTION  */
     RETOURNER = 333,               /* RETOURNER  */
-    FINFONCTION = 334              /* FINFONCTION  */
+    FINFONCTION = 334,             /* FINFONCTION  */
+    TYPE_KWRD = 335                /* TYPE_KWRD  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -158,7 +159,7 @@ union YYSTYPE
     Parameter *parameter;
     Function *function;
 
-#line 162 "parser.tab.h"
+#line 163 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -1,7 +1,7 @@
 // Algorithme UtiliserAjouter
 
 // A function to add two numbers and return the result.
-Fonction Ajouter(a: Entier, b: Entier): Chaine
+Fonction Ajouter(a: Entier, b: Entier): Entier
     Retourner (a + b)
 FinFonction
 
@@ -11,5 +11,5 @@ Debut
     Lire(x)
     Lire(y)
     resultat = Ajouter(x, y)
-    Ecrire("La somme est: ", resultat, "\n")
+    Ecrire("La somme est: ", Type(resultat), resultat, "\n")
 Fin

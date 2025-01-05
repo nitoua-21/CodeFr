@@ -65,6 +65,7 @@
 "Comparer"      { return COMPARE; }
 "Recherche"     { return SEARCH; }
 "Tableau"       { return TABLEAU; }
+"Type"          { return TYPE_KWRD; }
 "["            { return LBRACKET; }
 "]"            { return RBRACKET; }
 "+"             { return PLUS; }
