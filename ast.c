@@ -4,6 +4,11 @@
 #include <stdbool.h>
 #include "ast.h"
 
+// Global function table
+#define MAX_FUNCTIONS 100
+static Function *function_table[MAX_FUNCTIONS];
+static int function_count = 0;
+
 /**
  * new_statement_list - Creates a new statement list
  * @statement: Pointer to the Statement to be added to the list
@@ -361,10 +366,8 @@ void execute_array_declaration(Statement *stmt)
  */
 void execute_statement_list(StatementList *list)
 {
-    int statement_count = 0;
-    while (list)
+    while (list != NULL && list->statement != NULL)
     {
-        statement_count++;
         Statement *stmt = list->statement;
         if (stmt->type == ASSIGN)
         {
@@ -684,6 +687,243 @@ void execute_statement_list(StatementList *list)
         {
             execute_array_declaration(stmt);
         }
+        else if (stmt->type == FUNCTION_CALL)
+        {
+            Expression *result = evaluate_function_call(stmt->data.function_call.name, stmt->data.function_call.arguments);
+            free(result);
+        }
+        else if (stmt->type == RETURN_STMT)
+        {
+            Expression *value = evaluate_expression(stmt->data.return_stmt.value);
+            set_return_value(value);
+            return;  // Exit function execution after return
+        }
         list = list->next;
     }
+}
+
+/**
+ * evaluate_function_call - Evaluates a function call and returns its result
+ * @name: Name of the function to call
+ * @arguments: List of argument expressions
+ *
+ * Return: Expression containing the function's return value
+ */
+Expression *evaluate_function_call(const char *name, ExpressionList *arguments) {
+    Function *func = get_function(name);
+    if (!func) {
+        printf("Error: Function '%s' not found\n", name);
+        exit(1);
+    }
+
+    // Create a new scope for function parameters
+    push_scope();
+
+    // Evaluate all arguments first
+    ExpressionList *arg_values = NULL;
+    ExpressionList *current_arg = arguments;
+    while (current_arg) {
+        Expression *value = evaluate_expression(current_arg->expression);
+        arg_values = new_expression_list(value, arg_values);
+        current_arg = current_arg->next;
+    }
+
+    // Reverse the argument list to maintain correct order
+    ExpressionList *reversed_args = NULL;
+    while (arg_values) {
+        ExpressionList *next = arg_values->next;
+        arg_values->next = reversed_args;
+        reversed_args = arg_values;
+        arg_values = next;
+    }
+
+    // Bind arguments to parameters
+    Parameter *param = func->parameters;
+    ExpressionList *arg = reversed_args;
+    while (param && arg) {
+        add_symbol(param->name, param->type, false);
+        set_symbol_value(param->name, arg->expression);
+        param = param->next;
+        arg = arg->next;
+    }
+
+    if (param || arg) {
+        printf("Error: Wrong number of arguments in call to function '%s'\n", name);
+        exit(1);
+    }
+
+    // Execute function body
+    execute_statement_list(func->declarations);
+    execute_statement_list(func->body);
+
+    // Get return value
+    Expression *result = get_return_value();
+    if (!result && func->return_type != TYPE_VOID) {
+        printf("Error: Function '%s' must return a value\n", name);
+        exit(1);
+    }
+
+    // Free argument expressions
+    while (reversed_args) {
+        ExpressionList *next = reversed_args->next;
+        free(reversed_args->expression);
+        free(reversed_args);
+        reversed_args = next;
+    }
+
+    // Restore previous scope
+    pop_scope();
+
+    return result ? result : new_integer(0);  // Return 0 for void functions
+}
+
+// Global variable to store return value
+static Expression *return_value = NULL;
+
+/**
+ * get_return_value - Gets and clears the current return value
+ *
+ * Return: The current return value, or NULL if none
+ */
+Expression *get_return_value() {
+    Expression *result = return_value;
+    return_value = NULL;
+    return result;
+}
+
+/**
+ * set_return_value - Sets the return value from a return statement
+ * @value: The value to return
+ */
+void set_return_value(Expression *value) {
+    return_value = value;
+}
+
+/**
+ * new_parameter - Creates a new function parameter
+ * @name: Name of the parameter
+ * @type: Type of the parameter
+ * @next: Next parameter in the list
+ *
+ * Return: Pointer to the new Parameter structure
+ */
+Parameter *new_parameter(char *name, SymbolType type, Parameter *next) {
+    Parameter *param = malloc(sizeof(Parameter));
+    if (!param) {
+        printf("Memory allocation failed for parameter\n");
+        exit(1);
+    }
+    param->name = strdup(name);
+    param->type = type;
+    param->next = next;
+    return param;
+}
+
+/**
+ * new_function - Creates a new function definition
+ * @name: Function name
+ * @params: List of parameters
+ * @return_type: Return type of the function
+ * @decls: Local variable declarations
+ * @body: Function body statements
+ *
+ * Return: Pointer to the new Function structure
+ */
+Function *new_function(char *name, Parameter *params, SymbolType return_type, 
+                      StatementList *decls, StatementList *body) {
+    Function *func = malloc(sizeof(Function));
+    if (!func) {
+        printf("Memory allocation failed for function\n");
+        exit(1);
+    }
+    func->name = strdup(name);
+    func->parameters = params;
+    func->return_type = return_type;
+    func->declarations = decls;
+    func->body = body;
+    return func;
+}
+
+/**
+ * new_function_decl - Creates a new function declaration statement
+ * @function: Function to declare
+ *
+ * Return: Pointer to the new Statement structure
+ */
+Statement *new_function_decl(Function *function) {
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt) {
+        printf("Memory allocation failed for function declaration\n");
+        exit(1);
+    }
+    stmt->type = FUNCTION_DECL;
+    stmt->data.function_decl.function = function;
+    return stmt;
+}
+
+/**
+ * new_function_call - Creates a new function call statement
+ * @name: Name of the function to call
+ * @arguments: List of argument expressions
+ *
+ * Return: Pointer to the new Statement structure
+ */
+Statement *new_function_call(char *name, ExpressionList *arguments) {
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt) {
+        printf("Memory allocation failed for function call\n");
+        exit(1);
+    }
+    stmt->type = FUNCTION_CALL;
+    stmt->data.function_call.name = strdup(name);
+    stmt->data.function_call.arguments = arguments;
+    return stmt;
+}
+
+/**
+ * new_return - Creates a new return statement
+ * @value: Expression to return
+ *
+ * Return: Pointer to the new Statement structure
+ */
+Statement *new_return(Expression *value) {
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt) {
+        printf("Memory allocation failed for return statement\n");
+        exit(1);
+    }
+    stmt->type = RETURN_STMT;
+    stmt->data.return_stmt.value = value;
+    return stmt;
+}
+
+/**
+ * add_function - Adds a function to the function table
+ * @function: Function to add
+ */
+void add_function(Function *function) {
+    if (function_count >= MAX_FUNCTIONS) {
+        printf("Maximum number of functions reached\n");
+        exit(1);
+    }
+    if (get_function(function->name) != NULL) {
+        printf("Function %s already defined\n", function->name);
+        exit(1);
+    }
+    function_table[function_count++] = function;
+}
+
+/**
+ * get_function - Retrieves a function from the function table
+ * @name: Name of the function to retrieve
+ *
+ * Return: Pointer to the Function structure, or NULL if not found
+ */
+Function *get_function(const char *name) {
+    for (int i = 0; i < function_count; i++) {
+        if (strcmp(function_table[i]->name, name) == 0) {
+            return function_table[i];
+        }
+    }
+    return NULL;
 }

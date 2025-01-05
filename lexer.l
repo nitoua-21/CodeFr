@@ -23,6 +23,7 @@
 "Variables"     { return VARIABLES; }
 "Fonction"      { return FONCTION; }
 "Retourner"     { return RETOURNER; }
+"FinFonction"   { return FINFONCTION; }
 "Ecrire"        { return ECRIRE; }
 "Lire"          { return LIRE; }
 "Entier"        { return ENTIER_KWRD; }

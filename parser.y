@@ -17,6 +17,7 @@ void yyerror(const char *s);
 int yylex(void);
 
 StatementList *parsed_program = NULL;
+StatementList *function_declarations = NULL;
 
 %}
 %define parse.trace
@@ -37,6 +38,8 @@ StatementList *parsed_program = NULL;
     ArrayDimensions dims;
     ElseIfList *elseif_list;
     IdentifierList *identifier_list;
+    Parameter *parameter;
+    Function *function;
 }
 
 %token <int_value> ENTIER_VAL
@@ -55,17 +58,19 @@ StatementList *parsed_program = NULL;
 %token ABS INT RANDOM
 %token LENGTH COMPARE CONCATENATE COPY SEARCH
 %token TABLEAU LBRACKET RBRACKET VARIABLES
-%token FONCTION RETOURNER
+%token FONCTION RETOURNER FINFONCTION
 
-%type <statement> statement
-%type <statement_list> statement_list
+%type <statement> statement Declaration
+%type <statement_list> statement_list Declarations
 %type <expression> expression
 %type <type> type
 %type <case_list> case_list
-%type <expression_list> expression_list
+%type <expression_list> expression_list args_list
 %type <dims> array_dimensions
 %type <elseif_list> elif_list
 %type <identifier_list> identifier_list
+%type <parameter> param_list param
+%type <function> function_decl
 
 %left OR XOR
 %left AND
@@ -80,22 +85,94 @@ StatementList *parsed_program = NULL;
 %%
 
 program:
-    Declarations DEBUT statement_list FIN { parsed_program = $3; }
+    function_declarations main_program { parsed_program = $2; }
+;
+
+function_declarations:
+    /* empty */ { $$ = NULL; }
+    | function_declarations function_decl {
+        $$ = $1;  // Just store the function, don't execute it
+    }
+;
+
+main_program:
+    Declarations DEBUT statement_list FIN { $$ = $3; }
+;
+
+function_decl:
+    FONCTION IDENTIFIANT LPAREN param_list RPAREN Declarations statement_list FINFONCTION {
+        $$ = new_function($2, $4, TYPE_VOID, $6, $7);
+        add_function($$);
+    }
+    | FONCTION IDENTIFIANT LPAREN param_list RPAREN COLON type Declarations statement_list FINFONCTION {
+        $$ = new_function($2, $4, $7, $8, $9);
+        add_function($$);
+    }
+;
+
+param_list:
+    /* empty */ { $$ = NULL; }
+    | param { $$ = $1; }
+    | param COMMA param_list { $$ = $1; $$->next = $3; }
+;
+
+param:
+    IDENTIFIANT COLON type { $$ = new_parameter($1, $3, NULL); }
+;
+
+args_list:
+    /* empty */ { $$ = NULL; }
+    | expression { $$ = new_expression_list($1, NULL); }
+    | expression COMMA args_list { $$ = new_expression_list($1, $3); }
 ;
 
 Declarations:
-    /*Empty*/
-    | Declarations Declaration
+    /*Empty*/ { $$ = NULL; }
+    | Declarations Declaration { 
+        if ($2 != NULL) {
+            $$ = new_statement_list($2, $1);
+        } else {
+            $$ = $1;
+        }
+    }
     ;
+
 Declaration:    
-    VARIABLE_KWRD IDENTIFIANT COLON type { add_symbol($2, $4, false); }
-    | VARIABLES identifier_list COLON type { add_multiple_symbols($2, $4); }
-    | CONSTANT IDENTIFIANT EQUALS ENTIER_VAL { add_symbol($2, TYPE_ENTIER, true); set_symbol_value($2, new_integer($4)); }
-    | CONSTANT IDENTIFIANT EQUALS DECIMAL_VAL { add_symbol($2, TYPE_DECIMAL, true); set_symbol_value($2, new_decimal($4)); }
-    | CONSTANT IDENTIFIANT EQUALS STRING_VAL { add_symbol($2, TYPE_CHAINE, true); set_symbol_value($2, new_string($4));}
-    | CONSTANT IDENTIFIANT EQUALS LOGIQUE_VAL { add_symbol($2, TYPE_LOGIQUE, true); set_symbol_value($2, new_boolean($4)); }
+    VARIABLE_KWRD IDENTIFIANT COLON type { 
+        Statement *stmt = malloc(sizeof(Statement));
+        stmt->type = VAR_DECL;
+        stmt->data.var_decl.name = $2;
+        stmt->data.var_decl.type = $4;
+        add_symbol($2, $4, false);
+        $$ = stmt;
+    }
+    | VARIABLES identifier_list COLON type { 
+        add_multiple_symbols($2, $4); 
+        $$ = NULL; 
+    }
+    | CONSTANT IDENTIFIANT EQUALS ENTIER_VAL { 
+        add_symbol($2, TYPE_ENTIER, true); 
+        set_symbol_value($2, new_integer($4)); 
+        $$ = NULL; 
+    }
+    | CONSTANT IDENTIFIANT EQUALS DECIMAL_VAL { 
+        add_symbol($2, TYPE_DECIMAL, true); 
+        set_symbol_value($2, new_decimal($4)); 
+        $$ = NULL; 
+    }
+    | CONSTANT IDENTIFIANT EQUALS STRING_VAL { 
+        add_symbol($2, TYPE_CHAINE, true); 
+        set_symbol_value($2, new_string($4)); 
+        $$ = NULL; 
+    }
+    | CONSTANT IDENTIFIANT EQUALS LOGIQUE_VAL { 
+        add_symbol($2, TYPE_LOGIQUE, true); 
+        set_symbol_value($2, new_boolean($4)); 
+        $$ = NULL; 
+    }
     | TABLEAU IDENTIFIANT array_dimensions COLON type {
         add_array_symbol($2, $5, $3);
+        $$ = NULL;
     }
     ;
 
@@ -151,6 +228,8 @@ statement:
     | POUR IDENTIFIANT DE expression A expression FAIRE Declarations statement_list FINPOUR { $$ = new_for($2, $4, $6, $9); }
     | SELON expression FAIRE Declarations case_list FINSELON { $$ = new_switch($2, $5, NULL); }
     | SELON expression FAIRE Declarations case_list SINON Declarations statement_list FINSELON { $$ = new_switch($2, $5, $8); }
+    | IDENTIFIANT LPAREN args_list RPAREN { $$ = new_function_call($1, $3); }
+    | RETOURNER expression { $$ = new_return($2); }
     ;
 
 elif_list:
@@ -176,6 +255,9 @@ expression:
     | STRING_VAL { $$ = new_string($1); }
     | LOGIQUE_VAL { $$ = new_boolean($1); }
     | IDENTIFIANT { $$ = new_variable($1); }
+    | IDENTIFIANT LPAREN args_list RPAREN { 
+        $$ = evaluate_function_call($1, $3);
+    }
     | expression PLUS expression { $$ = new_binary_op('+', $1, $3); }
     | expression MINUS expression { $$ = new_binary_op('-', $1, $3); }
     | expression TIMES expression { $$ = new_binary_op('*', $1, $3); }

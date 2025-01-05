@@ -16,6 +16,7 @@ extern int yylineno;
  * @TYPE_DECIMAL: Represents a decimal (floating-point) type
  * @TYPE_LOGIQUE: Represents a logical (boolean) type
  * @TYPE_CHAINE: Represents a string type
+ * @TYPE_VOID: Represents a void type
  *
  * This enumeration defines the possible data types that can be
  * represented in the language being interpreted.
@@ -25,7 +26,8 @@ typedef enum
     TYPE_ENTIER,
     TYPE_DECIMAL,
     TYPE_LOGIQUE,
-    TYPE_CHAINE
+    TYPE_CHAINE,
+    TYPE_VOID
 } SymbolType;
 
 /**
@@ -151,6 +153,53 @@ typedef struct IdentifierList {
 } IdentifierList;
 
 /**
+ * struct Parameter - Represents a function parameter
+ * @name: Name of the parameter
+ * @type: Type of the parameter
+ */
+typedef struct Parameter {
+    char *name;
+    SymbolType type;
+    struct Parameter *next;
+} Parameter;
+
+// Forward declarations
+struct Statement;
+struct StatementList;
+typedef struct Statement Statement;
+typedef struct StatementList StatementList;
+
+/**
+ * struct StatementList - Represents a list of statements in the AST
+ * @statement: Pointer to the current Statement
+ * @next: Pointer to the next StatementList node
+ *
+ * This structure represents a linked list of statements, allowing
+ * multiple statements to be chained together in sequence.
+ */
+struct StatementList
+{
+    Statement *statement;
+    struct StatementList *next;
+};
+
+/**
+ * struct Function - Represents a function definition
+ * @name: Name of the function
+ * @parameters: List of parameters
+ * @return_type: Return type of the function (TYPE_VOID for no return)
+ * @body: Function body statements
+ * @declarations: Local variable declarations
+ */
+typedef struct Function {
+    char *name;
+    Parameter *parameters;
+    SymbolType return_type;
+    StatementList *body;
+    StatementList *declarations;
+} Function;
+
+/**
  * struct CaseList - Linked list node for switch-case statements
  * @condition: Pointer to the Expression representing the case condition
  * @body: Pointer to the StatementList containing the case body
@@ -185,12 +234,16 @@ typedef struct Statement
         ASSIGN,
         ARRAY_ASSIGN,
         PRINT,
-        IF_STATEMENT,
         READ,
+        IF_STATEMENT,
         WHILE_STATEMENT,
         FOR_STATEMENT,
         SWITCH_STATEMENT,
-        ARRAY_DECL
+        FUNCTION_DECL,
+        FUNCTION_CALL,
+        RETURN_STMT,
+        ARRAY_DECL,
+        VAR_DECL
     } type;
     union
     {
@@ -234,26 +287,26 @@ typedef struct Statement
             struct StatementList *default_case;
         } switch_stmt;
         struct {
+            Function *function;
+        } function_decl;
+        struct {
+            char *name;
+            ExpressionList *arguments;
+        } function_call;
+        struct {
+            Expression *value;
+        } return_stmt;
+        struct {
             char *array_name;
             ArrayDimensions dimensions;
             SymbolType element_type;
         } array_decl;
+        struct {
+            char *name;
+            SymbolType type;
+        } var_decl;
     } data;
 } Statement;
-
-/**
- * struct StatementList - Represents a list of statements in the AST
- * @statement: Pointer to the current Statement
- * @next: Pointer to the next StatementList node
- *
- * This structure represents a linked list of statements, allowing
- * for the representation of sequences of statements in the program.
- */
-typedef struct StatementList
-{
-    Statement *statement;
-    struct StatementList *next;
-} StatementList;
 
 /**
  * struct ElseIfBranch - Represents a single elif (SinonSi) branch
@@ -319,6 +372,19 @@ void set_array_element(const char *name, Expression *indices, Expression *value)
 Expression *get_array_element(const char *name, Expression *indices);
 void execute_array_declaration(Statement *stmt);
 void add_multiple_symbols(IdentifierList *list, SymbolType type);
+
+Function *new_function(char *name, Parameter *params, SymbolType return_type, StatementList *decls, StatementList *body);
+Parameter *new_parameter(char *name, SymbolType type, Parameter *next);
+Statement *new_function_decl(Function *function);
+Statement *new_function_call(char *name, ExpressionList *arguments);
+Statement *new_return(Expression *value);
+void add_function(Function *function);
+Function *get_function(const char *name);
+Expression *evaluate_function_call(const char *name, ExpressionList *arguments);
+Expression *get_return_value(void);
+void set_return_value(Expression *value);
+void push_scope(void);
+void pop_scope(void);
 
 char *process_string(const char *str);
 bool check_file_extension(const char *filename);

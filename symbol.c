@@ -6,6 +6,50 @@
 Symbol symbols[MAX_SYMBOLS];
 int symbol_count = 0;
 
+// Stack to store symbol counts for each scope
+#define MAX_SCOPE_DEPTH 100
+static int scope_stack[MAX_SCOPE_DEPTH];
+static int scope_depth = 0;
+
+/**
+ * push_scope - Creates a new variable scope
+ *
+ * Description: This function saves the current symbol count
+ * to allow restoration of the previous scope later.
+ */
+void push_scope(void) {
+    if (scope_depth >= MAX_SCOPE_DEPTH) {
+        printf("Error: Maximum scope depth exceeded\n");
+        exit(1);
+    }
+    scope_stack[scope_depth++] = symbol_count;
+}
+
+/**
+ * pop_scope - Restores the previous variable scope
+ *
+ * Description: This function restores the symbol table to its
+ * state before the current scope was created, effectively
+ * removing all symbols declared in the current scope.
+ */
+void pop_scope(void) {
+    if (scope_depth <= 0) {
+        printf("Error: Cannot pop global scope\n");
+        exit(1);
+    }
+    
+    // Free any string values in the symbols we're removing
+    for (int i = scope_stack[scope_depth - 1]; i < symbol_count; i++) {
+        if (symbols[i].type == TYPE_CHAINE && symbols[i].value.string_val) {
+            free(symbols[i].value.string_val);
+        }
+        free(symbols[i].name);
+    }
+    
+    // Restore symbol count to previous scope
+    symbol_count = scope_stack[--scope_depth];
+}
+
 /**
  * add_symbol - Adds a new symbol to the symbol table
  * @name: The name of the symbol to add

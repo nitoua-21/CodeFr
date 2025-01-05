@@ -1,16 +1,17 @@
-//Algorithme Boucle
+// Algorithme UtiliserAjouter
 
-Variables i, n: Entier
-Variables message, nom: Chaine
+// A function to add two numbers and return the result.
+Fonction Ajouter(a: Entier, b: Entier): Entier
+    Ecrire("Ajouter(", a, ", ", b, ")\n")
+    Retourner a + b
+FinFonction
 
-Debut
-    Ecrire("Quel est votre nom?\n")
-    Lire(nom)
+Fonction Saluer(nom: Chaine)
     Ecrire("Bonjour ", nom, "!\n")
-    Pour i De 0 A 12 Faire
-        n = 2
-        Ecrire(n, " x ", " ", i, " = ")
-        Ecrire(n * i, "\n")
-    FinPour
+FinFonction
 
+Variables x, y, resultat: Entier
+Debut
+    Ecrire("Entrez deux nombres:\n")
+    Saluer("John")
 Fin
