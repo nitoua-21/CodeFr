@@ -1,0 +1,16 @@
+/*
+Program to generate a multiplcation table
+For a given number n
+*/
+
+Variable n: Entier
+Variable i: Entier
+
+Debut
+	Ecrire("Enter a number: ")
+	Lire(n)
+
+	Pour i De 0 A 12 Faire
+		Ecrire(n, " x ", i, " = ", n * i, "\n")
+	FinPour
+Fin

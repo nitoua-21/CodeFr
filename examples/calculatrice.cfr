@@ -1,5 +1,5 @@
 Variable a: Entier
-Variable b: Entier
+Varible b: Entier
 Variable op: Chaine
 Variable resultat: Decimal
 
