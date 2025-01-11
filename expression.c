@@ -812,7 +812,30 @@ Expression *evaluate_expression(Expression *expr)
     break;
     case FUNCTION:
     {
-        return evaluate_function_call(expr->data.function_call.name, expr->data.function_call.arguments);
+        Expression *result = evaluate_function_call(expr->data.function_call.name, expr->data.function_call.arguments);
+        if (result) {
+            // Create a deep copy of the result before returning
+            Expression *result_copy = malloc(sizeof(Expression));
+            if (!result_copy) {
+                printf("Erreur ligne %d: Échec d'allocation mémoire pour le résultat de la fonction\n", yylineno);
+                exit(1);
+            }
+            memcpy(result_copy, result, sizeof(Expression));
+            
+            // For string values, we need to duplicate the string
+            if (result->type == STRING) {
+                result_copy->data.string_value = strdup(result->data.string_value);
+                if (!result_copy->data.string_value) {
+                    printf("Erreur ligne %d: Échec d'allocation mémoire pour la chaîne de caractères\n", yylineno);
+                    free(result_copy);
+                    exit(1);
+                }
+            }
+            
+            free(result); // Free the original result
+            return result_copy;
+        }
+        return NULL;
     }
     break;
     default:

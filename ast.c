@@ -712,7 +712,7 @@ void execute_statement_list(StatementList *list)
 Expression *evaluate_function_call(const char *name, ExpressionList *arguments) {
     Function *func = get_function(name);
     if (!func) {
-        printf("Erreur ligne %d: Fonction '%s' non trouvée\n", yylineno, name);
+        printf("Erreur ligne %d: La fonction '%s' n'existe pas\n", yylineno, name);
         exit(1);
     }
 
@@ -731,7 +731,8 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     }
 
     if (param || arg) {
-        printf("Erreur ligne %d: Nombre incorrect d'arguments dans l'appel de la fonction '%s'\n", yylineno, name);
+        printf("Erreur ligne %d: Nombre incorrect de paramètres pour la fonction '%s'\n", 
+               yylineno, name);
         exit(1);
     }
 
@@ -742,7 +743,8 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     // Get return value
     Expression *result = get_return_value();
     if (!result && func->return_type != TYPE_VOID) {
-        printf("Erreur ligne %d: La fonction '%s' doit retourner une valeur\n", yylineno, name);
+        printf("Erreur ligne %d: La fonction '%s' doit retourner une valeur\n", 
+               yylineno, name);
         exit(1);
     }
 

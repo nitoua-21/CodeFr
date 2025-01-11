@@ -34,7 +34,7 @@ void push_scope(void) {
  */
 void pop_scope(void) {
     if (scope_depth <= 0) {
-        printf("Erreur: Impossible de supprimer la portée globale\n");
+        printf("Erreur: Impossible de supprimer la portée globale du programme\n");
         exit(1);
     }
     
@@ -65,14 +65,14 @@ void add_symbol(const char *name, SymbolType type, bool is_constant)
 {
     if (symbol_count >= MAX_SYMBOLS)
     {
-        printf("Erreur ligne %d: Trop de symboles\n", yylineno);
+        printf("Erreur ligne %d: Nombre maximum de variables atteint\n", yylineno);
         exit(1);
     }
 
     // Check if symbol already exists in current scope
     for (int i = scope_stack[scope_depth - 1]; i < symbol_count; i++) {
         if (strcmp(symbols[i].name, name) == 0) {
-            printf("Erreur ligne %d: Le symbole '%s' est déjà défini dans cette portée\n", 
+            printf("Erreur ligne %d: La variable '%s' est déjà déclarée dans cette portée\n", 
                    yylineno, name);
             exit(1);
         }

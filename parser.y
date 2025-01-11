@@ -308,7 +308,7 @@ expression:
 
         if (str_exp->type != STRING || pos_exp->type != INTEGER || n_exp->type != INTEGER)
         {
-            printf("Erreur ligne %d: Invalid argument type for 'Copie'\n", yylineno);
+            printf("Erreur ligne %d: Type d'argument invalide pour 'Copie'\n", yylineno);
             exit(1);
         }
 
@@ -316,8 +316,6 @@ expression:
 
         strncpy(new_str, str_exp->data.string_value + pos_exp->data.int_value, n_exp->data.int_value);
         new_str[n_exp->data.int_value] = '\0';
-
-        printf("\nNew String: %s\n", new_str);
 
         $$ = new_string(new_str);
         free(str_exp);
@@ -339,7 +337,7 @@ expression:
         // Module-qualified function call
         Function *func = get_module_function($1, $3);
         if (!func) {
-            yyerror("Function not found in module");
+            yyerror("Fonction introuvable dans le module");
             YYERROR;
         }
         $$ = new_function_expression($3, $5);
@@ -347,7 +345,7 @@ expression:
     }
     | IDENTIFIANT DOT IDENTIFIANT {
         // Module-qualified variable access
-        yyerror("Module-qualified variable access not yet supported");
+        yyerror("Accès à une variable qualifiée par module non supporté");
         YYERROR;
     }
     ;

@@ -621,9 +621,9 @@ static const yytype_int16 yyrline[] =
      256,   260,   261,   262,   263,   264,   265,   269,   270,   271,
      272,   273,   274,   275,   276,   277,   278,   279,   280,   281,
      282,   283,   284,   285,   286,   287,   288,   289,   290,   291,
-     292,   293,   294,   295,   296,   301,   302,   303,   304,   328,
-     329,   332,   335,   338,   348,   356,   357,   358,   359,   363,
-     380,   381,   385,   389,   396,   401
+     292,   293,   294,   295,   296,   301,   302,   303,   304,   326,
+     327,   330,   333,   336,   346,   354,   355,   356,   357,   361,
+     378,   379,   383,   387,   394,   399
 };
 #endif
 
@@ -2208,7 +2208,7 @@ yyreduce:
 
         if (str_exp->type != STRING || pos_exp->type != INTEGER || n_exp->type != INTEGER)
         {
-            printf("Erreur ligne %d: Invalid argument type for 'Copie'\n", yylineno);
+            printf("Erreur ligne %d: Type d'argument invalide pour 'Copie'\n", yylineno);
             exit(1);
         }
 
@@ -2217,98 +2217,96 @@ yyreduce:
         strncpy(new_str, str_exp->data.string_value + pos_exp->data.int_value, n_exp->data.int_value);
         new_str[n_exp->data.int_value] = '\0';
 
-        printf("\nNew String: %s\n", new_str);
-
         (yyval.expression) = new_string(new_str);
         free(str_exp);
         free(pos_exp);
         free(n_exp);
         //free(new_str);
     }
-#line 2229 "parser.tab.c"
+#line 2227 "parser.tab.c"
     break;
 
   case 89: /* expression: SEARCH LPAREN expression COMMA expression RPAREN  */
-#line 328 "parser.y"
+#line 326 "parser.y"
                                                        { (yyval.expression) = new_binary_op('r', (yyvsp[-3].expression), (yyvsp[-1].expression)); }
-#line 2235 "parser.tab.c"
+#line 2233 "parser.tab.c"
     break;
 
   case 90: /* expression: IDENTIFIANT LBRACKET expression RBRACKET  */
-#line 329 "parser.y"
+#line 327 "parser.y"
                                                {
         (yyval.expression) = new_array_access((yyvsp[-3].var_name), (yyvsp[-1].expression), NULL);
     }
-#line 2243 "parser.tab.c"
+#line 2241 "parser.tab.c"
     break;
 
   case 91: /* expression: IDENTIFIANT LBRACKET expression RBRACKET LBRACKET expression RBRACKET  */
-#line 332 "parser.y"
+#line 330 "parser.y"
                                                                             {
         (yyval.expression) = new_array_access((yyvsp[-6].var_name), (yyvsp[-4].expression), (yyvsp[-1].expression));
     }
-#line 2251 "parser.tab.c"
+#line 2249 "parser.tab.c"
     break;
 
   case 92: /* expression: TYPE_KWRD LPAREN expression RPAREN  */
-#line 335 "parser.y"
+#line 333 "parser.y"
                                          { 
         (yyval.expression) = new_unary_op('t', (yyvsp[-1].expression));
     }
-#line 2259 "parser.tab.c"
+#line 2257 "parser.tab.c"
     break;
 
   case 93: /* expression: IDENTIFIANT DOT IDENTIFIANT LPAREN args_list RPAREN  */
-#line 338 "parser.y"
+#line 336 "parser.y"
                                                           {
         // Module-qualified function call
         Function *func = get_module_function((yyvsp[-5].var_name), (yyvsp[-3].var_name));
         if (!func) {
-            yyerror("Function not found in module");
+            yyerror("Fonction introuvable dans le module");
             YYERROR;
         }
         (yyval.expression) = new_function_expression((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
         //$$ = evaluate_function_call($3, $5);
     }
-#line 2274 "parser.tab.c"
+#line 2272 "parser.tab.c"
     break;
 
   case 94: /* expression: IDENTIFIANT DOT IDENTIFIANT  */
-#line 348 "parser.y"
+#line 346 "parser.y"
                                   {
         // Module-qualified variable access
-        yyerror("Module-qualified variable access not yet supported");
+        yyerror("Accès à une variable qualifiée par module non supporté");
         YYERROR;
     }
-#line 2284 "parser.tab.c"
+#line 2282 "parser.tab.c"
     break;
 
   case 95: /* type: ENTIER_KWRD  */
-#line 356 "parser.y"
+#line 354 "parser.y"
                 { (yyval.type) = TYPE_ENTIER; }
-#line 2290 "parser.tab.c"
+#line 2288 "parser.tab.c"
     break;
 
   case 96: /* type: DECIMAL_KWRD  */
-#line 357 "parser.y"
+#line 355 "parser.y"
                    { (yyval.type) = TYPE_DECIMAL; }
-#line 2296 "parser.tab.c"
+#line 2294 "parser.tab.c"
     break;
 
   case 97: /* type: CHAINE_KWRD  */
-#line 358 "parser.y"
+#line 356 "parser.y"
                   { (yyval.type) = TYPE_CHAINE; }
-#line 2302 "parser.tab.c"
+#line 2300 "parser.tab.c"
     break;
 
   case 98: /* type: LOGIQUE_KWRD  */
-#line 359 "parser.y"
+#line 357 "parser.y"
                    { (yyval.type) = TYPE_LOGIQUE; }
-#line 2308 "parser.tab.c"
+#line 2306 "parser.tab.c"
     break;
 
   case 99: /* module_decl: MODULE IDENTIFIANT module_content FINMODULE  */
-#line 363 "parser.y"
+#line 361 "parser.y"
                                                 {
         (yyval.module) = new_module((yyvsp[-2].var_name));
         current_module = (yyval.module);
@@ -2323,51 +2321,51 @@ yyreduce:
         }
         current_module = NULL;
     }
-#line 2327 "parser.tab.c"
+#line 2325 "parser.tab.c"
     break;
 
   case 100: /* module_content: function_decl  */
-#line 380 "parser.y"
+#line 378 "parser.y"
                   { (yyval.statement_list) = new_statement_list(new_function_statement((yyvsp[0].function)), NULL); }
-#line 2333 "parser.tab.c"
+#line 2331 "parser.tab.c"
     break;
 
   case 101: /* module_content: function_decl module_content  */
-#line 381 "parser.y"
+#line 379 "parser.y"
                                    { (yyval.statement_list) = new_statement_list(new_function_statement((yyvsp[-1].function)), (yyvsp[0].statement_list)); }
-#line 2339 "parser.tab.c"
+#line 2337 "parser.tab.c"
     break;
 
   case 102: /* import_stmt: IMPORTER IDENTIFIANT  */
-#line 385 "parser.y"
+#line 383 "parser.y"
                          {
         (yyval.import) = new_import((yyvsp[0].var_name), NULL, 0);
         execute_import((yyval.import));
     }
-#line 2348 "parser.tab.c"
+#line 2346 "parser.tab.c"
     break;
 
   case 103: /* import_stmt: DEPUIS IDENTIFIANT IMPORTER function_name_list  */
-#line 389 "parser.y"
+#line 387 "parser.y"
                                                      {
         (yyval.import) = new_import((yyvsp[-2].var_name), (yyvsp[0].function_names), count_function_names((yyvsp[0].function_names)));
         execute_import((yyval.import));
     }
-#line 2357 "parser.tab.c"
+#line 2355 "parser.tab.c"
     break;
 
   case 104: /* function_name_list: IDENTIFIANT  */
-#line 396 "parser.y"
+#line 394 "parser.y"
                 {
         char **names = malloc(sizeof(char *));
         names[0] = (yyvsp[0].var_name);
         (yyval.function_names) = names;
     }
-#line 2367 "parser.tab.c"
+#line 2365 "parser.tab.c"
     break;
 
   case 105: /* function_name_list: function_name_list COMMA IDENTIFIANT  */
-#line 401 "parser.y"
+#line 399 "parser.y"
                                            {
         int count = 0;
         char **names = (yyvsp[-2].function_names);
@@ -2377,11 +2375,11 @@ yyreduce:
         names[count + 1] = NULL;
         (yyval.function_names) = names;
     }
-#line 2381 "parser.tab.c"
+#line 2379 "parser.tab.c"
     break;
 
 
-#line 2385 "parser.tab.c"
+#line 2383 "parser.tab.c"
 
       default: break;
     }
@@ -2574,7 +2572,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 412 "parser.y"
+#line 410 "parser.y"
 
 
 void yyerror(const char *s) {
