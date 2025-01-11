@@ -622,8 +622,8 @@ static const yytype_int16 yyrline[] =
      272,   273,   274,   275,   276,   277,   278,   279,   280,   281,
      282,   283,   284,   285,   286,   287,   288,   289,   290,   291,
      292,   293,   294,   295,   296,   301,   302,   303,   304,   328,
-     329,   332,   335,   338,   347,   355,   356,   357,   358,   362,
-     379,   380,   384,   388,   395,   400
+     329,   332,   335,   338,   348,   356,   357,   358,   359,   363,
+     380,   381,   385,   389,   396,   401
 };
 #endif
 
@@ -2267,47 +2267,48 @@ yyreduce:
             yyerror("Function not found in module");
             YYERROR;
         }
-        (yyval.expression) = evaluate_function_call((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
+        (yyval.expression) = new_function_expression((yyvsp[-3].var_name), (yyvsp[-1].expression_list));
+        //$$ = evaluate_function_call($3, $5);
     }
-#line 2273 "parser.tab.c"
+#line 2274 "parser.tab.c"
     break;
 
   case 94: /* expression: IDENTIFIANT DOT IDENTIFIANT  */
-#line 347 "parser.y"
+#line 348 "parser.y"
                                   {
         // Module-qualified variable access
         yyerror("Module-qualified variable access not yet supported");
         YYERROR;
     }
-#line 2283 "parser.tab.c"
+#line 2284 "parser.tab.c"
     break;
 
   case 95: /* type: ENTIER_KWRD  */
-#line 355 "parser.y"
+#line 356 "parser.y"
                 { (yyval.type) = TYPE_ENTIER; }
-#line 2289 "parser.tab.c"
+#line 2290 "parser.tab.c"
     break;
 
   case 96: /* type: DECIMAL_KWRD  */
-#line 356 "parser.y"
+#line 357 "parser.y"
                    { (yyval.type) = TYPE_DECIMAL; }
-#line 2295 "parser.tab.c"
+#line 2296 "parser.tab.c"
     break;
 
   case 97: /* type: CHAINE_KWRD  */
-#line 357 "parser.y"
+#line 358 "parser.y"
                   { (yyval.type) = TYPE_CHAINE; }
-#line 2301 "parser.tab.c"
+#line 2302 "parser.tab.c"
     break;
 
   case 98: /* type: LOGIQUE_KWRD  */
-#line 358 "parser.y"
+#line 359 "parser.y"
                    { (yyval.type) = TYPE_LOGIQUE; }
-#line 2307 "parser.tab.c"
+#line 2308 "parser.tab.c"
     break;
 
   case 99: /* module_decl: MODULE IDENTIFIANT module_content FINMODULE  */
-#line 362 "parser.y"
+#line 363 "parser.y"
                                                 {
         (yyval.module) = new_module((yyvsp[-2].var_name));
         current_module = (yyval.module);
@@ -2322,51 +2323,51 @@ yyreduce:
         }
         current_module = NULL;
     }
-#line 2326 "parser.tab.c"
+#line 2327 "parser.tab.c"
     break;
 
   case 100: /* module_content: function_decl  */
-#line 379 "parser.y"
+#line 380 "parser.y"
                   { (yyval.statement_list) = new_statement_list(new_function_statement((yyvsp[0].function)), NULL); }
-#line 2332 "parser.tab.c"
+#line 2333 "parser.tab.c"
     break;
 
   case 101: /* module_content: function_decl module_content  */
-#line 380 "parser.y"
+#line 381 "parser.y"
                                    { (yyval.statement_list) = new_statement_list(new_function_statement((yyvsp[-1].function)), (yyvsp[0].statement_list)); }
-#line 2338 "parser.tab.c"
+#line 2339 "parser.tab.c"
     break;
 
   case 102: /* import_stmt: IMPORTER IDENTIFIANT  */
-#line 384 "parser.y"
+#line 385 "parser.y"
                          {
         (yyval.import) = new_import((yyvsp[0].var_name), NULL, 0);
         execute_import((yyval.import));
     }
-#line 2347 "parser.tab.c"
+#line 2348 "parser.tab.c"
     break;
 
   case 103: /* import_stmt: DEPUIS IDENTIFIANT IMPORTER function_name_list  */
-#line 388 "parser.y"
+#line 389 "parser.y"
                                                      {
         (yyval.import) = new_import((yyvsp[-2].var_name), (yyvsp[0].function_names), count_function_names((yyvsp[0].function_names)));
         execute_import((yyval.import));
     }
-#line 2356 "parser.tab.c"
+#line 2357 "parser.tab.c"
     break;
 
   case 104: /* function_name_list: IDENTIFIANT  */
-#line 395 "parser.y"
+#line 396 "parser.y"
                 {
         char **names = malloc(sizeof(char *));
         names[0] = (yyvsp[0].var_name);
         (yyval.function_names) = names;
     }
-#line 2366 "parser.tab.c"
+#line 2367 "parser.tab.c"
     break;
 
   case 105: /* function_name_list: function_name_list COMMA IDENTIFIANT  */
-#line 400 "parser.y"
+#line 401 "parser.y"
                                            {
         int count = 0;
         char **names = (yyvsp[-2].function_names);
@@ -2376,11 +2377,11 @@ yyreduce:
         names[count + 1] = NULL;
         (yyval.function_names) = names;
     }
-#line 2380 "parser.tab.c"
+#line 2381 "parser.tab.c"
     break;
 
 
-#line 2384 "parser.tab.c"
+#line 2385 "parser.tab.c"
 
       default: break;
     }
@@ -2573,7 +2574,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 411 "parser.y"
+#line 412 "parser.y"
 
 
 void yyerror(const char *s) {

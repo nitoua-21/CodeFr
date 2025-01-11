@@ -342,7 +342,8 @@ expression:
             yyerror("Function not found in module");
             YYERROR;
         }
-        $$ = evaluate_function_call($3, $5);
+        $$ = new_function_expression($3, $5);
+        //$$ = evaluate_function_call($3, $5);
     }
     | IDENTIFIANT DOT IDENTIFIANT {
         // Module-qualified variable access
