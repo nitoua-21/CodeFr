@@ -93,7 +93,7 @@ Module *current_module = NULL;
 
 program:
     module_decl
-    | import_stmt
+    | import_stmt Declarations DEBUT statement_list FIN { parsed_program = $4; }
     | Declarations DEBUT statement_list FIN { parsed_program = $3; }
     | function_decl program
 ;
@@ -386,7 +386,7 @@ import_stmt:
         execute_import($$);
     }
     | DEPUIS IDENTIFIANT IMPORTER function_name_list {
-        $$ = new_import($2, $4, $4 ? 1 : 0);
+        $$ = new_import($2, $4, count_function_names($4));
         execute_import($$);
     }
 ;

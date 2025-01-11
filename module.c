@@ -76,6 +76,18 @@ Import *new_import(const char *module_name, char **function_names, int function_
     return import;
 }
 
+/**
+ * count_function_names - Count the number of function names in a NULL-terminated array
+ * @names: Array of function names, NULL-terminated
+ * Return: Number of function names
+ */
+int count_function_names(char **names) {
+    if (!names) return 0;
+    int count = 0;
+    while (names[count]) count++;
+    return count;
+}
+
 void execute_import(Import *import) {
     Module *module = get_module(import->module_name);
     if (!module) {

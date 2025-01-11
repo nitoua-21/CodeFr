@@ -31,5 +31,6 @@ Module *get_module(const char *name);
 Function *get_module_function(const char *module_name, const char *function_name);
 Import *new_import(const char *module_name, char **function_names, int function_count);
 void execute_import(Import *import);
+int count_function_names(char **names);
 
 #endif // MODULE_H

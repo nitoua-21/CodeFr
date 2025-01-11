@@ -13,5 +13,5 @@ Debut
     resultat = Ajouter(x, y)
     Ecrire("x :", Type(x), "\n")
     Ecrire("y :", Type(y), "\n")
-    Ecrire("La somme est: ", Type(resultat), resultat, "\n")
+    Ecrire("La somme est: ", resultat, " : ", Type(resultat), "\n")
 Fin
