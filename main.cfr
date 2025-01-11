@@ -1,0 +1,14 @@
+// Import the whole module
+Importer Calculs
+
+//Algorithme Principal
+Variables x, y, resultat: Entier
+Debut
+    x = 5
+    y = 3
+    resultat = Calculs.addition(x, y)
+    Ecrire("5 + 3 = ", resultat, "\n")
+    
+    resultat = Calculs.soustraction(10, 4)
+    Ecrire("10 - 4 = ", resultat, "\n")
+Fin

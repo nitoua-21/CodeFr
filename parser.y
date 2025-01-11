@@ -12,15 +12,16 @@
 #include <stdbool.h>
 #include <time.h>
 #include "ast.h"
+#include "module.h"
 
 void yyerror(const char *s);
 int yylex(void);
 
 StatementList *parsed_program = NULL;
+Module *current_module = NULL;
 
 %}
 %define parse.trace
-
 
 %union {
     int int_value;
@@ -39,6 +40,9 @@ StatementList *parsed_program = NULL;
     IdentifierList *identifier_list;
     Parameter *parameter;
     Function *function;
+    struct Module *module;
+    struct Import *import;
+    char **function_names;
 }
 
 %token <int_value> ENTIER_VAL
@@ -58,9 +62,10 @@ StatementList *parsed_program = NULL;
 %token LENGTH COMPARE CONCATENATE COPY SEARCH
 %token TABLEAU LBRACKET RBRACKET VARIABLES
 %token FONCTION RETOURNER FINFONCTION TYPE_KWRD
+%token MODULE FINMODULE IMPORTER DEPUIS DOT
 
 %type <statement> statement Declaration
-%type <statement_list> statement_list Declarations
+%type <statement_list> statement_list Declarations module_content
 %type <expression> expression
 %type <type> type
 %type <case_list> case_list
@@ -70,6 +75,9 @@ StatementList *parsed_program = NULL;
 %type <identifier_list> identifier_list
 %type <parameter> param_list param
 %type <function> function_decl
+%type <module> module_decl
+%type <import> import_stmt
+%type <function_names> function_name_list
 
 %left OR XOR
 %left AND
@@ -84,18 +92,28 @@ StatementList *parsed_program = NULL;
 %%
 
 program:
-    Declarations DEBUT statement_list FIN { parsed_program = $3; }
+    module_decl
+    | import_stmt
+    | Declarations DEBUT statement_list FIN { parsed_program = $3; }
     | function_decl program
 ;
 
 function_decl:
-    FONCTION IDENTIFIANT LPAREN param_list RPAREN Declarations statement_list FINFONCTION {
-        $$ = new_function($2, $4, TYPE_VOID, $6, $7);
-        add_function($$);
-    }
-    | FONCTION IDENTIFIANT LPAREN param_list RPAREN COLON type Declarations statement_list FINFONCTION {
+    FONCTION IDENTIFIANT LPAREN param_list RPAREN COLON type Declarations statement_list FINFONCTION {
         $$ = new_function($2, $4, $7, $8, $9);
-        add_function($$);
+        if (current_module) {
+            add_function_to_module(current_module, $$);
+        } else {
+            add_function($$);
+        }
+    }
+    | FONCTION IDENTIFIANT LPAREN param_list RPAREN Declarations statement_list FINFONCTION {
+        $$ = new_function($2, $4, TYPE_VOID, $6, $7);
+        if (current_module) {
+            add_function_to_module(current_module, $$);
+        } else {
+            add_function($$);
+        }
     }
 ;
 
@@ -317,6 +335,20 @@ expression:
     | TYPE_KWRD LPAREN expression RPAREN { 
         $$ = new_unary_op('t', $3);
     }
+    | IDENTIFIANT DOT IDENTIFIANT LPAREN args_list RPAREN {
+        // Module-qualified function call
+        Function *func = get_module_function($1, $3);
+        if (!func) {
+            yyerror("Function not found in module");
+            YYERROR;
+        }
+        $$ = evaluate_function_call($3, $5);
+    }
+    | IDENTIFIANT DOT IDENTIFIANT {
+        // Module-qualified variable access
+        yyerror("Module-qualified variable access not yet supported");
+        YYERROR;
+    }
     ;
 
 type:
@@ -325,6 +357,56 @@ type:
     | CHAINE_KWRD { $$ = TYPE_CHAINE; }
     | LOGIQUE_KWRD { $$ = TYPE_LOGIQUE; }
     ;
+
+module_decl:
+    MODULE IDENTIFIANT module_content FINMODULE {
+        $$ = new_module($2);
+        current_module = $$;
+        module_table[module_count++] = $$;
+        // Add all functions from module_content to module
+        StatementList *list = $3;
+        while (list) {
+            if (list->statement && list->statement->type == FUNCTION_DECL) {
+                add_function_to_module($$, list->statement->data.function_decl.function);
+            }
+            list = list->next;
+        }
+        current_module = NULL;
+    }
+;
+
+module_content:
+    function_decl { $$ = new_statement_list(new_function_statement($1), NULL); }
+    | function_decl module_content { $$ = new_statement_list(new_function_statement($1), $2); }
+;
+
+import_stmt:
+    IMPORTER IDENTIFIANT {
+        $$ = new_import($2, NULL, 0);
+        execute_import($$);
+    }
+    | DEPUIS IDENTIFIANT IMPORTER function_name_list {
+        $$ = new_import($2, $4, $4 ? 1 : 0);
+        execute_import($$);
+    }
+;
+
+function_name_list:
+    IDENTIFIANT {
+        char **names = malloc(sizeof(char *));
+        names[0] = $1;
+        $$ = names;
+    }
+    | function_name_list COMMA IDENTIFIANT {
+        int count = 0;
+        char **names = $1;
+        while (names[count]) count++;
+        names = realloc(names, sizeof(char *) * (count + 2));
+        names[count] = $3;
+        names[count + 1] = NULL;
+        $$ = names;
+    }
+;
 
 %%
 

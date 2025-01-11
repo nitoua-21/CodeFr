@@ -1,0 +1,13 @@
+Module Calculs
+    Fonction addition(a: Entier, b: Entier): Entier
+        Retourner a + b
+    FinFonction
+
+    Fonction soustraction(a: Entier, b: Entier): Entier
+        Retourner a - b
+    FinFonction
+
+    Fonction multiplication(a: Entier, b: Entier): Entier
+        Retourner a * b
+    FinFonction
+FinModule

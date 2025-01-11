@@ -902,3 +902,20 @@ Function *get_function(const char *name) {
     }
     return NULL;
 }
+
+/**
+ * new_function_statement - Creates a new statement node for a function
+ * @function: The function to wrap in a statement
+ *
+ * Return: A pointer to the new Statement structure
+ */
+Statement *new_function_statement(Function *function) {
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt) {
+        printf("Memory allocation failed for function statement\n");
+        exit(1);
+    }
+    stmt->type = FUNCTION_DECL;
+    stmt->data.function_decl.function = function;
+    return stmt;
+}

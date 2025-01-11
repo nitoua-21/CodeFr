@@ -343,6 +343,7 @@ void add_symbol(const char *name, SymbolType type, bool is_constant);
 Symbol *get_symbol(const char *name);
 void set_symbol_value(const char *name, Expression *value);
 
+Statement *new_function_statement(Function *function);
 StatementList *new_statement_list(Statement *statement, StatementList *next);
 Statement *new_assign(char *var_name, Expression *value);
 Statement *new_array_assign(char *array_name, Expression *index, Expression *index1, Expression *value);
@@ -395,4 +396,4 @@ void pop_scope(void);
 char *process_string(const char *str);
 bool check_file_extension(const char *filename);
 
-#endif
+#endif // AST_H

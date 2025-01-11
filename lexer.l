@@ -7,8 +7,10 @@
 #include "ast.h"
 #include "parser.tab.h"
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+void yyerror(const char *s);
 %}
 
 %option noyywrap
@@ -16,7 +18,15 @@
 %option yylineno
 
 %%
-[ \t\n]         ; /* Ignore whitespace */
+[ \t\n]+        ; /* Ignore whitespace */
+"//".*          { /* Ignore single-line comments */ }
+
+"Module"        { return MODULE; }
+"FinModule"     { return FINMODULE; }
+"Importer"      { return IMPORTER; }
+"Depuis"        { return DEPUIS; }
+"."             { return DOT; }
+
 "Algorithme"    { return ALGORITHME; }
 "Debut"         { return DEBUT; }
 "Variable"      { return VARIABLE_KWRD; }
@@ -34,7 +44,7 @@
 "Alors"         { return ALORS; }
 "Constante"     { return CONSTANT; }
 "Sinon"         { return SINON; }
-"SinonSi"       {return SINONSI; }
+"SinonSi"       { return SINONSI; }
 "FinSi"         { return FINSI; }
 "TantQue"       { return TANTQUE; }
 "Faire"         { return FAIRE; }
@@ -66,8 +76,8 @@
 "Recherche"     { return SEARCH; }
 "Tableau"       { return TABLEAU; }
 "Type"          { return TYPE_KWRD; }
-"["            { return LBRACKET; }
-"]"            { return RBRACKET; }
+"["             { return LBRACKET; }
+"]"             { return RBRACKET; }
 "+"             { return PLUS; }
 "-"             { return MINUS; }
 "*"             { return TIMES; }
@@ -86,25 +96,23 @@
 "=="            { return EQ; }
 "!="            { return NE; }
 "&"             { return CONCAT; }
+":"             { return COLON; }
+","             { return COMMA; }
+
 [-+]?[0-9]+          { yylval.int_value = atoi(yytext); return ENTIER_VAL; }
 [-+]?[0-9]+\.[0-9]+  { yylval.double_value = atof(yytext); return DECIMAL_VAL; }
 "Vrai"          { yylval.bval = true; return LOGIQUE_VAL; }
 "Faux"          { yylval.bval = false; return LOGIQUE_VAL; }
-[a-zA-Z_][a-zA-Z0-9_]* { yylval.string_value = strdup(yytext); return IDENTIFIANT; }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.var_name = strdup(yytext); return IDENTIFIANT; }
 \"([^"]|\\.)*\"  {
     yylval.string_value = process_string(yytext + 1);
     return STRING_VAL;
 }
-":"             { return COLON; }
-","             { return COMMA; }
-
- /* Single-line comment */
-"//".*          { /* Ignore single-line comments */ }
 
  /* Multi-line comment */
 "/*"            { BEGIN(COMMENT); }
 <COMMENT>"*/"   { BEGIN(INITIAL); }
-<COMMENT>.|\n   { /* Ignore content inside multi-line comments */ }
+<COMMENT>.|\n   ;
 
 .               { printf("Caractère inattendu: %s\n", yytext); }
 %%
