@@ -15,18 +15,38 @@ Version actuelle : 1.1
 ## Documentation du Langage
 
 ### Structure du Programme
-Chaque programme doit suivre cette structure de base :
+
+Un programme CodeFr peut avoir l'une des structures suivantes :
+
+1. Programme Simple :
+```
+// Déclarations (Variables, Constantes, Tableaux)
+Debut
+    // Instructions du programme
+Fin
 ```
 
-// Déclarations de variables
-// Déclarations de constantes
-// Déclarations de tableaux
-
-// Instructions du programme
-
+2. Programme avec Modules :
+```
+Module NomModule
+    // Déclarations de fonctions
+    // et autres éléments du module
+FinModule
 ```
 
-### Variables et Types de Données
+3. Programme avec Imports :
+```
+// Imports de modules
+Importer Module1
+Depuis Module2 Importer fonction1, fonction2
+
+// Déclarations
+Debut
+    // Instructions du programme
+Fin
+```
+
+Les déclarations doivent toujours précéder le bloc `Debut...Fin`, et les imports doivent précéder les déclarations.
 
 #### Déclaration de Variables
 ```
@@ -139,6 +159,90 @@ Selon expression Faire
 FinSelon
 ```
 
+### Fonctions Utilisateur
+
+Les fonctions peuvent être définies selon deux syntaxes différentes, selon qu'elles retournent ou non une valeur.
+
+#### Fonction sans retour
+```
+Fonction NomFonction(arg1: type, arg2: type, ...)
+    // Déclarations locales
+    // Instructions
+FinFonction
+```
+
+Exemple:
+```
+Fonction AfficherMessage(message: Chaine)
+    Ecrire(message)
+FinFonction
+```
+
+#### Fonction avec retour
+```
+Fonction NomFonction(arg1: type, arg2: type, ...): type
+    // Déclarations locales
+    // Instructions
+    Retourner Expression
+FinFonction
+```
+
+Exemple:
+```
+Fonction Somme(a: Entier, b: Entier): Entier
+    Variable resultat: Entier
+    resultat = a + b
+    Retourner resultat
+FinFonction
+```
+
+### Modules
+
+Les modules permettent d'organiser et de réutiliser le code en le séparant dans différents fichiers. Le nom du module correspond au nom du fichier (sans l'extension `.cfr`).
+
+#### Création d'un Module
+Exemple de module `Calculs.cfr` :
+```
+Fonction addition(a, b)
+    Retourner a + b
+FinFonction
+
+Fonction soustraction(a, b)
+    Retourner a - b
+FinFonction
+
+Fonction multiplication(a, b)
+    Retourner a * b
+FinFonction
+```
+
+#### Importation de Modules
+
+##### Importer un Module Complet
+```
+Importer Calculs
+
+resultat_addition = Calculs.addition(5, 3)
+Ecrire(resultat_addition)
+
+resultat_soustraction = Calculs.soustraction(10, 4)
+Ecrire(resultat_soustraction)
+```
+
+##### Importer des Fonctions Spécifiques
+```
+Depuis Calculs Importer addition
+
+resultat = addition(7, 2)
+Ecrire(resultat)
+```
+
+#### Exécution de Programmes avec Modules
+Pour exécuter un programme utilisant des modules, spécifiez tous les fichiers nécessaires :
+```bash
+./codefr calculs.cfr main.cfr
+```
+
 ### Fonctions Mathématiques
 - `Racine(x)` : Racine carrée
 - `Sin(x)` : Sinus
@@ -208,28 +312,30 @@ Variable b: Entier
 Variable op: Chaine
 Variable resultat: Decimal
 
-Ecrire("Entrez le premier nombre : ")
-Lire(a)
-Ecrire("Entrez l'opération (+,-,*,/) : ")
-Lire(op)
-Ecrire("Entrez le deuxième nombre : ")
-Lire(b)
+Debut
+    Ecrire("Entrez le premier nombre : ")
+    Lire(a)
+    Ecrire("Entrez l'opération (+,-,*,/) : ")
+    Lire(op)
+    Ecrire("Entrez le deuxième nombre : ")
+    Lire(b)
 
-Si op == "+" Alors
-    resultat = a + b
-SinonSi op == "-" Alors
-    resultat = a - b
-SinonSi op == "*" Alors
-    resultat = a * b
-SinonSi op == "/" Alors
-    Si b == 0 Alors
-        Ecrire("Erreur : Division par zéro!")
-    Sinon
-        resultat = a / b
+    Si op == "+" Alors
+        resultat = a + b
+    SinonSi op == "-" Alors
+        resultat = a - b
+    SinonSi op == "*" Alors
+        resultat = a * b
+    SinonSi op == "/" Alors
+        Si b == 0 Alors
+            Ecrire("Erreur : Division par zéro!")
+        Sinon
+            resultat = a / b
+        FinSi
     FinSi
-FinSi
 
-Ecrire("Résultat : ", resultat, "\n")
+    Ecrire("Résultat : ", resultat, "\n")
+Fin
 ```
 
 ### Exemple 2 : Opérations sur Tableaux
@@ -238,18 +344,20 @@ Variable somme: Entier
 Variable i: Entier
 Tableau nombres[5]: Entier
 
-// Initialisation du tableau
-Pour i De 0 A 4 Faire
-    nombres[i] = i * 2
-FinPour
+Debut
+    // Initialisation du tableau
+    Pour i De 0 A 4 Faire
+        nombres[i] = i * 2
+    FinPour
 
-// Calcul de la somme
-somme = 0
-Pour i De 0 A 4 Faire
-    somme = somme + nombres[i]
-FinPour
+    // Calcul de la somme
+    somme = 0
+    Pour i De 0 A 4 Faire
+        somme = somme + nombres[i]
+    FinPour
 
-Ecrire("Somme des éléments du tableau : ", somme)
+    Ecrire("Somme des éléments du tableau : ", somme, "\n")
+Fin
 ```
 
 ## Structure du Projet

@@ -17,21 +17,38 @@ Current version: 1.0
 ## Language Documentation
 
 ### Program Structure
-Every program must follow this basic structure:
-```
-// Variable declarations
-// Constants declarations
-// Array declarations
 
-// Program statements
+A CodeFr program can have one of the following structures:
+
+1. Simple Program:
+```
+// Declarations (Variables, Constants, Arrays)
+Debut
+    // Program statements
+Fin
 ```
 
-### Variables and Data Types
+2. Program with Modules:
+```
+Module ModuleName
+    // Function declarations
+    // and other module elements
+FinModule
+```
 
-#### Variable Declaration
+3. Program with Imports:
 ```
-Variable name: Type
+// Module imports
+Importer Module1
+Depuis Module2 Importer function1, function2
+
+// Declarations
+Debut
+    // Program statements
+Fin
 ```
+
+Declarations must always precede the `Debut...Fin` block, and imports must precede declarations.
 
 #### Supported Data Types
 - `Entier`: Integer numbers
@@ -139,6 +156,90 @@ Selon expression Faire
 FinSelon
 ```
 
+### User-Defined Functions
+
+Functions can be defined using two different syntaxes, depending on whether they return a value or not.
+
+#### Function without return value
+```
+Fonction FunctionName(arg1: type, arg2: type, ...)
+    // Local declarations
+    // Statements
+FinFonction
+```
+
+Example:
+```
+Fonction DisplayMessage(message: Chaine)
+    Ecrire(message)
+FinFonction
+```
+
+#### Function with return value
+```
+Fonction FunctionName(arg1: type, arg2: type, ...): type
+    // Local declarations
+    // Statements
+    Retourner Expression
+FinFonction
+```
+
+Example:
+```
+Fonction Sum(a: Entier, b: Entier): Entier
+    Variable result: Entier
+    result = a + b
+    Retourner result
+FinFonction
+```
+
+### Modules
+
+Modules allow you to organize and reuse code by separating it into different files. The module name corresponds to the file name (without the `.cfr` extension).
+
+#### Creating a Module
+Example module `Calculs.cfr`:
+```
+Fonction addition(a, b)
+    Retourner a + b
+FinFonction
+
+Fonction soustraction(a, b)
+    Retourner a - b
+FinFonction
+
+Fonction multiplication(a, b)
+    Retourner a * b
+FinFonction
+```
+
+#### Importing Modules
+
+##### Import an Entire Module
+```
+Importer Calculs
+
+resultat_addition = Calculs.addition(5, 3)
+Ecrire(resultat_addition)
+
+resultat_soustraction = Calculs.soustraction(10, 4)
+Ecrire(resultat_soustraction)
+```
+
+##### Import Specific Functions
+```
+Depuis Calculs Importer addition
+
+resultat = addition(7, 2)
+Ecrire(resultat)
+```
+
+#### Running Programs with Modules
+To run a program using modules, specify all the necessary files:
+```bash
+./codefr calculs.cfr main.cfr
+```
+
 ### Mathematical Functions
 - `Racine(x)`: Square root
 - `Sin(x)`: Sine
@@ -223,50 +324,52 @@ Variable b: Entier
 Variable op: Chaine
 Variable resultat: Decimal
 
-Ecrire("Enter first number: ")
-Lire(a)
-Ecrire("Enter operation (+,-,*,/): ")
-Lire(op)
-Ecrire("Enter second number: ")
-Lire(b)
+Debut
+    Ecrire("Enter first number: ")
+    Lire(a)
+    Ecrire("Enter operation (+,-,*,/): ")
+    Lire(op)
+    Ecrire("Enter second number: ")
+    Lire(b)
 
-Si op == "+" Alors
-    result = a + b
-SinonSi op == "-" Alors
-    result = a - b
-SinonSi op == "*" Alors
-    result = a * b
-SinonSi op == "/" Alors
-    Si b == 0 Alors
-        Ecrire("Error: Division by zero!")
-    Sinon
-        result = a / b
+    Si op == "+" Alors
+        result = a + b
+    SinonSi op == "-" Alors
+        result = a - b
+    SinonSi op == "*" Alors
+        result = a * b
+    SinonSi op == "/" Alors
+        Si b == 0 Alors
+            Ecrire("Error: Division by zero!")
+        Sinon
+            result = a / b
+        FinSi
     FinSi
-FinSi
 
-Ecrire("Result: ", result, "\n")
+    Ecrire("Result: ", result, "\n")
+Fin
 ```
 
 ### Example 2: Array Operations
 ```
-Algorithme ArrayExample
-
 Variable sum: Entier
 Variable i: Entier
 Tableau numbers[5]: Entier
 
-// Initialize array
-Pour i De 0 A 4 Faire
-    numbers[i] = i * 2
-FinPour
+Debut
+    // Initialize array
+    Pour i De 0 A 4 Faire
+        numbers[i] = i * 2
+    FinPour
 
-// Calculate sum
-sum = 0
-Pour i De 0 A 4 Faire
-    sum = sum + numbers[i]
-FinPour
+    // Calculate sum
+    sum = 0
+    Pour i De 0 A 4 Faire
+        sum = sum + numbers[i]
+    FinPour
 
-Ecrire("Sum of array elements: ", sum, "\n")
+    Ecrire("Sum of array elements: ", sum, "\n")
+Fin
 ```
 
 ## Project Structure

@@ -2,15 +2,17 @@ Variable somme: Entier
 Variable i: Entier
 Tableau nombres[5]: Entier
 
-// Initialisation du tableau
-Pour i De 0 A 4 Faire
-    nombres[i] = i * 2
-FinPour
+Debut
+    // Initialisation du tableau
+    Pour i De 0 A 4 Faire
+        nombres[i] = i * 2
+    FinPour
 
-// Calcul de la somme
-somme = 0
-Pour i De 0 A 4 Faire
-    somme = somme + nombres[i]
-FinPour
+    // Calcul de la somme
+    somme = 0
+    Pour i De 0 A 4 Faire
+        somme = somme + nombres[i]
+    FinPour
 
-Ecrire("Somme des éléments du tableau : ", somme, "\n")
+    Ecrire("Somme des éléments du tableau : ", somme, "\n")
+Fin 
