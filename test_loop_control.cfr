@@ -1,6 +1,7 @@
 // Test des instructions de contrôle de boucle: Interrompre et Suivant
 
 Variables i,j : Entier
+
 Debut
     // Test de l'instruction Interrompre dans une boucle Pour
     Ecrire("Test de Interrompre dans une boucle Pour:\n")
@@ -16,10 +17,13 @@ Debut
     // Test de l'instruction Suivant dans une boucle Pour
     Ecrire("Test de Suivant dans une boucle Pour:\n")
     Pour i De 1 A 10 Faire
+        Ecrire("Début d'itération i=", i, ": ")
         Si i == 5 Alors
+            Ecrire("(Saut de 5) ")
             Suivant
         FinSi
         Ecrire(i, " ")
+        Ecrire("Fin d'itération i=", i, "\n")
     FinPour
     Ecrire("\n\n")
 

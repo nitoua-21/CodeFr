@@ -1,0 +1,15 @@
+// Test simple de l'instruction Suivant dans une boucle Pour
+
+Variables i : Entier
+Debut
+    // Test de l'instruction Suivant dans une boucle Pour
+    Ecrire("Test de Suivant dans une boucle Pour:\n")
+    Pour i De 1 A 10 Faire
+        Ecrire("Avant test: i=", i, " | ")
+        Si i == 5 Alors
+            Ecrire("(Sauter i=5) ")
+            Suivant
+        FinSi
+        Ecrire("Après test: i=", i, "\n")
+    FinPour
+Fin

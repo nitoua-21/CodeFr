@@ -370,9 +370,26 @@ void execute_array_declaration(Statement *stmt)
  */
 void execute_statement_list(StatementList *list)
 {
-    while (list != NULL && list->statement != NULL)
+    StatementList *current = list;
+    
+    while (current != NULL && current->statement != NULL)
     {
-        Statement *stmt = list->statement;
+        Statement *stmt = current->statement;
+        
+        // Check for break or continue statements first
+        if (stmt->type == BREAK_STMT)
+        {
+            // Set the break flag and return immediately
+            loop_control = LOOP_BREAK;
+            return;
+        }
+        else if (stmt->type == CONTINUE_STMT)
+        {
+            // Set the continue flag and return immediately
+            loop_control = LOOP_CONTINUE;
+            return;
+        }
+        
         if (stmt->type == ASSIGN)
         {
             // Handle assignment
@@ -650,6 +667,9 @@ void execute_statement_list(StatementList *list)
                 set_symbol_value(stmt->data.for_stmt.counter, current_value);
                 free(current_value);
 
+                // Reset loop control flag before executing the body
+                loop_control = LOOP_NORMAL;
+                
                 // Execute loop body
                 execute_statement_list(stmt->data.for_stmt.body);
                 
@@ -740,19 +760,14 @@ void execute_statement_list(StatementList *list)
             set_return_value(value);
             return;  // Exit function execution after return
         }
-        else if (stmt->type == BREAK_STMT)
+        // Move to the next statement
+        current = current->next;
+        
+        // Check if we need to break out of the loop due to control flow
+        if (loop_control != LOOP_NORMAL)
         {
-            // Set the break flag and return immediately
-            loop_control = LOOP_BREAK;
             return;
         }
-        else if (stmt->type == CONTINUE_STMT)
-        {
-            // Set the continue flag and return immediately
-            loop_control = LOOP_CONTINUE;
-            return;
-        }
-        list = list->next;
     }
 }
 
