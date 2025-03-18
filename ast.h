@@ -396,7 +396,9 @@ void add_function(Function *function);
 Function *get_function(const char *name);
 Expression *evaluate_function_call(const char *name, ExpressionList *arguments);
 Expression *get_return_value(void);
+Expression *get_and_clear_return_value(void);
 void set_return_value(Expression *value);
+void clear_return_value(void);
 void push_scope(void);
 void pop_scope(void);
 

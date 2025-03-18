@@ -1,0 +1,54 @@
+// Test complet pour vérifier les fonctions récursives et les retours
+
+// Fonction récursive pour calculer la factorielle
+Fonction Factorielle(n: Entier): Entier
+    Si n <= 1 Alors
+        Retourner 1
+    Sinon
+        Retourner n * Factorielle(n - 1)
+    FinSi
+FinFonction
+
+// Fonction récursive pour déterminer si un nombre est pair
+Fonction estPair(n: Entier): Logique
+    Si n == 0 Alors
+        Retourner Vrai
+    SinonSi n == 1 Alors
+        Retourner Faux
+    Sinon
+        Retourner estPair(n - 2)
+    FinSi
+FinFonction
+
+// Fonction récursive pour calculer Fibonacci
+Fonction Fibonacci(n: Entier): Entier
+    Si n <= 1 Alors
+        Retourner n
+    Sinon
+        Retourner Fibonacci(n - 1) + Fibonacci(n - 2)
+    FinSi
+FinFonction
+
+// Fonction avec retour conditionnel
+Fonction Max(a: Entier, b: Entier): Entier
+    Si a > b Alors
+        Retourner a
+    FinSi
+    Retourner b
+FinFonction
+
+Debut
+    // Test de Factorielle
+    Ecrire("Factorielle(5) = ", Factorielle(5), "\n")
+    
+    // Test de estPair
+    Ecrire("estPair(4) = ", estPair(4), "\n")
+    Ecrire("estPair(5) = ", estPair(5), "\n")
+    
+    // Test de Fibonacci
+    Ecrire("Fibonacci(7) = ", Fibonacci(7), "\n")
+    
+    // Test de Max
+    Ecrire("Max(10, 20) = ", Max(10, 20), "\n")
+    Ecrire("Max(30, 20) = ", Max(30, 20), "\n")
+Fin

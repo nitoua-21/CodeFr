@@ -1,0 +1,18 @@
+Fonction estPair(n: Entier): Logique
+    Si n Mod 2 == 0 Alors
+        Ecrire("Dans estPair: n est pair, retourne Vrai\n")
+        Retourner Vrai
+        Ecrire("Cette ligne ne devrait jamais s'exécuter\n")
+    FinSi
+    Ecrire("Dans estPair: n est impair, retourne Faux\n")
+    Retourner Faux
+    Ecrire("Cette ligne ne devrait jamais s'exécuter\n")
+FinFonction
+
+Debut
+    Ecrire("Test pour n=3:\n")
+    Ecrire("Est pair (3) = ", estPair(3), "\n\n")
+    
+    Ecrire("Test pour n=4:\n")
+    Ecrire("Est pair (4) = ", estPair(4), "\n")
+Fin

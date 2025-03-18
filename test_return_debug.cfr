@@ -1,0 +1,21 @@
+// Test de la fonction retourner avec debug
+
+Fonction estPair(n: Entier): Logique
+    Ecrire("Début de estPair avec n = ", n, "\n")
+    Si n Mod 2 == 0 Alors
+        Ecrire("  n est pair, retourne Vrai\n")
+        Retourner Vrai
+        Ecrire("  Cette ligne ne devrait jamais s'exécuter\n")
+    FinSi
+    Ecrire("  n est impair, retourne Faux\n")
+    Retourner Faux
+    Ecrire("  Cette ligne ne devrait jamais s'exécuter\n")
+FinFonction
+
+Debut
+    Ecrire("Appel de estPair(3):\n")
+    Ecrire("Résultat: ", estPair(3), "\n\n")
+    
+    Ecrire("Appel de estPair(4):\n")
+    Ecrire("Résultat: ", estPair(4), "\n")
+Fin

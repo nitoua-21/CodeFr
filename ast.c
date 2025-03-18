@@ -758,8 +758,16 @@ void execute_statement_list(StatementList *list)
         {
             Expression *value = evaluate_expression(stmt->data.return_stmt.value);
             set_return_value(value);
+            // Don't free the value here as it will be used by the caller
             return;  // Exit function execution after return
         }
+        // Check if a return value has been set (by a nested function call)
+        if (get_return_value() != NULL)
+        {
+            // A return has occurred in a nested function call, so we should stop executing
+            return;
+        }
+        
         // Move to the next statement
         current = current->next;
         
@@ -806,12 +814,17 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
         exit(1);
     }
 
-    // Execute function body
+    // Reset return value before executing function body
+    clear_return_value();
+    
+    // Execute function declarations
     execute_statement_list(func->declarations);
+    
+    // Execute function body
     execute_statement_list(func->body);
 
     // Get return value
-    Expression *result = get_return_value();
+    Expression *result = get_and_clear_return_value();
     if (!result && func->return_type != TYPE_VOID) {
         printf("Erreur ligne %d: La fonction '%s' doit retourner une valeur\n", 
                yylineno, name);
@@ -832,6 +845,9 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
         if (result->type == TYPE_CHAINE && result->data.string_value) {
             result_copy->data.string_value = strdup(result->data.string_value);
         }
+        
+        // Free the original result
+        free(result);
     }
 
     // Restore previous scope
@@ -844,11 +860,20 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
 static Expression *return_value = NULL;
 
 /**
- * get_return_value - Gets and clears the current return value
+ * get_return_value - Gets the current return value without clearing it
  *
  * Return: The current return value, or NULL if none
  */
-Expression *get_return_value() {
+Expression *get_return_value(void) {
+    return return_value;
+}
+
+/**
+ * get_and_clear_return_value - Gets and clears the current return value
+ *
+ * Return: The current return value, or NULL if none
+ */
+Expression *get_and_clear_return_value(void) {
     Expression *result = return_value;
     return_value = NULL;
     return result;
@@ -860,6 +885,16 @@ Expression *get_return_value() {
  */
 void set_return_value(Expression *value) {
     return_value = value;
+}
+
+/**
+ * clear_return_value - Clears the current return value
+ */
+void clear_return_value(void) {
+    if (return_value) {
+        free(return_value);
+        return_value = NULL;
+    }
 }
 
 /**

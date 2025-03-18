@@ -9,5 +9,5 @@ Fonction Factorielle(n: Entier): Entier
 FinFonction
 
 Debut
-    Ecrire("Factorielle(3) = ", Factorielle(10), "\n")
+    Ecrire("Factorielle(10) = ", Factorielle(10), "\n")
 Fin
