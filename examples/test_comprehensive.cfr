@@ -20,13 +20,25 @@ Fonction estPair(n: Entier): Logique
     FinSi
 FinFonction
 
-// Fonction récursive pour calculer Fibonacci
+// Fonction itérative pour calculer Fibonacci
 Fonction Fibonacci(n: Entier): Entier
+    Variables fib1, fib2, resultat, i: Entier
+    // Utilisation d'une approche itérative pour éviter les débordements
     Si n <= 1 Alors
         Retourner n
-    Sinon
-        Retourner Fibonacci(n - 1) + Fibonacci(n - 2)
     FinSi
+    
+    fib1 = 0
+    fib2 = 1
+    resultat = 0
+    
+    Pour i De 2 A n Faire
+        resultat = fib1 + fib2
+        fib1 = fib2
+        fib2 = resultat
+    FinPour
+    
+    Retourner resultat
 FinFonction
 
 // Fonction avec retour conditionnel
