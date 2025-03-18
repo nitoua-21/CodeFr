@@ -7,7 +7,7 @@ Symbol symbols[MAX_SYMBOLS];
 int symbol_count = 0;
 
 // Stack to store symbol counts for each scope
-#define MAX_SCOPE_DEPTH 100
+#define MAX_SCOPE_DEPTH 1000
 static int scope_stack[MAX_SCOPE_DEPTH];
 static int scope_depth = 0;
 

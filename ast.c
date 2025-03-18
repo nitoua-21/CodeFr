@@ -795,6 +795,7 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
         Expression *value = evaluate_expression(arg->expression);
         add_symbol(param->name, param->type, false);
         set_symbol_value(param->name, value);
+        free(value); // Free the evaluated expression after setting the symbol value
         param = param->next;
         arg = arg->next;
     }
@@ -817,10 +818,26 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
         exit(1);
     }
 
+    // Make a copy of the result before popping the scope
+    Expression *result_copy = NULL;
+    if (result) {
+        result_copy = malloc(sizeof(Expression));
+        if (!result_copy) {
+            printf("Erreur: Échec de l'allocation mémoire pour la valeur de retour\n");
+            exit(1);
+        }
+        memcpy(result_copy, result, sizeof(Expression));
+        
+        // For string values, make a deep copy
+        if (result->type == TYPE_CHAINE && result->data.string_value) {
+            result_copy->data.string_value = strdup(result->data.string_value);
+        }
+    }
+
     // Restore previous scope
     pop_scope();
 
-    return result;
+    return result_copy;
 }
 
 // Global variable to store return value

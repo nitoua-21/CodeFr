@@ -1,0 +1,13 @@
+// Test de la récursion avec la fonction Factorielle
+
+Fonction Factorielle(n: Entier): Entier
+    Si n == 0 Alors
+        Retourner 1
+    Sinon
+        Retourner n * Factorielle(n - 1)
+    FinSi
+FinFonction
+
+Debut
+    Ecrire("Factorielle(3) = ", Factorielle(10), "\n")
+Fin

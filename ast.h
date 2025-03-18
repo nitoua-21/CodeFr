@@ -6,7 +6,10 @@
 #include <string.h>
 #include <math.h>
 
-#define MAX_SYMBOLS 100
+#define MAX_EXPRESSIONS 100
+#define MAX_STATEMENTS 100
+#define MAX_FUNCTIONS 100
+#define MAX_SYMBOLS 1000
 #define MAX_DIMENSIONS 2
 extern int yylineno;
 
