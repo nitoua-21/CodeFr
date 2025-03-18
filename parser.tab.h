@@ -119,19 +119,21 @@ extern int yydebug;
     CONCATENATE = 325,
     COPY = 326,
     SEARCH = 327,
-    TABLEAU = 328,
-    LBRACKET = 329,
-    RBRACKET = 330,
-    VARIABLES = 331,
-    FONCTION = 332,
-    RETOURNER = 333,
-    FINFONCTION = 334,
-    TYPE_KWRD = 335,
-    MODULE = 336,
-    FINMODULE = 337,
-    IMPORTER = 338,
-    DEPUIS = 339,
-    DOT = 340
+    BREAK = 328,
+    CONTINUE = 329,
+    TABLEAU = 330,
+    LBRACKET = 331,
+    RBRACKET = 332,
+    VARIABLES = 333,
+    FONCTION = 334,
+    RETOURNER = 335,
+    FINFONCTION = 336,
+    TYPE_KWRD = 337,
+    MODULE = 338,
+    FINMODULE = 339,
+    IMPORTER = 340,
+    DEPUIS = 341,
+    DOT = 342
   };
 #endif
 
@@ -161,7 +163,7 @@ union YYSTYPE
     struct Import *import;
     char **function_names;
 
-#line 165 "parser.tab.h"
+#line 167 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

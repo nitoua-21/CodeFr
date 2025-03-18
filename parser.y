@@ -60,6 +60,7 @@ Module *current_module = NULL;
 %token SQUARE_ROOT SINE COSINE TANGENT LOG LOG10 ROUND
 %token ABS INT RANDOM
 %token LENGTH COMPARE CONCATENATE COPY SEARCH
+%token BREAK CONTINUE
 %token TABLEAU LBRACKET RBRACKET VARIABLES
 %token FONCTION RETOURNER FINFONCTION TYPE_KWRD
 %token MODULE FINMODULE IMPORTER DEPUIS DOT
@@ -237,6 +238,8 @@ statement:
     | SELON expression FAIRE Declarations case_list SINON Declarations statement_list FINSELON { $$ = new_switch($2, $5, $8); }
     | IDENTIFIANT LPAREN args_list RPAREN { $$ = new_function_call($1, $3); }
     | RETOURNER expression { $$ = new_return($2); }
+    | BREAK { $$ = new_break(); }
+    | CONTINUE { $$ = new_continue(); }
     ;
 
 elif_list:

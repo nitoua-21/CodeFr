@@ -74,6 +74,8 @@ void yyerror(const char *s);
 "Copie"         { return COPY; }
 "Comparer"      { return COMPARE; }
 "Recherche"     { return SEARCH; }
+"Interrompre"   { return BREAK; }
+"Suivant"       { return CONTINUE; }
 "Tableau"       { return TABLEAU; }
 "Type"          { return TYPE_KWRD; }
 "["             { return LBRACKET; }

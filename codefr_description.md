@@ -25,6 +25,9 @@
       * [Boucles](#boucles)
          * [TantQue-Faire-FinTantQue](#tantque-faire-fintantque)
          * [Pour-Faire-FinPour](#pour-faire-finpour)
+      * [Instructions de contrôle de boucle](#instructions-de-contrôle-de-boucle)
+         * [Interrompre](#interrompre)
+         * [Suivant](#suivant)
    * [Tableaux](#tableaux)
       * [Tableaux à Une Dimension](#tableaux-à-une-dimension)
       * [Tableaux à Deux Dimensions](#tableaux-à-deux-dimensions)
@@ -601,7 +604,7 @@ La boucle `Pour` permet de répéter un bloc d'instructions pour une plage spéc
 **Syntaxe :**
 
 ```
-Pour variable De debut A fin Faire
+Pour variable De valeur_debut A valeur_fin Faire
     
     // Instructions à répéter pour chaque itération
     
@@ -918,7 +921,7 @@ Pour exécuter votre programme principal qui utilise des modules :
 - Compilez/exécutez votre programme en spécifiant tous les fichiers requis à la commande :
 
 ```bash    
-./codefr calculs.cfr main.cfr     
+./codefr calculs.cfr main.cfr
 ```
 
 Dans cet exemple :
@@ -1023,3 +1026,91 @@ Pour exécuter votre programme principal qui utilise des modules :
 
 ```bash    
 ./codefr calculs.cfr main.cfr
+```
+
+Dans cet exemple :
+
+- **calculs.cfr** est votre fichier de module.
+- **main.cfr** est votre fichier contenant le programme principal qui utilise ce(s)module(s).
+
+Cette approche modulaire permet une organisation claire et efficace de vos projets CodeFR !
+
+### Pour-Faire-FinPour
+
+La structure `Pour` permet d'exécuter un bloc d'instructions un nombre défini de fois, en utilisant un compteur qui prend successivement toutes les valeurs d'un intervalle spécifié.
+
+**Syntaxe :**
+
+```
+Pour variable De valeur_debut A valeur_fin Faire
+    // instructions
+FinPour
+```
+
+Où :
+* `variable` est le nom de la variable qui servira de compteur.
+* `valeur_debut` est la valeur initiale du compteur.
+* `valeur_fin` est la valeur finale du compteur.
+* Les instructions entre `Faire` et `FinPour` sont exécutées pour chaque valeur du compteur, de `valeur_debut` à `valeur_fin` inclus.
+
+**Exemple :**
+
+```
+// Afficher les nombres de 1 à 5
+Pour i De 1 A 5 Faire
+    Ecrire(i, "\n")
+FinPour
+```
+
+#### Instructions de contrôle de boucle
+
+CodeFR fournit des instructions spéciales pour contrôler le flux d'exécution à l'intérieur des boucles.
+
+##### Interrompre
+
+L'instruction `Interrompre` permet de sortir immédiatement de la boucle en cours d'exécution, quelle que soit la condition de la boucle.
+
+**Syntaxe :**
+
+```
+Interrompre
+```
+
+**Exemple :**
+
+```
+// Sortir de la boucle lorsque i est égal à 3
+Pour i De 1 A 5 Faire
+    Ecrire(i, "\n")
+    Si i == 3 Alors
+        Interrompre
+    FinSi
+FinPour
+// Affichera seulement 1, 2 et 3
+```
+
+##### Suivant
+
+L'instruction `Suivant` permet de passer directement à l'itération suivante de la boucle, en sautant toutes les instructions restantes dans l'itération courante.
+
+**Syntaxe :**
+
+```
+Suivant
+```
+
+**Exemple :**
+
+```
+// Sauter l'affichage lorsque i est égal à 3
+Pour i De 1 A 5 Faire
+    Si i == 3 Alors
+        Suivant
+    FinSi
+    Ecrire(i, "\n")
+FinPour
+// Affichera 1, 2, 4 et 5 (le 3 est sauté)
+```
+
+### Tableaux
+{{ ... }}

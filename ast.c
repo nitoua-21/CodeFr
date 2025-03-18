@@ -3,11 +3,15 @@
 #include <string.h>
 #include <stdbool.h>
 #include "ast.h"
+#include "parser.tab.h"
 
 // Global function table
 #define MAX_FUNCTIONS 100
 static Function *function_table[MAX_FUNCTIONS];
 static int function_count = 0;
+
+// Global variable for loop control
+int loop_control = LOOP_NORMAL;
 
 /**
  * new_statement_list - Creates a new statement list
@@ -371,7 +375,7 @@ void execute_statement_list(StatementList *list)
         Statement *stmt = list->statement;
         if (stmt->type == ASSIGN)
         {
-
+            // Handle assignment
             Symbol *sym = get_symbol(stmt->data.assign.var_name);
             if (!sym)
             {
@@ -475,33 +479,33 @@ void execute_statement_list(StatementList *list)
             switch (sym->type)
             {
             case TYPE_ENTIER:
-            {
-                int *arr = (int *)sym->value.array_val;
-                arr[offset] = value->type == INTEGER ? value->data.int_value : (int)value->data.double_value;
-                break;
-            }
-            case TYPE_DECIMAL:
-            {
-                double *arr = (double *)sym->value.array_val;
-                arr[offset] = value->type == DECIMAL ? value->data.double_value : (double)value->data.int_value;
-                break;
-            }
-            case TYPE_LOGIQUE:
-            {
-                bool *arr = (bool *)sym->value.array_val;
-                arr[offset] = value->data.bool_value;
-                break;
-            }
-            case TYPE_CHAINE:
-            {
-                char **arr = (char **)sym->value.array_val;
-                if (arr[offset])
                 {
-                    free(arr[offset]);
+                    int *arr = (int *)sym->value.array_val;
+                    arr[offset] = value->type == INTEGER ? value->data.int_value : (int)value->data.double_value;
+                    break;
                 }
-                arr[offset] = strdup(value->data.string_value);
-                break;
-            }
+            case TYPE_DECIMAL:
+                {
+                    double *arr = (double *)sym->value.array_val;
+                    arr[offset] = value->type == DECIMAL ? value->data.double_value : (double)value->data.int_value;
+                    break;
+                }
+            case TYPE_LOGIQUE:
+                {
+                    bool *arr = (bool *)sym->value.array_val;
+                    arr[offset] = value->data.bool_value;
+                    break;
+                }
+            case TYPE_CHAINE:
+                {
+                    char **arr = (char **)sym->value.array_val;
+                    if (arr[offset])
+                    {
+                        free(arr[offset]);
+                    }
+                    arr[offset] = strdup(value->data.string_value);
+                    break;
+                }
             }
 
             free(value);
@@ -602,13 +606,30 @@ void execute_statement_list(StatementList *list)
         }
         else if (stmt->type == WHILE_STATEMENT)
         {
+            // Handle while statement
             while (evaluate_expression(stmt->data.while_stmt.condition)->data.bool_value)
             {
+                // Execute the loop body
                 execute_statement_list(stmt->data.while_stmt.body);
+                
+                // Check if break was encountered
+                if (loop_control == LOOP_BREAK)
+                {
+                    loop_control = LOOP_NORMAL;  // Reset for next time
+                    break;
+                }
+                
+                // Check if continue was encountered
+                if (loop_control == LOOP_CONTINUE)
+                {
+                    loop_control = LOOP_NORMAL;  // Reset for next time
+                    continue;
+                }
             }
         }
         else if (stmt->type == FOR_STATEMENT)
         {
+            // Handle for statement
             Expression *start_expr = evaluate_expression(stmt->data.for_stmt.start);
             Expression *end_expr = evaluate_expression(stmt->data.for_stmt.end);
             int start = start_expr->data.int_value;
@@ -631,6 +652,20 @@ void execute_statement_list(StatementList *list)
 
                 // Execute loop body
                 execute_statement_list(stmt->data.for_stmt.body);
+                
+                // Check if break was encountered
+                if (loop_control == LOOP_BREAK)
+                {
+                    loop_control = LOOP_NORMAL;  // Reset for next time
+                    break;
+                }
+                
+                // Check if continue was encountered
+                if (loop_control == LOOP_CONTINUE)
+                {
+                    loop_control = LOOP_NORMAL;  // Reset for next time
+                    continue;
+                }
             }
 
             free(counter_var);
@@ -670,7 +705,10 @@ void execute_statement_list(StatementList *list)
                     {
                         execute_statement_list(current_case->body);
                         case_executed = true;
-                        break;
+                        
+                        // Check if break or continue was encountered
+                        if (loop_control != LOOP_NORMAL)
+                            return;
                     }
                 }
                 current_case = current_case->next;
@@ -679,6 +717,10 @@ void execute_statement_list(StatementList *list)
             if (!case_executed && stmt->data.switch_stmt.default_case != NULL)
             {
                 execute_statement_list(stmt->data.switch_stmt.default_case);
+                
+                // Check if break or continue was encountered
+                if (loop_control != LOOP_NORMAL)
+                    return;
             }
 
             free(switch_value);
@@ -697,6 +739,18 @@ void execute_statement_list(StatementList *list)
             Expression *value = evaluate_expression(stmt->data.return_stmt.value);
             set_return_value(value);
             return;  // Exit function execution after return
+        }
+        else if (stmt->type == BREAK_STMT)
+        {
+            // Set the break flag and return immediately
+            loop_control = LOOP_BREAK;
+            return;
+        }
+        else if (stmt->type == CONTINUE_STMT)
+        {
+            // Set the continue flag and return immediately
+            loop_control = LOOP_CONTINUE;
+            return;
         }
         list = list->next;
     }
@@ -919,5 +973,46 @@ Statement *new_function_statement(Function *function) {
     }
     stmt->type = FUNCTION_DECL;
     stmt->data.function_decl.function = function;
+    return stmt;
+}
+
+/**
+ * new_break - Creates a new break statement
+ *
+ * Description: This function allocates and initializes a new Statement structure
+ * representing a break statement, which exits the innermost loop when executed.
+ *
+ * Return: Pointer to the newly created Statement structure
+ */
+Statement *new_break()
+{
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt)
+    {
+        printf("Memory allocation failed for break statement\n");
+        exit(1);
+    }
+    stmt->type = BREAK_STMT;
+    return stmt;
+}
+
+/**
+ * new_continue - Creates a new continue statement
+ *
+ * Description: This function allocates and initializes a new Statement structure
+ * representing a continue statement, which skips to the next iteration of the
+ * innermost loop when executed.
+ *
+ * Return: Pointer to the newly created Statement structure
+ */
+Statement *new_continue()
+{
+    Statement *stmt = malloc(sizeof(Statement));
+    if (!stmt)
+    {
+        printf("Memory allocation failed for continue statement\n");
+        exit(1);
+    }
+    stmt->type = CONTINUE_STMT;
     return stmt;
 }

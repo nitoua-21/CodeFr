@@ -248,7 +248,9 @@ typedef struct Statement
         FUNCTION_CALL,
         RETURN_STMT,
         ARRAY_DECL,
-        VAR_DECL
+        VAR_DECL,
+        BREAK_STMT,
+        CONTINUE_STMT
     } type;
     union
     {
@@ -385,6 +387,8 @@ Parameter *new_parameter(char *name, SymbolType type, Parameter *next);
 Statement *new_function_decl(Function *function);
 Statement *new_function_call(char *name, ExpressionList *arguments);
 Statement *new_return(Expression *value);
+Statement *new_break();
+Statement *new_continue();
 void add_function(Function *function);
 Function *get_function(const char *name);
 Expression *evaluate_function_call(const char *name, ExpressionList *arguments);
@@ -395,5 +399,11 @@ void pop_scope(void);
 
 char *process_string(const char *str);
 bool check_file_extension(const char *filename);
+
+// Global variables for loop control
+extern int loop_control;
+#define LOOP_NORMAL 0
+#define LOOP_BREAK 1
+#define LOOP_CONTINUE 2
 
 #endif // AST_H
