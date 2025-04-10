@@ -405,6 +405,10 @@ void pop_scope(void);
 char *process_string(const char *str);
 bool check_file_extension(const char *filename);
 
+// Type conversion and error reporting functions
+const char *type_to_string(SymbolType type);
+void report_type_error(SymbolType expected, SymbolType actual, const char *context);
+
 // Global variables for loop control
 extern int loop_control;
 #define LOOP_NORMAL 0

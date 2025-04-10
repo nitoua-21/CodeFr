@@ -1,0 +1,72 @@
+// Test des messages d'erreur améliorés
+
+// 1. Test d'erreur lexicale
+// Décommentez pour tester: Variable test@ : Entier
+
+// 2. Test d'erreur de syntaxe
+// Décommentez pour tester: Si x > 10 Alors Ecrire("Trop grand") FinSi
+
+// 3. Test d'erreur sémantique - variable non déclarée
+Fonction TestVariableNonDeclaree(): Entier
+    Retourner x + 5  // x n'est pas déclaré
+FinFonction
+
+// 4. Test d'erreur sémantique - type incompatible
+Fonction TestTypeIncompatible(): Entier
+    Variable a: Entier
+    a = "Bonjour"  // Affectation d'une chaîne à un entier
+    Retourner a
+FinFonction
+
+// 5. Test d'erreur sémantique - fonction inexistante
+Fonction TestFonctionInexistante(): Entier
+    Retourner FactorielleX(5)  // Cette fonction n'existe pas
+FinFonction
+
+// 6. Test d'erreur sémantique - nombre incorrect de paramètres
+Fonction Addition(a: Entier, b: Entier): Entier
+    Retourner a + b
+FinFonction
+
+Fonction TestNombreParametres(): Entier
+    Retourner Addition(1, 2, 3)  // Trop de paramètres
+FinFonction
+
+// 7. Test d'erreur sémantique - type de paramètre incorrect
+Fonction TestTypeParametre(): Entier
+    Retourner Addition("un", 2)  // Premier paramètre devrait être un entier
+FinFonction
+
+// 8. Test d'erreur sémantique - tableau hors limites
+Fonction TestTableauHorsLimites(): Entier
+    Tableau tab[5]: Entier
+    tab[10] = 42  // Indice hors limites
+    Retourner 0
+FinFonction
+
+// 9. Test d'erreur sémantique - fonction sans retour
+Fonction TestSansRetour(): Entier
+    Variable x: Entier
+    x = 10
+    // Pas de retour alors qu'un Entier est attendu
+FinFonction
+
+// 10. Test d'erreur sémantique - constante réaffectée
+Fonction TestConstanteReaffectee(): Entier
+    Constante PI = 3.14
+    PI = 3.14159  // Tentative de modification d'une constante
+    Retourner 0
+FinFonction
+
+Debut
+    // Décommentez une fonction à la fois pour tester les erreurs
+    //TestVariableNonDeclaree()
+    //TestTypeIncompatible()
+    //TestFonctionInexistante()
+    //TestNombreParametres()
+    //TestTypeParametre()
+    // TestTableauHorsLimites()
+    TestSansRetour()
+    // TestConstanteReaffectee()
+    Ecrire("Test des messages d'erreur améliorés\n")
+Fin

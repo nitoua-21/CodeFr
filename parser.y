@@ -413,8 +413,33 @@ function_name_list:
 %%
 
 void yyerror(const char *s) {
+    // Check if this is a lexical error (already formatted)
+    if (strncmp(s, "Erreur lexicale", 15) == 0) {
+        fprintf(stderr, "%s\n", s);
+        return;
+    }
+    
+    // Handle syntax errors with more context
     if (strcmp(s, "syntax error") == 0) {
-        fprintf(stderr, "Erreur ligne %d: Syntaxe incorrecte\n", yylineno);
+        // Get the current token from yytext
+        extern char *yytext;
+        
+        if (yytext && *yytext) {
+            fprintf(stderr, "Erreur de syntaxe ligne %d: Élément inattendu '%s'\n", yylineno, yytext);
+        } else {
+            fprintf(stderr, "Erreur de syntaxe ligne %d: Structure incorrecte ou élément manquant\n", yylineno);
+        }
+        
+        // Provide hints based on context
+        if (strstr(yytext, "Fin") != NULL) {
+            fprintf(stderr, "Conseil: Vérifiez que chaque bloc a une instruction de début et de fin correspondante\n");
+        } else if (strstr(yytext, "Si") != NULL || strstr(yytext, "Alors") != NULL) {
+            fprintf(stderr, "Conseil: La structure correcte est 'Si condition Alors ... FinSi'\n");
+        } else if (strstr(yytext, "Pour") != NULL) {
+            fprintf(stderr, "Conseil: La structure correcte est 'Pour variable De debut A fin Faire ... FinPour'\n");
+        } else if (strstr(yytext, "Fonction") != NULL) {
+            fprintf(stderr, "Conseil: La structure correcte est 'Fonction nom(params): Type ... FinFonction'\n");
+        }
     }
     else {
         fprintf(stderr, "Erreur ligne %d: %s\n", yylineno, s);

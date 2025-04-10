@@ -401,20 +401,27 @@ void execute_statement_list(StatementList *list)
             }
             if (sym->is_constant)
             {
-                printf("Erreur ligne %d : La réaffectation de la variable constante %s n'est pas autorisée\n", yylineno, stmt->data.assign.var_name);
+                fprintf(stderr, "Erreur sémantique ligne %d: Tentative de modification de la constante '%s'\n", 
+                        yylineno, stmt->data.assign.var_name);
+                fprintf(stderr, "  Les constantes ne peuvent pas être modifiées après leur initialisation\n");
                 exit(1);
             }
             Expression *result = evaluate_expression(stmt->data.assign.value);
             if (sym->type != result->type)
             {
-                if ((sym->type == TYPE_ENTIER || sym->type == DECIMAL) && result->type == BOOLEAN)
+                // Special case for boolean to integer conversion
+                if ((sym->type == TYPE_ENTIER || sym->type == TYPE_DECIMAL) && result->type == BOOLEAN)
                 {
                     result->type = INTEGER;
                     result->data.int_value = result->data.bool_value;
                 }
-                if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
+                // Special case for integer to decimal and vice versa
+                else if (!((sym->type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || 
+                         (sym->type == TYPE_DECIMAL && result->type == TYPE_ENTIER)))
                 {
-                    printf("Erreur ligne %d : Type incompatible pour l'affectation à la variable %s\n", yylineno, stmt->data.assign.var_name);
+                    char context[100];
+                    sprintf(context, "l'affectation à la variable '%s'", stmt->data.assign.var_name);
+                    report_type_error(sym->type, result->type, context);
                     exit(1);
                 }
             }
@@ -427,20 +434,38 @@ void execute_statement_list(StatementList *list)
             Symbol *sym = get_symbol(stmt->data.array_assign.array_name);
             if (!sym || !sym->is_array)
             {
-                printf("Erreur ligne %d: Invalid array: %s\n", yylineno,
-                       stmt->data.array_assign.array_name);
+                fprintf(stderr, "Erreur sémantique ligne %d: '%s' n'est pas un tableau\n", 
+                       yylineno, stmt->data.array_assign.array_name);
+                if (!sym) {
+                    fprintf(stderr, "  La variable '%s' n'a pas été déclarée\n", 
+                           stmt->data.array_assign.array_name);
+                } else {
+                    fprintf(stderr, "  La variable '%s' est de type %s, pas un tableau\n", 
+                           stmt->data.array_assign.array_name, type_to_string(sym->type));
+                }
                 exit(1);
             }
 
             // Evaluate indices
             Expression *index_result = evaluate_expression(stmt->data.array_assign.index);
+            
+            // Check that the index is an integer
+            if (index_result->type != TYPE_ENTIER) {
+                fprintf(stderr, "Erreur sémantique ligne %d: L'indice du tableau doit être un entier\n", yylineno);
+                fprintf(stderr, "  Type reçu: %s\n", type_to_string(index_result->type));
+                exit(1);
+            }
+            
             int index = index_result->data.int_value;
             free(index_result);
 
             // Check first dimension bounds
             if (index < 0 || index >= sym->dimensions.sizes[0])
             {
-                printf("Erreur ligne %d: Array index out of bounds\n", yylineno);
+                fprintf(stderr, "Erreur sémantique ligne %d: Indice hors limites pour le tableau '%s'\n", 
+                       yylineno, stmt->data.array_assign.array_name);
+                fprintf(stderr, "  Indice: %d\n", index);
+                fprintf(stderr, "  Taille du tableau: %d\n", sym->dimensions.sizes[0]);
                 exit(1);
             }
 
@@ -789,7 +814,18 @@ void execute_statement_list(StatementList *list)
 Expression *evaluate_function_call(const char *name, ExpressionList *arguments) {
     Function *func = get_function(name);
     if (!func) {
-        printf("Erreur ligne %d: La fonction '%s' n'existe pas\n", yylineno, name);
+        fprintf(stderr, "Erreur sémantique ligne %d: La fonction '%s' n'existe pas\n", yylineno, name);
+        fprintf(stderr, "  Vérifiez l'orthographe du nom de la fonction\n");
+        
+        // Try to suggest similar function names
+        for (int i = 0; i < function_count; i++) {
+            // Simple similarity check - first letter matches and length is similar
+            if (function_table[i]->name[0] == name[0] && 
+                abs((int)strlen(function_table[i]->name) - (int)strlen(name)) <= 2) {
+                fprintf(stderr, "  Vouliez-vous dire '%s' ?\n", function_table[i]->name);
+            }
+        }
+        
         exit(1);
     }
 
@@ -799,8 +835,38 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     // Bind arguments to parameters
     Parameter *param = func->parameters;
     ExpressionList *arg = arguments;
+    int param_count = 0, arg_count = 0;
+    
+    // Count parameters and arguments
+    Parameter *param_counter = func->parameters;
+    while (param_counter) {
+        param_count++;
+        param_counter = param_counter->next;
+    }
+    
+    ExpressionList *arg_counter = arguments;
+    while (arg_counter) {
+        arg_count++;
+        arg_counter = arg_counter->next;
+    }
+    
     while (param && arg) {
         Expression *value = evaluate_expression(arg->expression);
+        
+        // Type checking for parameters
+        if (param->type != value->type && 
+            !((param->type == TYPE_DECIMAL && value->type == TYPE_ENTIER) || 
+              (param->type == TYPE_ENTIER && value->type == TYPE_DECIMAL))) {
+            
+            char context[100];
+            sprintf(context, "le paramètre '%s' de la fonction '%s'", param->name, name);
+            report_type_error(param->type, value->type, context);
+            
+            fprintf(stderr, "  Position du paramètre: %d\n", 
+                    param_count - (param_count - arg_count) + 1);
+            exit(1);
+        }
+        
         add_symbol(param->name, param->type, false);
         set_symbol_value(param->name, value);
         free(value); // Free the evaluated expression after setting the symbol value
@@ -809,8 +875,10 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     }
 
     if (param || arg) {
-        printf("Erreur ligne %d: Nombre incorrect de paramètres pour la fonction '%s'\n", 
+        fprintf(stderr, "Erreur sémantique ligne %d: Nombre incorrect de paramètres pour la fonction '%s'\n", 
                yylineno, name);
+        fprintf(stderr, "  Nombre attendu: %d\n", param_count);
+        fprintf(stderr, "  Nombre fourni: %d\n", arg_count);
         exit(1);
     }
 
@@ -826,9 +894,23 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     // Get return value
     Expression *result = get_and_clear_return_value();
     if (!result && func->return_type != TYPE_VOID) {
-        printf("Erreur ligne %d: La fonction '%s' doit retourner une valeur\n", 
-               yylineno, name);
+        fprintf(stderr, "Erreur sémantique ligne %d: La fonction '%s' doit retourner une valeur de type %s\n", 
+               yylineno, name, type_to_string(func->return_type));
+        fprintf(stderr, "  Assurez-vous que tous les chemins d'exécution contiennent une instruction 'Retourner'\n");
         exit(1);
+    }
+    
+    // Check return type
+    if (result && func->return_type != TYPE_VOID && result->type != func->return_type) {
+        // Special case for integer/decimal conversion
+        if (!((func->return_type == TYPE_ENTIER && result->type == TYPE_DECIMAL) || 
+             (func->return_type == TYPE_DECIMAL && result->type == TYPE_ENTIER))) {
+            
+            char context[100];
+            sprintf(context, "la valeur de retour de la fonction '%s'", name);
+            report_type_error(func->return_type, result->type, context);
+            exit(1);
+        }
     }
 
     // Make a copy of the result before popping the scope
@@ -836,7 +918,7 @@ Expression *evaluate_function_call(const char *name, ExpressionList *arguments) 
     if (result) {
         result_copy = malloc(sizeof(Expression));
         if (!result_copy) {
-            printf("Erreur: Échec de l'allocation mémoire pour la valeur de retour\n");
+            fprintf(stderr, "Erreur: Échec de l'allocation mémoire pour la valeur de retour\n");
             exit(1);
         }
         memcpy(result_copy, result, sizeof(Expression));
@@ -1082,4 +1164,50 @@ Statement *new_continue()
     }
     stmt->type = CONTINUE_STMT;
     return stmt;
+}
+
+/**
+ * type_to_string - Converts a SymbolType to a string representation
+ * @type: The type to convert
+ *
+ * Return: A string representation of the type
+ */
+const char *type_to_string(SymbolType type) {
+    switch (type) {
+        case TYPE_ENTIER:
+            return "Entier";
+        case TYPE_DECIMAL:
+            return "Decimal";
+        case TYPE_LOGIQUE:
+            return "Logique";
+        case TYPE_CHAINE:
+            return "Chaine";
+        case TYPE_VOID:
+            return "Vide";
+        default:
+            return "Type inconnu";
+    }
+}
+
+/**
+ * report_type_error - Reports a type error with detailed information
+ * @expected: The expected type
+ * @actual: The actual type
+ * @context: The context in which the error occurred
+ */
+void report_type_error(SymbolType expected, SymbolType actual, const char *context) {
+    fprintf(stderr, "Erreur sémantique ligne %d: Type incompatible dans %s\n", yylineno, context);
+    fprintf(stderr, "  Type attendu: %s\n", type_to_string(expected));
+    fprintf(stderr, "  Type reçu: %s\n", type_to_string(actual));
+    
+    // Provide helpful suggestions based on common type errors
+    if (expected == TYPE_ENTIER && actual == TYPE_DECIMAL) {
+        fprintf(stderr, "  Conseil: Utilisez la fonction Ent() pour convertir un Decimal en Entier\n");
+    } else if (expected == TYPE_DECIMAL && actual == TYPE_ENTIER) {
+        fprintf(stderr, "  Conseil: Les Entiers peuvent généralement être utilisés là où des Decimaux sont attendus\n");
+    } else if (expected == TYPE_LOGIQUE) {
+        fprintf(stderr, "  Conseil: Les expressions de condition doivent être de type Logique (Vrai/Faux)\n");
+    } else if (actual == TYPE_CHAINE && (expected == TYPE_ENTIER || expected == TYPE_DECIMAL)) {
+        fprintf(stderr, "  Conseil: Utilisez une fonction de conversion pour transformer une Chaine en nombre\n");
+    }
 }

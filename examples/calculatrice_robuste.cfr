@@ -1,0 +1,70 @@
+// Calculatrice robuste avec validation d'entrée améliorée
+Variables a, b, choix, erreur: Entier
+Variable op: Chaine
+Variable resultat: Decimal
+Variable valide: Logique
+
+Debut
+    Ecrire("=== Calculatrice Robuste ===\n\n")
+    
+    // Boucle principale pour permettre plusieurs calculs
+    TantQue Vrai Faire
+        erreur = 0
+        
+        // Saisie du premier nombre avec gestion d'erreur
+        Ecrire("Entrez le premier nombre : ")
+        Lire(a)
+        
+        // Saisie de l'opération avec validation
+        valide = Faux
+        TantQue valide == Faux Faire
+            Ecrire("Entrez l'opération (+,-,*,/) : ")
+            Lire(op)
+            
+            Si op == "+" Ou op == "-" Ou op == "*" Ou op == "/" Alors
+                valide = Vrai
+            Sinon
+                Ecrire("Erreur : Opération non reconnue. Veuillez utiliser +, -, * ou /\n")
+            FinSi
+        FinTantQue
+        
+        // Saisie du deuxième nombre avec gestion d'erreur pour division par zéro
+        Ecrire("Entrez le deuxième nombre : ")
+        Lire(b)
+        
+        // Vérification pour la division par zéro
+        Si op == "/" Et b == 0 Alors
+            Ecrire("Erreur : Division par zéro impossible\n")
+            erreur = 1
+        FinSi
+        
+        // Calcul et affichage du résultat si pas d'erreur
+        Si erreur == 0 Alors
+            Si op == "+" Alors
+                resultat = a + b
+            SinonSi op == "-" Alors
+                resultat = a - b
+            SinonSi op == "*" Alors
+                resultat = a * b
+            SinonSi op == "/" Alors
+                resultat = a / b
+            FinSi
+            
+            // Affichage du résultat avec plus de détails
+            Ecrire("\nCalcul effectué : ", a, " ", op, " ", b, "\n")
+            Ecrire("Résultat : ", resultat, "\n\n")
+        FinSi
+        
+        // Demander à l'utilisateur s'il souhaite continuer
+        Ecrire("Souhaitez-vous effectuer un autre calcul? (1: Oui, 0: Non) : ")
+        Lire(choix)
+        
+        Si choix == 0 Alors
+            Interrompre
+        FinSi
+        
+        Ecrire("\n")
+    FinTantQue
+    
+    Ecrire("Merci d'avoir utilisé la calculatrice robuste!\n")
+Fin

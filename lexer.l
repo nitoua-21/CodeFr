@@ -116,5 +116,16 @@ void yyerror(const char *s);
 <COMMENT>"*/"   { BEGIN(INITIAL); }
 <COMMENT>.|\n   ;
 
-.               { printf("Caractère inattendu: %s\n", yytext); }
+.               { 
+                  char *error_message = malloc(100);
+                  if (yytext[0] >= 32 && yytext[0] <= 126) {
+                      // Printable character
+                      sprintf(error_message, "Erreur lexicale ligne %d: Caractère inattendu '%s'", yylineno, yytext);
+                  } else {
+                      // Non-printable character
+                      sprintf(error_message, "Erreur lexicale ligne %d: Caractère non imprimable (code ASCII %d)", yylineno, (int)yytext[0]);
+                  }
+                  yyerror(error_message);
+                  free(error_message);
+                }
 %%

@@ -51,38 +51,37 @@ void pop_scope(void) {
 }
 
 /**
- * add_symbol - Adds a new symbol to the symbol table
- * @name: The name of the symbol to add
- * @type: The type of the symbol (from SymbolType enum)
- *
- * This function creates a new entry in the symbol table for a variable.
- * It allocates space for the symbol name, initializes its value based on
- * the type, and adds it to the global symbols array.
+ * add_symbol - Adds a symbol to the symbol table
+ * @name: Name of the symbol
+ * @type: Type of the symbol
+ * @is_constant: Whether the symbol is a constant
  *
  * Return: void
  */
-void add_symbol(const char *name, SymbolType type, bool is_constant)
-{
-    if (symbol_count >= MAX_SYMBOLS)
-    {
-        printf("Erreur ligne %d: Nombre maximum de variables atteint\n", yylineno);
+void add_symbol(const char *name, SymbolType type, bool is_constant) {
+    // Check if we've reached the maximum number of symbols
+    if (symbol_count >= MAX_SYMBOLS) {
+        fprintf(stderr, "Erreur sémantique ligne %d: Nombre maximum de variables dépassé (%d)\n", 
+                yylineno, MAX_SYMBOLS);
         exit(1);
     }
-
-    // Check if symbol already exists in current scope
+    
+    // Check if the symbol already exists in the current scope
     for (int i = scope_stack[scope_depth - 1]; i < symbol_count; i++) {
         if (strcmp(symbols[i].name, name) == 0) {
-            printf("Erreur ligne %d: La variable '%s' est déjà déclarée dans cette portée\n", 
-                   yylineno, name);
+            fprintf(stderr, "Erreur sémantique ligne %d: La variable '%s' est déjà définie dans cette portée\n", 
+                    yylineno, name);
             exit(1);
         }
     }
-
+    
+    // Add the symbol
     symbols[symbol_count].name = strdup(name);
     symbols[symbol_count].type = type;
     symbols[symbol_count].is_constant = is_constant;
-    switch (type)
-    {
+    
+    // Initialize the symbol value based on type
+    switch (type) {
     case TYPE_ENTIER:
         symbols[symbol_count].value.int_val = 0;
         break;
@@ -96,6 +95,7 @@ void add_symbol(const char *name, SymbolType type, bool is_constant)
         symbols[symbol_count].value.string_val = strdup("");
         break;
     }
+    
     symbol_count++;
 }
 

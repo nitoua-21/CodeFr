@@ -2,15 +2,35 @@ Variable a: Entier
 Variable b: Entier
 Variable op: Chaine
 Variable resultat: Decimal
+Variable valide: Logique
+Variable typeValeur: Chaine
 
 Debut
+    // Saisie du premier nombre
     Ecrire("Entrez le premier nombre : ")
     Lire(a)
+    
+    // Saisie de l'opération
     Ecrire("Entrez l'opération (+,-,*,/) : ")
     Lire(op)
+    
+    // Validation de l'opération
+    Si op != "+" Et op != "-" Et op != "*" Et op != "/" Alors
+        Ecrire("Erreur : Opération non reconnue. Utilisez +, -, * ou /\n")
+        Interrompre
+    FinSi
+    
+    // Saisie du deuxième nombre
     Ecrire("Entrez le deuxième nombre : ")
     Lire(b)
+    
+    // Vérification pour la division par zéro
+    Si op == "/" Et b == 0 Alors
+        Ecrire("Erreur : Division par zéro impossible\n")
+        Interrompre
+    FinSi
 
+    // Calcul du résultat
     Si op == "+" Alors
         resultat = a + b
     SinonSi op == "-" Alors
@@ -18,12 +38,10 @@ Debut
     SinonSi op == "*" Alors
         resultat = a * b
     SinonSi op == "/" Alors
-        Si b == 0 Alors
-            Ecrire("Erreur : Division par zéro!\n")
-        Sinon
-            resultat = a / b
-        FinSi
+        resultat = a / b
     FinSi
 
+    // Affichage du résultat avec plus de détails
+    Ecrire("\nCalcul effectué : ", a, " ", op, " ", b, "\n")
     Ecrire("Résultat : ", resultat, "\n")
 Fin
